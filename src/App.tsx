@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import LandingPage from "@/pages/LandingPage";
 import DashboardPage from "@/pages/DashboardPage";
 import SessionsPage from "@/pages/SessionsPage";
@@ -32,12 +33,12 @@ const App = () => (
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/dashboard/api-keys" element={<APIKeysPage />} />
-            <Route path="/sessions" element={<SessionsPage />} />
-            <Route path="/sessions/:id" element={<SessionDetailPage />} />
-            <Route path="/sessions/:id/viewer" element={<SessionViewerPage />} />
-            <Route path="/search" element={<SearchPage />} />
+            <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+            <Route path="/dashboard/api-keys" element={<ProtectedRoute><APIKeysPage /></ProtectedRoute>} />
+            <Route path="/sessions" element={<ProtectedRoute><SessionsPage /></ProtectedRoute>} />
+            <Route path="/sessions/:id" element={<ProtectedRoute><SessionDetailPage /></ProtectedRoute>} />
+            <Route path="/sessions/:id/viewer" element={<ProtectedRoute><SessionViewerPage /></ProtectedRoute>} />
+            <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
             <Route path="/marketplace" element={<MarketplacePage />} />
             <Route path="/marketplace/:id" element={<ListingPage />} />
             <Route path="*" element={<NotFound />} />

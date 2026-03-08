@@ -4,11 +4,14 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 
-const navLinks = [
+const publicLinks = [
   { to: "/", label: "Home" },
+  { to: "/marketplace", label: "Marketplace" },
+];
+
+const authLinks = [
   { to: "/search", label: "Search" },
   { to: "/sessions", label: "Sessions" },
-  { to: "/marketplace", label: "Marketplace" },
   { to: "/dashboard", label: "Dashboard" },
 ];
 
@@ -31,7 +34,21 @@ const Navbar = () => {
         </Link>
 
         <div className="hidden md:flex items-center gap-1">
-          {navLinks.map(({ to, label }) => (
+          {publicLinks.map(({ to, label }) => (
+            <Link
+              key={to}
+              to={to}
+              className={cn(
+                "px-4 py-2 rounded-lg text-sm transition-colors",
+                location.pathname === to
+                  ? "text-primary bg-primary/10"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+              )}
+            >
+              {label}
+            </Link>
+          ))}
+          {isAuthenticated && authLinks.map(({ to, label }) => (
             <Link
               key={to}
               to={to}

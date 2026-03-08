@@ -32,9 +32,12 @@ export interface Stream {
   id: string;
   session_id: string;
   name: string;
-  type: "video" | "lidar" | "imu" | "audio" | "depth" | "custom";
+  type: "video" | "audio" | "imu" | "lidar" | "depth" | "pose" | "other";
+  device_name?: string;
+  sample_rate?: string;
   format: string;
   file_count: number;
+  files?: AssetFile[];
 }
 
 export interface AssetFile {

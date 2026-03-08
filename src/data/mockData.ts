@@ -21,9 +21,23 @@ export const mockSessions: Session[] = [
 ];
 
 export const mockStreams: Stream[] = [
-  { id: "str_001", session_id: "ses_001", name: "Front LiDAR", type: "lidar", format: "pcd", file_count: 1200 },
-  { id: "str_002", session_id: "ses_001", name: "RGB Camera", type: "video", format: "mp4", file_count: 1 },
-  { id: "str_003", session_id: "ses_001", name: "IMU Sensor", type: "imu", format: "csv", file_count: 1 },
+  { id: "str_001", session_id: "ses_001", name: "Front LiDAR", type: "lidar", device_name: "Velodyne VLP-16", sample_rate: "20 Hz", format: "pcd", file_count: 1200, files: [
+    { id: "af_010", stream_id: "str_001", filename: "scan_000001.pcd", size_bytes: 2_000_000, content_type: "application/octet-stream", s3_key: "ses_001/str_001/scan_000001.pcd", uploaded_at: "2026-02-20T14:35:00Z" },
+    { id: "af_011", stream_id: "str_001", filename: "scan_000002.pcd", size_bytes: 2_100_000, content_type: "application/octet-stream", s3_key: "ses_001/str_001/scan_000002.pcd", uploaded_at: "2026-02-20T14:35:01Z" },
+  ] },
+  { id: "str_002", session_id: "ses_001", name: "RGB Camera", type: "video", device_name: "Intel RealSense D435", sample_rate: "30 fps", format: "mp4", file_count: 1, files: [
+    { id: "af_001", stream_id: "str_002", filename: "front_cam_001.mp4", size_bytes: 450_000_000, content_type: "video/mp4", s3_key: "ses_001/str_002/front_cam_001.mp4", uploaded_at: "2026-02-20T15:00:00Z" },
+  ] },
+  { id: "str_003", session_id: "ses_001", name: "IMU Sensor", type: "imu", device_name: "Bosch BNO055", sample_rate: "100 Hz", format: "csv", file_count: 1, files: [
+    { id: "af_020", stream_id: "str_003", filename: "imu_data.csv", size_bytes: 12_000_000, content_type: "text/csv", s3_key: "ses_001/str_003/imu_data.csv", uploaded_at: "2026-02-20T15:10:00Z" },
+  ] },
+  { id: "str_004", session_id: "ses_002", name: "Stereo Left", type: "video", device_name: "ZED 2i", sample_rate: "15 fps", format: "mp4", file_count: 1 },
+  { id: "str_005", session_id: "ses_002", name: "IMU + Magnetometer", type: "imu", device_name: "ICM-20948", sample_rate: "200 Hz", format: "csv", file_count: 2 },
+  { id: "str_006", session_id: "ses_004", name: "Overhead Camera", type: "video", device_name: "Logitech Brio", sample_rate: "30 fps", format: "mp4", file_count: 3 },
+  { id: "str_007", session_id: "ses_004", name: "Depth Camera", type: "depth", device_name: "Intel RealSense D455", sample_rate: "30 fps", format: "bag", file_count: 3 },
+  { id: "str_008", session_id: "ses_004", name: "Arm Pose", type: "pose", device_name: "UR5e Joint Encoder", sample_rate: "125 Hz", format: "json", file_count: 1 },
+  { id: "str_009", session_id: "ses_004", name: "Audio Mic", type: "audio", device_name: "Blue Yeti", sample_rate: "48 kHz", format: "wav", file_count: 1 },
+  { id: "str_010", session_id: "ses_004", name: "Gripper Force", type: "other", device_name: "Robotiq FT-300", sample_rate: "100 Hz", format: "csv", file_count: 1 },
 ];
 
 export const mockAssetFiles: AssetFile[] = [

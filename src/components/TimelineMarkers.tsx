@@ -10,7 +10,7 @@ interface TimelineMarkersProps {
  * Simple greedy interval scheduling.
  */
 function assignRows(anns: SessionAnnotation[]): { ann: SessionAnnotation; row: number }[] {
-  const items = anns
+  const items = (anns || [])
     .filter((a) => a.target === "time_range" && a.time_start !== undefined)
     .sort((a, b) => (a.time_start ?? 0) - (b.time_start ?? 0));
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -8,19 +8,30 @@ const RegisterPage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordTouched, setPasswordTouched] = useState(false);
   const [error, setError] = useState("");
+
+  const passwordValid = useMemo(() => {
+    return (
+      password.length >= 8 &&
+      /[a-zA-Z]/.test(password) &&
+      /[0-9]/.test(password) &&
+      /[^a-zA-Z0-9]/.test(password)
+    );
+  }, [password]);
   const { register, isLoading } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setPasswordTouched(true);
     setError("");
     if (!name.trim() || !email.trim() || !password.trim()) {
       setError("Please fill in all fields.");
       return;
     }
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
+    if (!passwordValid) {
+      setError("Password does not meet the requirements.");
       return;
     }
     try {
@@ -91,10 +102,14 @@ const RegisterPage = () => {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                onBlur={() => setPasswordTouched(true)}
                 placeholder="••••••••"
                 className="w-full rounded-xl border border-border/50 bg-background/50 py-2.5 pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-colors"
               />
             </div>
+            <p className={`text-[11px] mt-1.5 transition-colors ${passwordTouched && !passwordValid ? "text-destructive" : "text-muted-foreground"}`}>
+              Must be at least 8 characters with a mix of letters, numbers, and symbols.
+            </p>
           </div>
 
           <Button variant="neon" className="w-full" size="lg" disabled={isLoading}>

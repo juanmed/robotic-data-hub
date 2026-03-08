@@ -102,10 +102,14 @@ const RegisterPage = () => {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                onBlur={() => setPasswordTouched(true)}
                 placeholder="••••••••"
                 className="w-full rounded-xl border border-border/50 bg-background/50 py-2.5 pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-colors"
               />
             </div>
+            <p className={`text-[11px] mt-1.5 transition-colors ${passwordTouched && !passwordValid ? "text-destructive" : "text-muted-foreground"}`}>
+              Must be at least 8 characters with a mix of letters, numbers, and symbols.
+            </p>
           </div>
 
           <Button variant="neon" className="w-full" size="lg" disabled={isLoading}>

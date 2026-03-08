@@ -6,6 +6,7 @@ import { LogOut } from "lucide-react";
 
 const navLinks = [
   { to: "/", label: "Home" },
+  { to: "/search", label: "Search" },
   { to: "/sessions", label: "Sessions" },
   { to: "/marketplace", label: "Marketplace" },
   { to: "/dashboard", label: "Dashboard" },

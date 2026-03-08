@@ -285,6 +285,15 @@ const ListingPage = () => {
           priceCents={listing.price_cents}
         />
       )}
+
+      {/* Download modal */}
+      {listing && (
+        <DownloadModal
+          open={downloadOpen}
+          onClose={() => setDownloadOpen(false)}
+          datasetTitle={listing.title}
+        />
+      )}
     </div>
   );
 };

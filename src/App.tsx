@@ -39,6 +39,7 @@ const App = () => (
             <Route path="/sessions/:id/viewer" element={<SessionViewerPage />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/marketplace" element={<MarketplacePage />} />
+            <Route path="/marketplace/:id" element={<ListingPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

@@ -4,6 +4,7 @@ import { listingService } from "@/services/listingService";
 import { orderService } from "@/services/orderService";
 import { sessionService } from "@/services/sessionService";
 import CheckoutModal from "@/components/CheckoutModal";
+import DownloadModal from "@/components/DownloadModal";
 import GlassCard from "@/components/GlassCard";
 import { Button } from "@/components/ui/button";
 import type { Listing, Session } from "@/types";
@@ -37,6 +38,7 @@ const ListingPage = () => {
   const [loading, setLoading] = useState(true);
   const [acquiring, setAcquiring] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [downloadOpen, setDownloadOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -231,7 +233,7 @@ const ListingPage = () => {
                       <CheckCircle2 className="h-4 w-4" />
                       Purchased
                     </div>
-                    <Button variant="neon" className="w-full gap-2">
+                    <Button variant="neon" className="w-full gap-2" onClick={() => setDownloadOpen(true)}>
                       <Download className="h-4 w-4" />
                       Download Dataset
                     </Button>
@@ -281,6 +283,15 @@ const ListingPage = () => {
           onConfirm={handlePaidPurchase}
           title={listing.title}
           priceCents={listing.price_cents}
+        />
+      )}
+
+      {/* Download modal */}
+      {listing && (
+        <DownloadModal
+          open={downloadOpen}
+          onClose={() => setDownloadOpen(false)}
+          datasetTitle={listing.title}
         />
       )}
     </div>

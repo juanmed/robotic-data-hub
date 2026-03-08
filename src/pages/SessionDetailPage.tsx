@@ -4,10 +4,11 @@ import PageContainer from "@/layouts/PageContainer";
 import SectionHeader from "@/components/SectionHeader";
 import GlassCard from "@/components/GlassCard";
 import AddStreamModal from "@/components/AddStreamModal";
+import FileUploadZone from "@/components/FileUploadZone";
 import { Button } from "@/components/ui/button";
 import { sessionService } from "@/services/sessionService";
-import type { Session, Stream } from "@/types";
-import { ArrowLeft, Radio, FileText, Clock, Plus, Film, Mic, Activity, Radar, Box, Crosshair, CircuitBoard } from "lucide-react";
+import type { Session, Stream, AssetFile } from "@/types";
+import { ArrowLeft, Radio, FileText, Clock, Plus, Film, Mic, Activity, Radar, Box, Crosshair, CircuitBoard, ChevronDown, ChevronRight } from "lucide-react";
 
 const formatBytes = (bytes: number) => {
   if (bytes === 0) return "0 B";
@@ -40,12 +41,15 @@ const SessionDetailPage = () => {
   const [streams, setStreams] = useState<Stream[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddStream, setShowAddStream] = useState(false);
+  const [expandedStreams, setExpandedStreams] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (!id) return;
     Promise.all([sessionService.get(id), sessionService.getStreams(id)]).then(([s, st]) => {
       setSession(s || null);
       setStreams(st);
+      // Expand all streams by default
+      setExpandedStreams(new Set(st.map((stream) => stream.id)));
       setLoading(false);
     });
   }, [id]);
@@ -55,11 +59,31 @@ const SessionDetailPage = () => {
       if (!id) return;
       sessionService.addStream(id, data).then((newStream) => {
         setStreams((prev) => [...prev, newStream]);
+        setExpandedStreams((prev) => new Set([...prev, newStream.id]));
         setShowAddStream(false);
       });
     },
     [id]
   );
+
+  const toggleStream = useCallback((streamId: string) => {
+    setExpandedStreams((prev) => {
+      const next = new Set(prev);
+      if (next.has(streamId)) next.delete(streamId);
+      else next.add(streamId);
+      return next;
+    });
+  }, []);
+
+  const handleFileUploaded = useCallback((streamId: string, file: AssetFile) => {
+    setStreams((prev) =>
+      prev.map((s) =>
+        s.id === streamId
+          ? { ...s, files: [...(s.files || []), file], file_count: (s.file_count || 0) + 1 }
+          : s
+      )
+    );
+  }, []);
 
   if (loading) {
     return (
@@ -163,6 +187,7 @@ const SessionDetailPage = () => {
             const cfg = streamTypeConfig[stream.type] || streamTypeConfig.other;
             const Icon = cfg.icon;
             const files = stream.files || [];
+            const isExpanded = expandedStreams.has(stream.id);
 
             return (
               <div
@@ -182,8 +207,11 @@ const SessionDetailPage = () => {
                   <div className="h-1 w-full" style={{ background: `linear-gradient(90deg, ${cfg.color}, transparent)` }} />
 
                   <div className="p-5">
-                    {/* Stream info */}
-                    <div className="flex items-start justify-between mb-4">
+                    {/* Stream info — clickable to toggle */}
+                    <div
+                      className="flex items-start justify-between cursor-pointer"
+                      onClick={() => toggleStream(stream.id)}
+                    >
                       <div className="flex items-center gap-3">
                         <div
                           className="h-9 w-9 rounded-xl flex items-center justify-center"
@@ -207,33 +235,45 @@ const SessionDetailPage = () => {
                         </div>
                       </div>
 
-                      <div className="text-right text-xs text-muted-foreground">
-                        {stream.sample_rate && <p className="font-mono-code text-foreground">{stream.sample_rate}</p>}
-                        <p>{stream.file_count} file{stream.file_count !== 1 ? "s" : ""}</p>
+                      <div className="flex items-center gap-3">
+                        <div className="text-right text-xs text-muted-foreground">
+                          {stream.sample_rate && <p className="font-mono-code text-foreground">{stream.sample_rate}</p>}
+                          <p>{files.length} file{files.length !== 1 ? "s" : ""}</p>
+                        </div>
+                        {isExpanded ? (
+                          <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                        )}
                       </div>
                     </div>
 
-                    {/* Files list */}
-                    {files.length > 0 && (
-                      <div className="rounded-xl border border-border/30 bg-background/40 divide-y divide-border/20">
-                        {files.map((file) => (
-                          <div key={file.id} className="flex items-center justify-between px-4 py-2.5 text-xs">
-                            <div className="flex items-center gap-2">
-                              <FileText className="h-3 w-3 text-muted-foreground" />
-                              <span className="font-mono-code text-foreground">{file.filename}</span>
-                            </div>
-                            <div className="flex items-center gap-3 text-muted-foreground">
-                              <span>{formatBytes(file.size_bytes)}</span>
-                              <span>{new Date(file.uploaded_at).toLocaleDateString()}</span>
-                            </div>
+                    {/* Expanded content */}
+                    {isExpanded && (
+                      <div className="mt-4 animate-fade-in">
+                        {/* Files list */}
+                        {files.length > 0 && (
+                          <div className="rounded-xl border border-border/30 bg-background/40 divide-y divide-border/20">
+                            {files.map((file) => (
+                              <div key={file.id} className="flex items-center justify-between px-4 py-2.5 text-xs">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <FileText className="h-3 w-3 text-muted-foreground shrink-0" />
+                                  <span className="font-mono-code text-foreground truncate">{file.filename}</span>
+                                </div>
+                                <div className="flex items-center gap-3 text-muted-foreground shrink-0 ml-3">
+                                  <span>{formatBytes(file.size_bytes)}</span>
+                                  <span>{new Date(file.uploaded_at).toLocaleDateString()}</span>
+                                </div>
+                              </div>
+                            ))}
                           </div>
-                        ))}
-                      </div>
-                    )}
+                        )}
 
-                    {files.length === 0 && (
-                      <div className="rounded-xl border border-dashed border-border/30 bg-background/20 px-4 py-3 text-center">
-                        <p className="text-[11px] text-muted-foreground">No files uploaded yet</p>
+                        {/* Upload zone */}
+                        <FileUploadZone
+                          streamId={stream.id}
+                          onFileUploaded={(file) => handleFileUploaded(stream.id, file)}
+                        />
                       </div>
                     )}
                   </div>

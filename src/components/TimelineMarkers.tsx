@@ -84,7 +84,7 @@ const TimelineMarkers = ({ annotations, totalDuration }: TimelineMarkersProps) =
               className="absolute -top-0.5 -left-[3px] h-2 w-2 rounded-full"
               style={{
                 backgroundColor: ann.color,
-                boxShadow: `0 0 6px ${ann.color}`,
+                boxShadow: `0 0 6px ${ann.color.replace(')', ' / 0.8)')}`,
               }}
             />
             {/* Label inside strip if wide enough */}

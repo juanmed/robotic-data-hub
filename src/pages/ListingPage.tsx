@@ -34,6 +34,7 @@ const CREATORS = ["Alex Chen", "Robotics Lab", "DataForge AI", "Chen Wei"];
 
 const ListingPage = () => {
   const { id } = useParams<{ id: string }>();
+  const { isAuthenticated } = useAuth();
   const [listing, setListing] = useState<Listing | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [purchased, setPurchased] = useState(false);
@@ -229,7 +230,19 @@ const ListingPage = () => {
                 </div>
 
                 {/* Action buttons */}
-                {purchased ? (
+                {!isAuthenticated ? (
+                  <div className="space-y-3">
+                    <p className="text-[11px] text-muted-foreground text-center">
+                      Sign in to purchase or download this dataset.
+                    </p>
+                    <Button variant="neon" className="w-full gap-2" asChild>
+                      <Link to="/login">
+                        <LogIn className="h-4 w-4" />
+                        Sign in to Continue
+                      </Link>
+                    </Button>
+                  </div>
+                ) : purchased ? (
                   <div className="space-y-3">
                     <div className="flex items-center justify-center gap-2 text-primary text-sm font-medium">
                       <CheckCircle2 className="h-4 w-4" />

@@ -24,13 +24,14 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setPasswordTouched(true);
     setError("");
     if (!name.trim() || !email.trim() || !password.trim()) {
       setError("Please fill in all fields.");
       return;
     }
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
+    if (!passwordValid) {
+      setError("Password does not meet the requirements.");
       return;
     }
     try {

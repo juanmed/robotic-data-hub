@@ -59,8 +59,8 @@ const HeroSection = () => {
         <div className="mt-16 max-w-lg mx-auto rounded-xl border border-border/50 bg-card/80 p-5 text-left backdrop-blur-sm">
           <div className="flex items-center gap-1.5 mb-4">
             <div className="h-2.5 w-2.5 rounded-full bg-destructive/60" />
-            <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/60" />
-            <div className="h-2.5 w-2.5 rounded-full bg-green-500/60" />
+            <div className="h-2.5 w-2.5 rounded-full bg-accent/60" />
+            <div className="h-2.5 w-2.5 rounded-full bg-primary/60" />
           </div>
           <pre className="font-mono-code text-xs text-muted-foreground leading-relaxed">
             <code>

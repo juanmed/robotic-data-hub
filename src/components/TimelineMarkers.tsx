@@ -73,9 +73,9 @@ const TimelineMarkers = ({ annotations, totalDuration }: TimelineMarkersProps) =
               width: `${Math.max(width, 0.5)}%`,
               top,
               height: ROW_HEIGHT - 4,
-              backgroundColor: `${ann.color}30`,
+              backgroundColor: ann.color.replace(')', ' / 0.2)').replace('hsl(', 'hsl('),
               borderLeft: `2px solid ${ann.color}`,
-              boxShadow: `0 0 8px ${ann.color}40`,
+              boxShadow: `0 0 8px ${ann.color.replace(')', ' / 0.25)')}`,
             }}
             title={`${ann.content} (${start.toFixed(1)}s → ${end.toFixed(1)}s)`}
           >

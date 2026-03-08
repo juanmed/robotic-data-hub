@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,17 @@ const RegisterPage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordTouched, setPasswordTouched] = useState(false);
   const [error, setError] = useState("");
+
+  const passwordValid = useMemo(() => {
+    return (
+      password.length >= 8 &&
+      /[a-zA-Z]/.test(password) &&
+      /[0-9]/.test(password) &&
+      /[^a-zA-Z0-9]/.test(password)
+    );
+  }, [password]);
   const { register, isLoading } = useAuth();
   const navigate = useNavigate();
 

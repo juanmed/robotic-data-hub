@@ -9,6 +9,7 @@ import LandingPage from "@/pages/LandingPage";
 import DashboardPage from "@/pages/DashboardPage";
 import SessionsPage from "@/pages/SessionsPage";
 import SessionDetailPage from "@/pages/SessionDetailPage";
+import SessionViewerPage from "@/pages/SessionViewerPage";
 import MarketplacePage from "@/pages/MarketplacePage";
 import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/dashboard/api-keys" element={<APIKeysPage />} />
             <Route path="/sessions" element={<SessionsPage />} />
             <Route path="/sessions/:id" element={<SessionDetailPage />} />
+            <Route path="/sessions/:id/viewer" element={<SessionViewerPage />} />
             <Route path="/marketplace" element={<MarketplacePage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

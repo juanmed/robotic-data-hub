@@ -14,6 +14,7 @@ import MarketplacePage from "@/pages/MarketplacePage";
 import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
 import APIKeysPage from "@/pages/APIKeysPage";
+import SearchPage from "@/pages/SearchPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/sessions" element={<SessionsPage />} />
             <Route path="/sessions/:id" element={<SessionDetailPage />} />
             <Route path="/sessions/:id/viewer" element={<SessionViewerPage />} />
+            <Route path="/search" element={<SearchPage />} />
             <Route path="/marketplace" element={<MarketplacePage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

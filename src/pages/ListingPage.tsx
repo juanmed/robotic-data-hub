@@ -7,6 +7,7 @@ import CheckoutModal from "@/components/CheckoutModal";
 import DownloadModal from "@/components/DownloadModal";
 import GlassCard from "@/components/GlassCard";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 import type { Listing, Session } from "@/types";
 import {
   ArrowLeft,
@@ -19,6 +20,7 @@ import {
   Database,
   Star,
   Loader2,
+  LogIn,
 } from "lucide-react";
 
 const PREVIEW_IMAGES = [

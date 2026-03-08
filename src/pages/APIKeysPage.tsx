@@ -14,7 +14,7 @@ interface MockKey {
 
 const generateMockKey = (): string => {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let result = "gai_";
+  let result = "gpai_";
   for (let i = 0; i < 12; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -31,8 +31,8 @@ const APIKeysPage = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setKeys([
-        { id: "key_001", name: "Production Key", key: "gai_83KDJDKS92JD", created_at: "2026-02-01T00:00:00Z" },
-        { id: "key_002", name: "Development Key", key: "gai_7FN29XKWP4QL", created_at: "2026-03-01T00:00:00Z" },
+        { id: "key_001", name: "Production Key", key: "gpai_83KDJDKS92JD", created_at: "2026-02-01T00:00:00Z" },
+        { id: "key_002", name: "Development Key", key: "gpai_7FN29XKWP4QL", created_at: "2026-03-01T00:00:00Z" },
       ]);
       setLoading(false);
     }, 400);

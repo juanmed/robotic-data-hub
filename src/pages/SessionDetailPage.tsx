@@ -8,7 +8,7 @@ import FileUploadZone from "@/components/FileUploadZone";
 import { Button } from "@/components/ui/button";
 import { sessionService } from "@/services/sessionService";
 import type { Session, Stream, AssetFile } from "@/types";
-import { ArrowLeft, Radio, FileText, Clock, Plus, Film, Mic, Activity, Radar, Box, Crosshair, CircuitBoard, ChevronDown, ChevronRight } from "lucide-react";
+import { ArrowLeft, Radio, FileText, Clock, Plus, Film, Mic, Activity, Radar, Box, Crosshair, CircuitBoard, ChevronDown, ChevronRight, Eye } from "lucide-react";
 
 const formatBytes = (bytes: number) => {
   if (bytes === 0) return "0 B";
@@ -134,6 +134,12 @@ const SessionDetailPage = () => {
               <p className="text-sm text-muted-foreground">{session.description}</p>
             )}
           </div>
+          <Button variant="neon" size="sm" asChild>
+            <Link to={`/sessions/${id}/viewer`}>
+              <Eye className="h-4 w-4" />
+              Open Viewer
+            </Link>
+          </Button>
         </div>
       </div>
 

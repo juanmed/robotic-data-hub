@@ -3,6 +3,8 @@ import { useParams, Link } from "react-router-dom";
 import { useSessionData } from "@/hooks/useSessionData";
 import { useDatasetEpisodes } from "@/hooks/useDatasetEpisodes";
 import LerobotVisualizer from "@/components/LerobotVisualizer";
+import AnnotationPanel from "@/components/AnnotationPanel";
+import TimelineMarkers from "@/components/TimelineMarkers";
 import GlassCard from "@/components/GlassCard";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,7 +19,6 @@ import {
   CircuitBoard,
   RefreshCw,
   BookOpen,
-  Tag,
   Bookmark,
   Filter,
   ChevronLeft,
@@ -50,11 +51,14 @@ const SessionViewerPage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [vizKey, setVizKey] = useState(0);
 
-  // Sync defaults once loaded
   const activeDatasetId = datasetId || defaultDatasetId;
   const activeEpisode = datasetId ? episode : defaultEpisode;
 
   const { episodes, loading: episodesLoading } = useDatasetEpisodes(activeDatasetId);
+
+  // Get duration from current episode for timeline
+  const currentEp = episodes.find((e) => e.index === activeEpisode);
+  const totalDuration = currentEp ? parseFloat(currentEp.duration) || 15 : 15;
 
   const handleReload = useCallback(() => {
     setVizKey((k) => k + 1);
@@ -163,18 +167,12 @@ const SessionViewerPage = () => {
                 </div>
               </div>
 
-              {/* Annotation Panel Placeholder */}
-              <div>
-                <h3 className="text-xs font-semibold text-foreground mb-2 flex items-center gap-1.5">
-                  <Tag className="h-3 w-3 text-secondary" />
-                  Annotations
-                </h3>
-                <div className="rounded-xl border border-dashed border-border/30 bg-background/10 px-4 py-6 text-center">
-                  <Tag className="h-5 w-5 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-[10px] text-muted-foreground">No annotations yet</p>
-                  <p className="text-[9px] text-muted-foreground mt-0.5">Annotations will appear here</p>
-                </div>
-              </div>
+              {/* Annotation Panel */}
+              <AnnotationPanel
+                sessionId={session.id}
+                streams={streams}
+                variant="sidebar"
+              />
             </div>
           </aside>
         )}
@@ -212,7 +210,6 @@ const SessionViewerPage = () => {
             {/* Controls */}
             <GlassCard hover={false}>
               <div className="flex flex-col md:flex-row items-start md:items-end gap-4">
-                {/* Dataset ID */}
                 <div className="flex-1 w-full">
                   <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5 block">
                     Dataset ID
@@ -226,7 +223,6 @@ const SessionViewerPage = () => {
                   />
                 </div>
 
-                {/* Episode selector */}
                 <div className="w-40">
                   <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5 block">
                     Episode
@@ -245,13 +241,20 @@ const SessionViewerPage = () => {
                   </select>
                 </div>
 
-                {/* Reload */}
                 <Button variant="neon" size="default" onClick={handleReload} className="gap-1.5 shrink-0">
                   <RefreshCw className="h-3.5 w-3.5" />
                   Reload
                 </Button>
               </div>
             </GlassCard>
+
+            {/* Timeline markers */}
+            <div>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">
+                Annotation Timeline
+              </p>
+              <TimelineMarkers sessionId={session.id} totalDuration={totalDuration} />
+            </div>
 
             {/* Visualizer */}
             <div>
@@ -263,29 +266,28 @@ const SessionViewerPage = () => {
               />
             </div>
 
-            {/* Bottom panels placeholder */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <GlassCard hover={false}>
-                <div className="flex items-center gap-2 mb-3">
-                  <Tag className="h-3.5 w-3.5 text-secondary" />
-                  <h3 className="text-xs font-semibold text-foreground">Annotations</h3>
-                </div>
-                <div className="rounded-lg border border-dashed border-border/30 bg-background/10 px-3 py-5 text-center">
-                  <p className="text-[10px] text-muted-foreground">
-                    Add bounding boxes, labels, and segmentation masks to frames.
-                  </p>
-                </div>
-              </GlassCard>
-
+            {/* Bottom panels */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <GlassCard hover={false}>
                 <div className="flex items-center gap-2 mb-3">
                   <Filter className="h-3.5 w-3.5 text-primary" />
                   <h3 className="text-xs font-semibold text-foreground">Sensor Filters</h3>
                 </div>
-                <div className="rounded-lg border border-dashed border-border/30 bg-background/10 px-3 py-5 text-center">
-                  <p className="text-[10px] text-muted-foreground">
-                    Toggle visibility of individual sensor streams and overlay channels.
-                  </p>
+                <div className="space-y-2">
+                  {streams.length > 0 ? streams.map((stream) => {
+                    const cfg = streamTypeConfig[stream.type] || streamTypeConfig.other;
+                    const Icon = cfg.icon;
+                    return (
+                      <label key={stream.id} className="flex items-center gap-2.5 px-3 py-2 rounded-lg border border-border/20 bg-background/10 hover:border-border/40 transition-colors cursor-pointer">
+                        <input type="checkbox" defaultChecked className="rounded border-border/50 text-primary focus:ring-primary/30 h-3 w-3" />
+                        <Icon className="h-3 w-3" style={{ color: cfg.color }} />
+                        <span className="text-[11px] text-foreground">{stream.name}</span>
+                        <span className="text-[9px] text-muted-foreground ml-auto">{cfg.label}</span>
+                      </label>
+                    );
+                  }) : (
+                    <p className="text-[10px] text-muted-foreground text-center py-3">No streams available</p>
+                  )}
                 </div>
               </GlassCard>
 
@@ -298,6 +300,7 @@ const SessionViewerPage = () => {
                   <p className="text-[10px] text-muted-foreground">
                     Mark key moments for review, training splits, or export ranges.
                   </p>
+                  <p className="text-[9px] text-muted-foreground mt-1">Coming soon</p>
                 </div>
               </GlassCard>
             </div>

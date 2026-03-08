@@ -1,7 +1,8 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useSessionData } from "@/hooks/useSessionData";
 import { useDatasetEpisodes } from "@/hooks/useDatasetEpisodes";
+import { annotationService, type SessionAnnotation } from "@/services/annotationService";
 import LerobotVisualizer from "@/components/LerobotVisualizer";
 import AnnotationPanel from "@/components/AnnotationPanel";
 import TimelineMarkers from "@/components/TimelineMarkers";
@@ -50,15 +51,30 @@ const SessionViewerPage = () => {
   const [episode, setEpisode] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [vizKey, setVizKey] = useState(0);
+  const [annotations, setAnnotations] = useState<SessionAnnotation[]>([]);
 
   const activeDatasetId = datasetId || defaultDatasetId;
   const activeEpisode = datasetId ? episode : defaultEpisode;
 
   const { episodes, loading: episodesLoading } = useDatasetEpisodes(activeDatasetId);
 
-  // Get duration from current episode for timeline
   const currentEp = episodes.find((e) => e.index === activeEpisode);
   const totalDuration = currentEp ? parseFloat(currentEp.duration) || 15 : 15;
+
+  // Load annotations once
+  useEffect(() => {
+    if (id) {
+      annotationService.listBySession(id).then(setAnnotations);
+    }
+  }, [id]);
+
+  const handleAnnotationCreated = useCallback((ann: SessionAnnotation) => {
+    setAnnotations((prev) => [ann, ...prev]);
+  }, []);
+
+  const handleAnnotationDeleted = useCallback((annId: string) => {
+    setAnnotations((prev) => prev.filter((a) => a.id !== annId));
+  }, []);
 
   const handleReload = useCallback(() => {
     setVizKey((k) => k + 1);
@@ -101,7 +117,6 @@ const SessionViewerPage = () => {
         {sidebarOpen && (
           <aside className="w-80 shrink-0 border-r border-border/40 bg-card/30 backdrop-blur-sm overflow-y-auto animate-fade-in">
             <div className="p-4 space-y-4">
-              {/* Back + Collapse */}
               <div className="flex items-center justify-between">
                 <Link
                   to="/sessions"
@@ -171,6 +186,9 @@ const SessionViewerPage = () => {
               <AnnotationPanel
                 sessionId={session.id}
                 streams={streams}
+                annotations={annotations}
+                onAnnotationCreated={handleAnnotationCreated}
+                onAnnotationDeleted={handleAnnotationDeleted}
                 variant="sidebar"
               />
             </div>
@@ -179,7 +197,6 @@ const SessionViewerPage = () => {
 
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto">
-          {/* Top bar */}
           <div className="sticky top-0 z-10 border-b border-border/40 bg-background/80 backdrop-blur-xl">
             <div className="flex items-center justify-between px-6 py-3">
               <div className="flex items-center gap-3">
@@ -253,7 +270,7 @@ const SessionViewerPage = () => {
               <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">
                 Annotation Timeline
               </p>
-              <TimelineMarkers sessionId={session.id} totalDuration={totalDuration} />
+              <TimelineMarkers annotations={annotations} totalDuration={totalDuration} />
             </div>
 
             {/* Visualizer */}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { annotationService, type SessionAnnotation, type AnnotationType, type AnnotationTarget } from "@/services/annotationService";
 import type { Stream } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,9 @@ const targetConfig: Record<AnnotationTarget, { icon: typeof Layers; label: strin
 interface AnnotationPanelProps {
   sessionId: string;
   streams: Stream[];
+  annotations: SessionAnnotation[];
+  onAnnotationCreated: (ann: SessionAnnotation) => void;
+  onAnnotationDeleted: (id: string) => void;
   variant?: "sidebar" | "full";
 }
 
@@ -40,9 +43,7 @@ const formatTime = (s: number) => {
   return m > 0 ? `${m}:${sec.padStart(4, "0")}` : `${sec}s`;
 };
 
-const AnnotationPanel = ({ sessionId, streams, variant = "sidebar" }: AnnotationPanelProps) => {
-  const [annotations, setAnnotations] = useState<SessionAnnotation[]>([]);
-  const [loading, setLoading] = useState(true);
+const AnnotationPanel = ({ sessionId, streams, annotations, onAnnotationCreated, onAnnotationDeleted, variant = "sidebar" }: AnnotationPanelProps) => {
   const [showForm, setShowForm] = useState(false);
 
   // Form state
@@ -53,13 +54,6 @@ const AnnotationPanel = ({ sessionId, streams, variant = "sidebar" }: Annotation
   const [timeStart, setTimeStart] = useState("");
   const [timeEnd, setTimeEnd] = useState("");
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    annotationService.listBySession(sessionId).then((a) => {
-      setAnnotations(a);
-      setLoading(false);
-    });
-  }, [sessionId]);
 
   const handleCreate = useCallback(async () => {
     setError("");
@@ -83,17 +77,17 @@ const AnnotationPanel = ({ sessionId, streams, variant = "sidebar" }: Annotation
       author: "Alex Chen",
     });
 
-    setAnnotations((prev) => [ann, ...prev]);
+    onAnnotationCreated(ann);
     setContent("");
     setTimeStart("");
     setTimeEnd("");
     setShowForm(false);
-  }, [sessionId, type, target, streamId, content, timeStart, timeEnd]);
+  }, [sessionId, type, target, streamId, content, timeStart, timeEnd, onAnnotationCreated]);
 
   const handleDelete = useCallback(async (id: string) => {
     await annotationService.remove(id);
-    setAnnotations((prev) => prev.filter((a) => a.id !== id));
-  }, []);
+    onAnnotationDeleted(id);
+  }, [onAnnotationDeleted]);
 
   const resetForm = () => {
     setShowForm(false);
@@ -261,11 +255,7 @@ const AnnotationPanel = ({ sessionId, streams, variant = "sidebar" }: Annotation
       )}
 
       {/* Annotations list */}
-      {loading ? (
-        <div className="space-y-2">
-          {[1, 2].map((i) => <div key={i} className="h-14 rounded-xl bg-muted/20 animate-pulse" />)}
-        </div>
-      ) : annotations.length === 0 && !showForm ? (
+      {annotations.length === 0 && !showForm ? (
         <div className="rounded-xl border border-dashed border-border/30 bg-background/10 px-4 py-6 text-center">
           <Tag className="h-5 w-5 text-muted-foreground mx-auto mb-2" />
           <p className="text-[10px] text-muted-foreground">No annotations yet</p>

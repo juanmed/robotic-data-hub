@@ -1,28 +1,53 @@
-import { useState, useEffect } from "react";
-import { annotationService, type SessionAnnotation } from "@/services/annotationService";
+import type { SessionAnnotation } from "@/services/annotationService";
 
 interface TimelineMarkersProps {
-  sessionId: string;
+  annotations: SessionAnnotation[];
   totalDuration: number; // seconds
 }
 
-const TimelineMarkers = ({ sessionId, totalDuration }: TimelineMarkersProps) => {
-  const [annotations, setAnnotations] = useState<SessionAnnotation[]>([]);
+/**
+ * Assign each annotation a "row" so overlapping time ranges stack vertically.
+ * Simple greedy interval scheduling.
+ */
+function assignRows(anns: SessionAnnotation[]): { ann: SessionAnnotation; row: number }[] {
+  const items = anns
+    .filter((a) => a.target === "time_range" && a.time_start !== undefined)
+    .sort((a, b) => (a.time_start ?? 0) - (b.time_start ?? 0));
 
-  useEffect(() => {
-    annotationService.listBySession(sessionId).then((all) => {
-      setAnnotations(all.filter((a) => a.target === "time_range" && a.time_start !== undefined));
-    });
-  }, [sessionId]);
+  const rowEnds: number[] = []; // tracks the end-time of each row
 
-  if (annotations.length === 0 || totalDuration <= 0) return null;
+  return items.map((ann) => {
+    const start = ann.time_start ?? 0;
+    // find first row where this annotation doesn't overlap
+    let row = rowEnds.findIndex((end) => end <= start);
+    if (row === -1) {
+      row = rowEnds.length;
+      rowEnds.push(0);
+    }
+    rowEnds[row] = ann.time_end ?? start + 0.5;
+    return { ann, row };
+  });
+}
+
+const ROW_HEIGHT = 24; // px per row
+const PADDING_Y = 4;
+
+const TimelineMarkers = ({ annotations, totalDuration }: TimelineMarkersProps) => {
+  if (totalDuration <= 0) return null;
+
+  const placed = assignRows(annotations);
+  const rowCount = placed.length > 0 ? Math.max(...placed.map((p) => p.row)) + 1 : 1;
+  const trackHeight = rowCount * ROW_HEIGHT + PADDING_Y * 2;
 
   return (
-    <div className="relative h-8 rounded-xl border border-border/30 bg-background/30 overflow-hidden">
-      {/* Track bg */}
+    <div
+      className="relative rounded-xl border border-border/30 bg-background/30 overflow-hidden transition-all duration-300"
+      style={{ height: trackHeight }}
+    >
+      {/* Track background gradient */}
       <div className="absolute inset-0 bg-[linear-gradient(90deg,hsl(var(--primary)/0.03),transparent_50%,hsl(var(--secondary)/0.03))]" />
 
-      {/* Time marks */}
+      {/* Quarter marks */}
       {[0.25, 0.5, 0.75].map((frac) => (
         <div
           key={frac}
@@ -31,28 +56,30 @@ const TimelineMarkers = ({ sessionId, totalDuration }: TimelineMarkersProps) => 
         />
       ))}
 
-      {/* Annotation markers */}
-      {annotations.map((ann) => {
-        if (ann.time_start === undefined) return null;
-        const left = (ann.time_start / totalDuration) * 100;
-        const width = ann.time_end !== undefined
-          ? ((ann.time_end - ann.time_start) / totalDuration) * 100
-          : 1;
+      {/* Annotation strips */}
+      {placed.map(({ ann, row }) => {
+        const start = ann.time_start ?? 0;
+        const end = ann.time_end ?? start + 0.5;
+        const left = (start / totalDuration) * 100;
+        const width = ((end - start) / totalDuration) * 100;
+        const top = PADDING_Y + row * ROW_HEIGHT + 2;
 
         return (
           <div
             key={ann.id}
-            className="absolute top-1 bottom-1 rounded-md cursor-pointer group/marker transition-all hover:brightness-125"
+            className="absolute rounded-md cursor-pointer group/marker transition-all hover:brightness-125"
             style={{
               left: `${Math.min(left, 99)}%`,
-              width: `${Math.max(width, 0.8)}%`,
+              width: `${Math.max(width, 0.5)}%`,
+              top,
+              height: ROW_HEIGHT - 4,
               backgroundColor: `${ann.color}30`,
               borderLeft: `2px solid ${ann.color}`,
               boxShadow: `0 0 8px ${ann.color}40`,
             }}
-            title={ann.content}
+            title={`${ann.content} (${start.toFixed(1)}s → ${end.toFixed(1)}s)`}
           >
-            {/* Glow dot */}
+            {/* Glow dot at start */}
             <div
               className="absolute -top-0.5 -left-[3px] h-2 w-2 rounded-full"
               style={{
@@ -60,11 +87,18 @@ const TimelineMarkers = ({ sessionId, totalDuration }: TimelineMarkersProps) => 
                 boxShadow: `0 0 6px ${ann.color}`,
               }}
             />
+            {/* Label inside strip if wide enough */}
+            <span
+              className="absolute inset-0 flex items-center px-1.5 text-[8px] font-medium truncate pointer-events-none"
+              style={{ color: ann.color }}
+            >
+              {ann.content}
+            </span>
           </div>
         );
       })}
 
-      {/* Labels */}
+      {/* Time labels */}
       <div className="absolute bottom-0 left-2 text-[8px] text-muted-foreground font-mono-code">0s</div>
       <div className="absolute bottom-0 right-2 text-[8px] text-muted-foreground font-mono-code">{totalDuration}s</div>
     </div>

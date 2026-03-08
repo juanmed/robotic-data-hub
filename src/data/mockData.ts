@@ -9,8 +9,8 @@ export const mockUser: User = {
 };
 
 export const mockApiKeys: APIKey[] = [
-  { id: "key_001", user_id: "usr_001", name: "Production Key", key_prefix: "gai_prod_", created_at: "2025-11-01T00:00:00Z", last_used_at: "2026-03-07T12:00:00Z" },
-  { id: "key_002", user_id: "usr_001", name: "Development Key", key_prefix: "gai_dev_", created_at: "2025-12-15T00:00:00Z" },
+  { id: "key_001", user_id: "usr_001", name: "Production Key", key_prefix: "gpai_prod_", created_at: "2025-11-01T00:00:00Z", last_used_at: "2026-03-07T12:00:00Z" },
+  { id: "key_002", user_id: "usr_001", name: "Development Key", key_prefix: "gpai_dev_", created_at: "2025-12-15T00:00:00Z" },
 ];
 
 export const mockSessions: Session[] = [

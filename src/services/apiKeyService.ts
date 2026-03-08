@@ -10,7 +10,7 @@ export const apiKeyService = {
   },
   async create(name: string): Promise<APIKey> {
     await delay(500);
-    return { id: `key_${Date.now()}`, user_id: "usr_001", name, key_prefix: "gai_", created_at: new Date().toISOString() };
+    return { id: `key_${Date.now()}`, user_id: "usr_001", name, key_prefix: "gpai_", created_at: new Date().toISOString() };
   },
   async revoke(_id: string): Promise<void> {
     await delay();

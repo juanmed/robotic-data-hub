@@ -15,6 +15,7 @@ import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
 import APIKeysPage from "@/pages/APIKeysPage";
 import SearchPage from "@/pages/SearchPage";
+import ListingPage from "@/pages/ListingPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();

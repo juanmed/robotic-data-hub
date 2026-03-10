@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import GlassCard from "@/components/GlassCard";
 import SectionHeader from "@/components/SectionHeader";
+import { lovable } from "@/integrations/lovable/index";
 
 const features = [
   { icon: Layers, title: "Session-Centric Robotics Data", desc: "Organize captures into sessions with multiple data streams — video, LiDAR, IMU, and more." },

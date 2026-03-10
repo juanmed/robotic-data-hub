@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Mail, Lock, User, ArrowRight, CheckCircle } from "lucide-react";
+import { lovable } from "@/integrations/lovable/index";
 
 const RegisterPage = () => {
   const [name, setName] = useState("");

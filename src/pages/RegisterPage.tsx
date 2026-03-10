@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Mail, Lock, User, ArrowRight } from "lucide-react";
+import { Mail, Lock, User, ArrowRight, CheckCircle } from "lucide-react";
 
 const RegisterPage = () => {
   const [name, setName] = useState("");
@@ -10,6 +10,7 @@ const RegisterPage = () => {
   const [password, setPassword] = useState("");
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
   const passwordValid = useMemo(() => {
     return (
@@ -20,7 +21,6 @@ const RegisterPage = () => {
     );
   }, [password]);
   const { register, isLoading } = useAuth();
-  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,11 +36,30 @@ const RegisterPage = () => {
     }
     try {
       await register(email, password, name);
-      navigate("/dashboard");
-    } catch {
-      setError("Registration failed.");
+      setSuccess(true);
+    } catch (err: any) {
+      setError(err.message || "Registration failed.");
     }
   };
+
+  if (success) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden">
+        <div className="absolute top-1/3 left-1/3 h-[400px] w-[400px] rounded-full bg-neon-cyan/5 blur-[140px] pointer-events-none" />
+        <div className="relative z-10 w-full max-w-md px-6 text-center">
+          <CheckCircle className="h-16 w-16 text-primary mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-foreground mb-2">Check your email</h1>
+          <p className="text-sm text-muted-foreground mb-6">
+            We've sent a verification link to <strong className="text-foreground">{email}</strong>. 
+            Please click the link to activate your account before signing in.
+          </p>
+          <Link to="/login">
+            <Button variant="outline" size="lg">Back to Sign in</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden">

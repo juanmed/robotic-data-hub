@@ -1,30 +1,53 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Mail, Lock, ArrowRight } from "lucide-react";
+import { Mail, ArrowLeft, CheckCircle } from "lucide-react";
 
-const LoginPage = () => {
+const ForgotPasswordPage = () => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { login, isLoading } = useAuth();
-  const navigate = useNavigate();
+  const [sent, setSent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { resetPassword } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    if (!email.trim() || !password.trim()) {
-      setError("Please fill in all fields.");
+    if (!email.trim()) {
+      setError("Please enter your email.");
       return;
     }
+    setIsSubmitting(true);
     try {
-      await login(email, password);
-      navigate("/dashboard");
+      await resetPassword(email);
+      setSent(true);
     } catch (err: any) {
-      setError(err.message || "Invalid credentials.");
+      setError(err.message || "Something went wrong.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  if (sent) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden">
+        <div className="absolute top-1/3 left-1/3 h-[400px] w-[400px] rounded-full bg-neon-cyan/5 blur-[140px] pointer-events-none" />
+        <div className="relative z-10 w-full max-w-md px-6 text-center">
+          <CheckCircle className="h-16 w-16 text-primary mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-foreground mb-2">Check your email</h1>
+          <p className="text-sm text-muted-foreground mb-6">
+            If an account exists for <strong className="text-foreground">{email}</strong>, we've sent a password reset link.
+          </p>
+          <Link to="/login">
+            <Button variant="outline" size="lg">
+              <ArrowLeft className="h-4 w-4 mr-2" /> Back to Sign in
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden">
@@ -37,8 +60,8 @@ const LoginPage = () => {
             <div className="h-8 w-8 rounded-lg bg-gradient-neon opacity-90" />
             <span className="text-lg font-semibold text-foreground">GamiphyAI</span>
           </Link>
-          <h1 className="text-2xl font-bold text-foreground">Welcome back</h1>
-          <p className="text-sm text-muted-foreground mt-1">Sign in to your account</p>
+          <h1 className="text-2xl font-bold text-foreground">Reset your password</h1>
+          <p className="text-sm text-muted-foreground mt-1">Enter your email and we'll send you a reset link</p>
         </div>
 
         <form onSubmit={handleSubmit} className="rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm p-6 space-y-4">
@@ -62,33 +85,12 @@ const LoginPage = () => {
             </div>
           </div>
 
-          <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs text-muted-foreground">Password</label>
-              <Link to="/forgot-password" className="text-xs text-primary hover:underline">
-                Forgot password?
-              </Link>
-            </div>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full rounded-xl border border-border/50 bg-background/50 py-2.5 pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-colors"
-              />
-            </div>
-          </div>
-
-          <Button variant="neon" className="w-full" size="lg" disabled={isLoading}>
-            {isLoading ? "Signing in..." : "Sign in"}
-            {!isLoading && <ArrowRight className="h-4 w-4" />}
+          <Button variant="neon" className="w-full" size="lg" disabled={isSubmitting}>
+            {isSubmitting ? "Sending..." : "Send reset link"}
           </Button>
 
           <p className="text-center text-xs text-muted-foreground">
-            Don't have an account?{" "}
-            <Link to="/register" className="text-primary hover:underline">Create one</Link>
+            <Link to="/login" className="text-primary hover:underline">Back to Sign in</Link>
           </p>
         </form>
       </div>
@@ -96,4 +98,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default ForgotPasswordPage;

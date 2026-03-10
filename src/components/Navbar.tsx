@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
+import { LogOut, UserCircle } from "lucide-react";
 
 const publicLinks = [
   { to: "/", label: "Home" },
@@ -80,7 +80,18 @@ const Navbar = () => {
         <div className="flex items-center gap-3">
           {isAuthenticated ? (
             <>
-              <span className="text-sm text-muted-foreground hidden sm:block">{user?.name}</span>
+              <Link
+                to="/profile"
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm transition-colors",
+                  location.pathname === "/profile"
+                    ? "text-primary bg-primary/10"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                )}
+              >
+                <UserCircle className="h-4 w-4" />
+                <span className="hidden sm:inline">{user?.name}</span>
+              </Link>
               <Button variant="ghost" size="sm" onClick={handleLogout} className="gap-1.5">
                 <LogOut className="h-3.5 w-3.5" />
                 Sign out

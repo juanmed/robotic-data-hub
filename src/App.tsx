@@ -14,6 +14,8 @@ import SessionViewerPage from "@/pages/SessionViewerPage";
 import MarketplacePage from "@/pages/MarketplacePage";
 import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
+import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
+import ResetPasswordPage from "@/pages/ResetPasswordPage";
 import APIKeysPage from "@/pages/APIKeysPage";
 import SearchPage from "@/pages/SearchPage";
 import ListingPage from "@/pages/ListingPage";

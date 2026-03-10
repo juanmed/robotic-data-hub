@@ -18,6 +18,7 @@ import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
 import ResetPasswordPage from "@/pages/ResetPasswordPage";
 import AuthCallbackPage from "@/pages/AuthCallbackPage";
 import APIKeysPage from "@/pages/APIKeysPage";
+import ProfilePage from "@/pages/ProfilePage";
 import SearchPage from "@/pages/SearchPage";
 import ListingPage from "@/pages/ListingPage";
 import NotFound from "@/pages/NotFound";

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Mail, Lock, ArrowRight } from "lucide-react";
+import { lovable } from "@/integrations/lovable/index";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");

@@ -63,17 +63,30 @@ const Navbar = () => {
             </Link>
           ))}
           {isAuthenticated && (
-            <Link
-              to="/dashboard/api-keys"
-              className={cn(
-                "px-4 py-2 rounded-lg text-sm transition-colors",
-                location.pathname === "/dashboard/api-keys"
-                  ? "text-primary bg-primary/10"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-              )}
-            >
-              API Keys
-            </Link>
+            <>
+              <Link
+                to="/dashboard/api-keys"
+                className={cn(
+                  "px-4 py-2 rounded-lg text-sm transition-colors",
+                  location.pathname === "/dashboard/api-keys"
+                    ? "text-primary bg-primary/10"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                )}
+              >
+                API Keys
+              </Link>
+              <Link
+                to="/dashboard/upload-keys"
+                className={cn(
+                  "px-4 py-2 rounded-lg text-sm transition-colors",
+                  location.pathname === "/dashboard/upload-keys"
+                    ? "text-primary bg-primary/10"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                )}
+              >
+                Upload Keys
+              </Link>
+            </>
           )}
         </div>
 

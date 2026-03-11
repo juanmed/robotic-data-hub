@@ -44,6 +44,7 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
             <Route path="/dashboard/api-keys" element={<ProtectedRoute><APIKeysPage /></ProtectedRoute>} />
+            <Route path="/dashboard/upload-keys" element={<ProtectedRoute><UploadKeysPage /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
             <Route path="/sessions" element={<ProtectedRoute><SessionsPage /></ProtectedRoute>} />
             <Route path="/sessions/:id" element={<ProtectedRoute><SessionDetailPage /></ProtectedRoute>} />

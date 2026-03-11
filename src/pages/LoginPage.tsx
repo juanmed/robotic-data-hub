@@ -45,7 +45,7 @@ const LoginPage = () => {
         type: "signup",
         email: email.trim(),
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `https://gamiphy.ai/auth/callback`,
         },
       });
       if (error) throw error;

@@ -2,3 +2,6 @@ project_id = "pzushceeyhudorsufxaf"
 
 [functions.init-dataset-upload]
 verify_jwt = false
+
+[functions.finalize-dataset-upload]
+verify_jwt = false

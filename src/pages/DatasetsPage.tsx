@@ -38,63 +38,95 @@ const DatasetsPage = () => {
 
   return (
     <PageContainer>
-      <div className="space-y-6 max-w-4xl">
-        <SectionHeader
-          title="Datasets"
-          subtitle="Datasets uploaded via the GamiphyAI CLI."
-        />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-6">
+          <SectionHeader
+            title="Datasets"
+            subtitle="Datasets uploaded via the GamiphyAI CLI."
+          />
 
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
-          </div>
-        ) : error ? (
-          <GlassCard hover={false} className="text-center py-12">
-            <AlertTriangle className="h-8 w-8 text-destructive mx-auto mb-3" />
-            <p className="text-sm text-destructive">{error}</p>
-          </GlassCard>
-        ) : datasets.length === 0 ? (
-          <GlassCard hover={false} className="text-center py-16">
-            <div className="inline-flex items-center justify-center h-16 w-16 rounded-2xl bg-primary/10 border border-primary/20 mb-4">
-              <Database className="h-7 w-7 text-primary" />
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
             </div>
-            <h3 className="text-base font-semibold text-foreground mb-1">No datasets yet</h3>
-            <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-              Upload your first dataset using the CLI and an upload key. Head to{" "}
-              <a href="/dashboard/upload-keys" className="text-primary hover:underline">Upload Keys</a>{" "}
-              to get started.
-            </p>
+          ) : error ? (
+            <GlassCard hover={false} className="text-center py-12">
+              <AlertTriangle className="h-8 w-8 text-destructive mx-auto mb-3" />
+              <p className="text-sm text-destructive">{error}</p>
+            </GlassCard>
+          ) : datasets.length === 0 ? (
+            <GlassCard hover={false} className="text-center py-16">
+              <div className="inline-flex items-center justify-center h-16 w-16 rounded-2xl bg-primary/10 border border-primary/20 mb-4">
+                <Database className="h-7 w-7 text-primary" />
+              </div>
+              <h3 className="text-base font-semibold text-foreground mb-1">No datasets yet</h3>
+              <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+                Upload your first dataset using the CLI and an upload key. Head to{" "}
+                <Link to="/dashboard/upload-keys" className="text-primary hover:underline">Upload Keys</Link>{" "}
+                to get started.
+              </p>
+            </GlassCard>
+          ) : (
+            <div className="space-y-3">
+              {datasets.map((ds) => {
+                const sc = statusConfig[ds.status] || statusConfig.draft;
+                const StatusIcon = sc.icon;
+                return (
+                  <Link key={ds.id} to={`/dashboard/datasets/${ds.id}`}>
+                    <GlassCard hover className="flex items-center justify-between gap-4 cursor-pointer group">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Database className="h-3.5 w-3.5 text-primary shrink-0" />
+                          <span className="text-sm font-medium text-foreground truncate">{ds.name}</span>
+                          <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium border ${sc.className}`}>
+                            <StatusIcon className="h-3 w-3" />
+                            {sc.label}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-4 text-[10px] text-muted-foreground mt-1.5">
+                          <span>Format: {ds.source_format}</span>
+                          <span>{ds.file_count} file{ds.file_count !== 1 ? "s" : ""}</span>
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            {new Date(ds.created_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                    </GlassCard>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* CLI Flow sidebar */}
+        <div className="space-y-4">
+          <GlassCard hover={false} className="border-primary/20">
+            <div className="flex items-center gap-2 mb-3">
+              <Terminal className="h-4 w-4 text-primary" />
+              <h3 className="text-sm font-semibold text-foreground">CLI Upload Flow</h3>
+            </div>
+            <ol className="space-y-3 text-xs text-muted-foreground">
+              {[
+                { step: "1", text: "Create an upload key", link: "/dashboard/upload-keys" },
+                { step: "2", text: "Call init-dataset-upload" },
+                { step: "3", text: "Upload files to signed URLs" },
+                { step: "4", text: "Call finalize-dataset-upload" },
+              ].map((s) => (
+                <li key={s.step} className="flex items-start gap-2.5">
+                  <span className="flex items-center justify-center h-5 w-5 rounded-full bg-primary text-[10px] font-bold text-primary-foreground shrink-0">
+                    {s.step}
+                  </span>
+                  <span className="pt-0.5">
+                    {s.link ? <Link to={s.link} className="text-primary hover:underline">{s.text}</Link> : s.text}
+                  </span>
+                </li>
+              ))}
+            </ol>
           </GlassCard>
-        ) : (
-          <div className="space-y-3">
-            {datasets.map((ds) => {
-              const sc = statusConfig[ds.status] || statusConfig.draft;
-              const StatusIcon = sc.icon;
-              return (
-                <GlassCard key={ds.id} hover={false} className="flex items-center justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Database className="h-3.5 w-3.5 text-primary shrink-0" />
-                      <span className="text-sm font-medium text-foreground truncate">{ds.name}</span>
-                      <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium border ${sc.className}`}>
-                        <StatusIcon className="h-3 w-3" />
-                        {sc.label}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-4 text-[10px] text-muted-foreground mt-1.5">
-                      <span>Format: {ds.source_format}</span>
-                      <span>{ds.file_count} file{ds.file_count !== 1 ? "s" : ""}</span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {new Date(ds.created_at).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
-                </GlassCard>
-              );
-            })}
-          </div>
-        )}
+        </div>
       </div>
     </PageContainer>
   );

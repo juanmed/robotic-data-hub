@@ -176,6 +176,37 @@ const UploadKeysPage = () => {
             </div>
           </GlassCard>
 
+          {/* API Reference card */}
+          <GlassCard hover={false} className="border-secondary/20">
+            <div className="flex items-center gap-2 mb-4">
+              <Terminal className="h-4 w-4 text-secondary" />
+              <h3 className="text-sm font-semibold text-foreground">API Reference</h3>
+            </div>
+            <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+              Initialize a dataset upload session by calling the backend function:
+            </p>
+            <div className="rounded-xl bg-background/80 border border-border/30 p-4 font-mono text-[11px] leading-relaxed overflow-x-auto space-y-2">
+              <div>
+                <span className="text-secondary">POST</span>{" "}
+                <span className="text-foreground">/functions/v1/init-dataset-upload</span>
+              </div>
+              <div className="text-muted-foreground">Authorization: Bearer &lt;upload_key&gt;</div>
+              <div className="border-t border-border/30 pt-2 mt-2">
+                <span className="text-muted-foreground">{"{"}</span>{"\n"}
+                {"  "}<span className="text-primary">"dataset_name"</span>: <span className="text-foreground">"my_dataset"</span>,{"\n"}
+                {"  "}<span className="text-primary">"source_format"</span>: <span className="text-foreground">"lerobot"</span>,{"\n"}
+                {"  "}<span className="text-primary">"files"</span>: [{"\n"}
+                {"    "}{"{"} <span className="text-primary">"relative_path"</span>: <span className="text-foreground">"meta/info.json"</span>,{"\n"}
+                {"      "}<span className="text-primary">"size_bytes"</span>: <span className="text-foreground">1234</span> {"}"}{"\n"}
+                {"  "}]{"\n"}
+                <span className="text-muted-foreground">{"}"}</span>
+              </div>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-3">
+              Returns <code className="text-primary">dataset_id</code> and signed upload URLs for each file.
+            </p>
+          </GlassCard>
+
           <GlassCard hover={false} className="border-border/30">
             <h3 className="text-sm font-semibold text-foreground mb-2">Key Lifecycle</h3>
             <ul className="space-y-2 text-xs text-muted-foreground">

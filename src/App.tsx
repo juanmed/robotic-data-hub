@@ -19,6 +19,7 @@ import ResetPasswordPage from "@/pages/ResetPasswordPage";
 import AuthCallbackPage from "@/pages/AuthCallbackPage";
 import APIKeysPage from "@/pages/APIKeysPage";
 import UploadKeysPage from "@/pages/UploadKeysPage";
+import DatasetsPage from "@/pages/DatasetsPage";
 import ProfilePage from "@/pages/ProfilePage";
 import SearchPage from "@/pages/SearchPage";
 import ListingPage from "@/pages/ListingPage";

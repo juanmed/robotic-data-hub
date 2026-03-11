@@ -19,6 +19,8 @@ const LoginPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setNeedsVerification(false);
+    setResendSuccess(false);
     if (!email.trim() || !password.trim()) {
       setError("Please fill in all fields.");
       return;
@@ -27,7 +29,31 @@ const LoginPage = () => {
       await login(email, password);
       navigate("/dashboard");
     } catch (err: any) {
-      setError(err.message || "Invalid credentials.");
+      const msg = err.message || "Invalid credentials.";
+      if (msg.includes("verify your email")) {
+        setNeedsVerification(true);
+      }
+      setError(msg);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    setResendingEmail(true);
+    setResendSuccess(false);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: "signup",
+        email: email.trim(),
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      if (error) throw error;
+      setResendSuccess(true);
+    } catch (err: any) {
+      setError(err.message || "Failed to resend verification email.");
+    } finally {
+      setResendingEmail(false);
     }
   };
 

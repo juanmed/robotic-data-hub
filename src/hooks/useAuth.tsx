@@ -83,7 +83,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       password,
       options: {
         data: { name },
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: `https://gamiphy.ai/auth/callback`,
       },
     });
     if (error) throw new Error(error.message);

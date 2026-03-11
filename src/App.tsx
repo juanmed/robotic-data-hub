@@ -19,6 +19,7 @@ import ResetPasswordPage from "@/pages/ResetPasswordPage";
 import AuthCallbackPage from "@/pages/AuthCallbackPage";
 import APIKeysPage from "@/pages/APIKeysPage";
 import UploadKeysPage from "@/pages/UploadKeysPage";
+import DatasetsPage from "@/pages/DatasetsPage";
 import ProfilePage from "@/pages/ProfilePage";
 import SearchPage from "@/pages/SearchPage";
 import ListingPage from "@/pages/ListingPage";
@@ -45,6 +46,7 @@ const App = () => (
             <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
             <Route path="/dashboard/api-keys" element={<ProtectedRoute><APIKeysPage /></ProtectedRoute>} />
             <Route path="/dashboard/upload-keys" element={<ProtectedRoute><UploadKeysPage /></ProtectedRoute>} />
+            <Route path="/dashboard/datasets" element={<ProtectedRoute><DatasetsPage /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
             <Route path="/sessions" element={<ProtectedRoute><SessionsPage /></ProtectedRoute>} />
             <Route path="/sessions/:id" element={<ProtectedRoute><SessionDetailPage /></ProtectedRoute>} />

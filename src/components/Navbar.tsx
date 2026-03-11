@@ -86,6 +86,17 @@ const Navbar = () => {
               >
                 Upload Keys
               </Link>
+              <Link
+                to="/dashboard/datasets"
+                className={cn(
+                  "px-4 py-2 rounded-lg text-sm transition-colors",
+                  location.pathname === "/dashboard/datasets"
+                    ? "text-primary bg-primary/10"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                )}
+              >
+                Datasets
+              </Link>
             </>
           )}
         </div>

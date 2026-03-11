@@ -10,12 +10,26 @@ const AuthCallbackPage = () => {
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // Handle hash-based tokens (implicit flow)
-        const hash = window.location.hash;
         const params = new URLSearchParams(window.location.search);
+        const hashParams = new URLSearchParams(window.location.hash.replace("#", ""));
+
+        // Check for auth errors first
+        const urlError =
+          params.get("error_description") ||
+          params.get("error") ||
+          hashParams.get("error_description") ||
+          hashParams.get("error");
+
+        if (urlError) {
+          setError(decodeURIComponent(urlError));
+          return;
+        }
+
+        const type = params.get("type") || hashParams.get("type");
+        const code = params.get("code");
+        const tokenHash = params.get("token_hash");
 
         // PKCE flow: exchange code for session
-        const code = params.get("code");
         if (code) {
           const { error } = await supabase.auth.exchangeCodeForSession(code);
           if (error) {
@@ -24,27 +38,29 @@ const AuthCallbackPage = () => {
           }
         }
 
-        // Check for error in URL
-        const urlError = params.get("error_description") || params.get("error");
-        if (urlError) {
-          setError(urlError);
-          return;
-        }
+        // Token-hash flow fallback (some recovery links use token_hash)
+        if (!code && tokenHash && type === "recovery") {
+          const { error } = await supabase.auth.verifyOtp({
+            type: "recovery",
+            token_hash: tokenHash,
+          });
 
-        // Determine where to redirect based on the auth event type
-        const hashParams = new URLSearchParams(hash.replace("#", ""));
-        const type = hashParams.get("type") || params.get("type");
+          if (error) {
+            setError(error.message);
+            return;
+          }
+        }
 
         if (type === "recovery") {
           navigate("/reset-password", { replace: true });
         } else {
-          // For email verification, signup confirmation, etc.
           navigate("/login", { replace: true });
         }
       } catch (err: any) {
         setError(err.message || "Authentication failed");
       }
     };
+
 
     handleCallback();
   }, [navigate]);

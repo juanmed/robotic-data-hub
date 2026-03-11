@@ -10,16 +10,21 @@ const ResetPasswordPage = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isRecovery, setIsRecovery] = useState(false);
+  const [sessionReady, setSessionReady] = useState(false);
   const { updatePassword } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check for recovery token in URL hash
-    const hash = window.location.hash;
-    if (hash.includes("type=recovery")) {
-      setIsRecovery(true);
-    }
+    // Verify we have an active session for password update
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        setSessionReady(true);
+      } else {
+        setError("No active session. Please request a new password reset link.");
+      }
+    };
+    checkSession();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {

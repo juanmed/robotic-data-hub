@@ -2,19 +2,25 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Mail, Lock, ArrowRight } from "lucide-react";
+import { Mail, Lock, ArrowRight, RefreshCw } from "lucide-react";
 import { lovable } from "@/integrations/lovable/index";
+import { supabase } from "@/integrations/supabase/client";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [needsVerification, setNeedsVerification] = useState(false);
+  const [resendingEmail, setResendingEmail] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState(false);
   const { login, isLoading } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setNeedsVerification(false);
+    setResendSuccess(false);
     if (!email.trim() || !password.trim()) {
       setError("Please fill in all fields.");
       return;
@@ -23,7 +29,31 @@ const LoginPage = () => {
       await login(email, password);
       navigate("/dashboard");
     } catch (err: any) {
-      setError(err.message || "Invalid credentials.");
+      const msg = err.message || "Invalid credentials.";
+      if (msg.includes("verify your email")) {
+        setNeedsVerification(true);
+      }
+      setError(msg);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    setResendingEmail(true);
+    setResendSuccess(false);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: "signup",
+        email: email.trim(),
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      if (error) throw error;
+      setResendSuccess(true);
+    } catch (err: any) {
+      setError(err.message || "Failed to resend verification email.");
+    } finally {
+      setResendingEmail(false);
     }
   };
 
@@ -46,6 +76,27 @@ const LoginPage = () => {
           {error && (
             <div className="rounded-lg bg-destructive/10 border border-destructive/20 px-4 py-2.5 text-xs text-destructive">
               {error}
+              {needsVerification && (
+                <Button
+                  type="button"
+                  variant="link"
+                  size="sm"
+                  className="text-xs text-primary p-0 h-auto mt-1 block"
+                  disabled={resendingEmail}
+                  onClick={handleResendVerification}
+                >
+                  {resendingEmail ? (
+                    <><RefreshCw className="h-3 w-3 animate-spin inline mr-1" />Sending...</>
+                  ) : (
+                    "Resend verification email"
+                  )}
+                </Button>
+              )}
+            </div>
+          )}
+          {resendSuccess && (
+            <div className="rounded-lg bg-primary/10 border border-primary/20 px-4 py-2.5 text-xs text-primary">
+              Verification email sent! Check your inbox.
             </div>
           )}
 

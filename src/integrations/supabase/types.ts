@@ -41,6 +41,80 @@ export type Database = {
         }
         Relationships: []
       }
+      dataset_files: {
+        Row: {
+          checksum: string | null
+          content_type: string | null
+          created_at: string
+          dataset_id: string
+          id: string
+          relative_path: string
+          size_bytes: number | null
+          storage_path: string
+          upload_status: string
+        }
+        Insert: {
+          checksum?: string | null
+          content_type?: string | null
+          created_at?: string
+          dataset_id: string
+          id?: string
+          relative_path: string
+          size_bytes?: number | null
+          storage_path: string
+          upload_status?: string
+        }
+        Update: {
+          checksum?: string | null
+          content_type?: string | null
+          created_at?: string
+          dataset_id?: string
+          id?: string
+          relative_path?: string
+          size_bytes?: number | null
+          storage_path?: string
+          upload_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dataset_files_dataset_id_fkey"
+            columns: ["dataset_id"]
+            isOneToOne: false
+            referencedRelation: "datasets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      datasets: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          source_format: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          source_format?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          source_format?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

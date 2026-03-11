@@ -93,3 +93,25 @@ export interface UploadKey {
   revoked_at: string | null;
   active: boolean;
 }
+
+export interface Dataset {
+  id: string;
+  user_id: string;
+  name: string;
+  source_format: string;
+  status: "draft" | "uploading" | "ready" | "failed";
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DatasetFile {
+  id: string;
+  dataset_id: string;
+  relative_path: string;
+  storage_path: string;
+  content_type: string | null;
+  size_bytes: number | null;
+  checksum: string | null;
+  upload_status: "pending" | "uploaded" | "failed";
+  created_at: string;
+}

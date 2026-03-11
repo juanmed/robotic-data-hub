@@ -1,1 +1,4 @@
 project_id = "pzushceeyhudorsufxaf"
+
+[functions.init-dataset-upload]
+verify_jwt = false

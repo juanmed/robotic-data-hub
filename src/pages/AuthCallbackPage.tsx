@@ -31,9 +31,14 @@ const AuthCallbackPage = () => {
 
         // PKCE flow: exchange code for session
         if (code) {
-          const { error } = await supabase.auth.exchangeCodeForSession(code);
+          const { data, error } = await supabase.auth.exchangeCodeForSession(code);
           if (error) {
             setError(error.message);
+            return;
+          }
+          // Wait for session to be confirmed
+          if (type === "recovery" && data?.session) {
+            navigate("/reset-password", { replace: true });
             return;
           }
         }
@@ -49,10 +54,18 @@ const AuthCallbackPage = () => {
             setError(error.message);
             return;
           }
+          navigate("/reset-password", { replace: true });
+          return;
         }
 
         if (type === "recovery") {
-          navigate("/reset-password", { replace: true });
+          // Fallback: wait for session from hash fragment
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session) {
+            navigate("/reset-password", { replace: true });
+          } else {
+            setError("Auth session could not be established. Please request a new reset link.");
+          }
         } else {
           navigate("/login", { replace: true });
         }

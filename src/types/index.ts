@@ -81,3 +81,15 @@ export interface Order {
   status: "pending" | "completed" | "refunded" | "cancelled";
   created_at: string;
 }
+
+export interface UploadKey {
+  id: string;
+  user_id: string;
+  name: string;
+  key_prefix: string;
+  raw_key?: string;
+  created_at: string;
+  last_used_at: string | null;
+  revoked_at: string | null;
+  active: boolean;
+}

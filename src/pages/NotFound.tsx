@@ -1,12 +1,24 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
 const NotFound = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const hashParams = new URLSearchParams(location.hash.replace("#", ""));
+    const hasAuthParams = ["code", "token_hash", "type", "error", "error_description"].some(
+      (key) => params.has(key) || hashParams.has(key)
+    );
+
+    if (location.pathname.startsWith("/auth/") || hasAuthParams) {
+      navigate(`/auth/callback${location.search}${location.hash}`, { replace: true });
+      return;
+    }
+
     console.error("404 Error: User attempted to access non-existent route:", location.pathname);
-  }, [location.pathname]);
+  }, [location.pathname, location.search, location.hash, navigate]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted">

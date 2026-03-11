@@ -76,6 +76,27 @@ const LoginPage = () => {
           {error && (
             <div className="rounded-lg bg-destructive/10 border border-destructive/20 px-4 py-2.5 text-xs text-destructive">
               {error}
+              {needsVerification && (
+                <Button
+                  type="button"
+                  variant="link"
+                  size="sm"
+                  className="text-xs text-primary p-0 h-auto mt-1 block"
+                  disabled={resendingEmail}
+                  onClick={handleResendVerification}
+                >
+                  {resendingEmail ? (
+                    <><RefreshCw className="h-3 w-3 animate-spin inline mr-1" />Sending...</>
+                  ) : (
+                    "Resend verification email"
+                  )}
+                </Button>
+              )}
+            </div>
+          )}
+          {resendSuccess && (
+            <div className="rounded-lg bg-primary/10 border border-primary/20 px-4 py-2.5 text-xs text-primary">
+              Verification email sent! Check your inbox.
             </div>
           )}
 

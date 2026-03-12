@@ -12,7 +12,6 @@ import type { Dataset, DatasetFile } from "@/types";
 import type { SignedFileUrl } from "@/services/datasetService";
 
 const statusConfig: Record<string, { icon: React.ElementType; label: string; className: string; vizMessage: string }> = {
-  draft: { icon: FileText, label: "Draft", className: "bg-muted/20 text-muted-foreground border-border/30", vizMessage: "Dataset is in draft state" },
   uploading: { icon: Upload, label: "Uploading", className: "bg-secondary/10 text-secondary border-secondary/20", vizMessage: "Upload in progress" },
   ready: { icon: CheckCircle2, label: "Ready", className: "bg-primary/10 text-primary border-primary/20", vizMessage: "Dataset is ready for visualization" },
   failed: { icon: AlertTriangle, label: "Failed", className: "bg-destructive/10 text-destructive border-destructive/20", vizMessage: "Dataset processing failed" },

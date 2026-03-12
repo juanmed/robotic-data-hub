@@ -53,6 +53,26 @@ const DatasetDetailPage = () => {
 
   useEffect(() => { fetch(); }, [fetch]);
 
+  // Fetch signed read URLs when dataset is ready and files are loaded
+  const fetchUrls = useCallback(async () => {
+    if (!id || !dataset || dataset.status !== "ready") return;
+    const uploaded = files.filter((f) => f.upload_status === "uploaded");
+    if (uploaded.length === 0) return;
+    setLoadingUrls(true);
+    try {
+      const urls = await getDatasetFileUrls(id);
+      const map: Record<string, string> = {};
+      urls.forEach((u) => { if (u.signed_url) map[u.relative_path] = u.signed_url; });
+      setFileUrls(map);
+    } catch {
+      // silent — URLs are optional for viewing
+    } finally {
+      setLoadingUrls(false);
+    }
+  }, [id, dataset, files]);
+
+  useEffect(() => { fetchUrls(); }, [fetchUrls]);
+
   if (loading) {
     return (
       <PageContainer>

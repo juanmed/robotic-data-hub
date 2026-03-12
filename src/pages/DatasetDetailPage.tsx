@@ -5,10 +5,11 @@ import GlassCard from "@/components/GlassCard";
 import { Button } from "@/components/ui/button";
 import {
   ArrowLeft, Database, FileText, Clock, CheckCircle2, AlertTriangle,
-  Upload, Loader2, Eye, Folder, File,
+  Upload, Loader2, Eye, Folder, File, Download, ExternalLink,
 } from "lucide-react";
-import { getDataset, getDatasetFiles } from "@/services/datasetService";
+import { getDataset, getDatasetFiles, getDatasetFileUrls } from "@/services/datasetService";
 import type { Dataset, DatasetFile } from "@/types";
+import type { SignedFileUrl } from "@/services/datasetService";
 
 const statusConfig: Record<string, { icon: React.ElementType; label: string; className: string; vizMessage: string }> = {
   draft: { icon: FileText, label: "Draft", className: "bg-muted/20 text-muted-foreground border-border/30", vizMessage: "Dataset is in draft state" },
@@ -29,6 +30,8 @@ const DatasetDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const [dataset, setDataset] = useState<Dataset | null>(null);
   const [files, setFiles] = useState<DatasetFile[]>([]);
+  const [fileUrls, setFileUrls] = useState<Record<string, string>>({});
+  const [loadingUrls, setLoadingUrls] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,6 +52,26 @@ const DatasetDetailPage = () => {
   }, [id]);
 
   useEffect(() => { fetch(); }, [fetch]);
+
+  // Fetch signed read URLs when dataset is ready and files are loaded
+  const fetchUrls = useCallback(async () => {
+    if (!id || !dataset || dataset.status !== "ready") return;
+    const uploaded = files.filter((f) => f.upload_status === "uploaded");
+    if (uploaded.length === 0) return;
+    setLoadingUrls(true);
+    try {
+      const urls = await getDatasetFileUrls(id);
+      const map: Record<string, string> = {};
+      urls.forEach((u) => { if (u.signed_url) map[u.relative_path] = u.signed_url; });
+      setFileUrls(map);
+    } catch {
+      // silent — URLs are optional for viewing
+    } finally {
+      setLoadingUrls(false);
+    }
+  }, [id, dataset, files]);
+
+  useEffect(() => { fetchUrls(); }, [fetchUrls]);
 
   if (loading) {
     return (
@@ -118,15 +141,16 @@ const DatasetDetailPage = () => {
               </GlassCard>
             ) : (
               <div className="rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm overflow-hidden">
-                <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 px-4 py-2.5 text-[10px] font-medium text-muted-foreground uppercase tracking-wider border-b border-border/30">
+                <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-x-4 px-4 py-2.5 text-[10px] font-medium text-muted-foreground uppercase tracking-wider border-b border-border/30">
                   <span>Path</span>
                   <span>Size</span>
                   <span>Type</span>
                   <span>Status</span>
+                  <span></span>
                 </div>
                 <div className="divide-y divide-border/20">
                   {files.map((f) => (
-                    <div key={f.id} className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 px-4 py-3 items-center hover:bg-muted/10 transition-colors">
+                    <div key={f.id} className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-x-4 px-4 py-3 items-center hover:bg-muted/10 transition-colors">
                       <div className="flex items-center gap-2 min-w-0">
                         <File className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                         <span className="text-xs text-foreground font-mono truncate">{f.relative_path}</span>
@@ -142,6 +166,19 @@ const DatasetDetailPage = () => {
                       }`}>
                         {f.upload_status}
                       </span>
+                      <div className="flex items-center gap-1">
+                        {fileUrls[f.relative_path] && (
+                          <a href={fileUrls[f.relative_path]} target="_blank" rel="noopener noreferrer">
+                            <Button variant="ghost" size="icon" className="h-6 w-6">
+                              {f.content_type?.startsWith("video/") ? (
+                                <Eye className="h-3 w-3" />
+                              ) : (
+                                <Download className="h-3 w-3" />
+                              )}
+                            </Button>
+                          </a>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>

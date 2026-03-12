@@ -1,0 +1,1 @@
+ALTER TABLE public.upload_keys ALTER COLUMN key_prefix SET DEFAULT 'gpai_upl_****';

@@ -8,6 +8,7 @@ import {
   Upload, Loader2, Eye, Folder, File, Download, ExternalLink,
 } from "lucide-react";
 import { getDataset, getDatasetFiles, getDatasetFileUrls } from "@/services/datasetService";
+import { openVisualizer } from "@/lib/visualizer";
 import type { Dataset, DatasetFile } from "@/types";
 import type { SignedFileUrl } from "@/services/datasetService";
 
@@ -52,7 +53,6 @@ const DatasetDetailPage = () => {
 
   useEffect(() => { fetch(); }, [fetch]);
 
-  // Fetch signed read URLs when dataset is ready and files are loaded
   const fetchUrls = useCallback(async () => {
     if (!id || !dataset || dataset.status !== "ready") return;
     const uploaded = files.filter((f) => f.upload_status === "uploaded");
@@ -64,7 +64,7 @@ const DatasetDetailPage = () => {
       urls.forEach((u) => { if (u.signed_url) map[u.relative_path] = u.signed_url; });
       setFileUrls(map);
     } catch {
-      // silent — URLs are optional for viewing
+      // silent
     } finally {
       setLoadingUrls(false);
     }
@@ -96,9 +96,10 @@ const DatasetDetailPage = () => {
     );
   }
 
-  const sc = statusConfig[dataset.status] || statusConfig.draft;
+  const sc = statusConfig[dataset.status] || statusConfig.uploading;
   const StatusIcon = sc.icon;
   const uploadedCount = files.filter((f) => f.upload_status === "uploaded").length;
+  const isReady = dataset.status === "ready";
 
   return (
     <PageContainer>
@@ -126,6 +127,21 @@ const DatasetDetailPage = () => {
               {dataset.confirmed_at && <span>Confirmed {new Date(dataset.confirmed_at).toLocaleDateString()}</span>}
             </div>
           </div>
+
+          {/* Visualize button in header */}
+          <Button
+            disabled={!isReady}
+            onClick={() => openVisualizer(dataset.id)}
+            className={`transition-all ${
+              isReady
+                ? "bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_16px_hsl(var(--primary)/0.4)] hover:shadow-[0_0_24px_hsl(var(--primary)/0.6)]"
+                : "opacity-50 cursor-not-allowed"
+            }`}
+          >
+            <Eye className="h-4 w-4 mr-2" />
+            Visualize Dataset
+            <ExternalLink className="h-3 w-3 ml-1.5 opacity-60" />
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -185,35 +201,48 @@ const DatasetDetailPage = () => {
 
           {/* Sidebar */}
           <div className="space-y-4">
-            {/* Visualization placeholder */}
+            {/* Visualization card */}
             <GlassCard hover={false} className={`border ${
-              dataset.status === "ready" ? "border-primary/30" : dataset.status === "failed" ? "border-destructive/30" : "border-secondary/30"
+              isReady ? "border-primary/30" : dataset.status === "failed" ? "border-destructive/30" : "border-secondary/30"
             }`}>
               <div className="flex items-center gap-2 mb-3">
                 <Eye className="h-4 w-4 text-primary" />
                 <h3 className="text-sm font-semibold text-foreground">Visualization</h3>
               </div>
               <div className={`rounded-xl px-4 py-6 text-center ${
-                dataset.status === "ready"
+                isReady
                   ? "bg-primary/5 border border-primary/20"
                   : dataset.status === "failed"
                   ? "bg-destructive/5 border border-destructive/20"
                   : "bg-secondary/5 border border-secondary/20"
               }`}>
-                <StatusIcon className={`h-8 w-8 mx-auto mb-2 ${
-                  dataset.status === "ready" ? "text-primary" : dataset.status === "failed" ? "text-destructive" : "text-secondary"
-                }`} />
+                {!isReady && dataset.status === "uploading" && (
+                  <Loader2 className="h-8 w-8 mx-auto mb-2 text-secondary animate-spin" />
+                )}
+                {(isReady || dataset.status === "failed") && (
+                  <StatusIcon className={`h-8 w-8 mx-auto mb-2 ${
+                    isReady ? "text-primary" : "text-destructive"
+                  }`} />
+                )}
                 <p className={`text-xs font-medium ${
-                  dataset.status === "ready" ? "text-primary" : dataset.status === "failed" ? "text-destructive" : "text-secondary"
+                  isReady ? "text-primary" : dataset.status === "failed" ? "text-destructive" : "text-secondary"
                 }`}>
                   {sc.vizMessage}
                 </p>
               </div>
-              {dataset.status === "ready" && (
-                <p className="text-[10px] text-muted-foreground mt-3 text-center">
-                  Visualization tools coming soon.
-                </p>
-              )}
+              <Button
+                disabled={!isReady}
+                onClick={() => openVisualizer(dataset.id)}
+                className={`w-full mt-3 transition-all ${
+                  isReady
+                    ? "bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_16px_hsl(var(--primary)/0.4)] hover:shadow-[0_0_24px_hsl(var(--primary)/0.6)]"
+                    : "opacity-50 cursor-not-allowed"
+                }`}
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                {isReady ? "Open Visualizer" : "Not Available"}
+                {isReady && <ExternalLink className="h-3 w-3 ml-1.5 opacity-60" />}
+              </Button>
             </GlassCard>
 
             {/* CLI Upload Flow */}

@@ -160,8 +160,6 @@ const DatasetDetailPage = () => {
                       <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium border ${
                         f.upload_status === "uploaded"
                           ? "bg-primary/10 text-primary border-primary/20"
-                          : f.upload_status === "failed"
-                          ? "bg-destructive/10 text-destructive border-destructive/20"
                           : "bg-muted/20 text-muted-foreground border-border/30"
                       }`}>
                         {f.upload_status}

@@ -84,7 +84,7 @@ const DatasetsPage = () => {
                           </span>
                         </div>
                         <div className="flex items-center gap-4 text-[10px] text-muted-foreground mt-1.5">
-                          <span>Format: {ds.source_format}</span>
+                          <span>{ds.file_count} file{ds.file_count !== 1 ? "s" : ""}</span>
                           <span>{ds.file_count} file{ds.file_count !== 1 ? "s" : ""}</span>
                           <span className="flex items-center gap-1">
                             <Clock className="h-3 w-3" />

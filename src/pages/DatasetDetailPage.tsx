@@ -144,15 +144,19 @@ const DatasetDetailPage = () => {
 
           {/* Visualize button in header */}
           <Button
-            disabled={!isReady}
-            onClick={() => openVisualizer(dataset.id)}
+            disabled={!isReady || visualizing}
+            onClick={handleVisualize}
             className={`transition-all ${
               isReady
                 ? "bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_16px_hsl(var(--primary)/0.4)] hover:shadow-[0_0_24px_hsl(var(--primary)/0.6)]"
                 : "opacity-50 cursor-not-allowed"
             }`}
           >
-            <Eye className="h-4 w-4 mr-2" />
+            {visualizing ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Eye className="h-4 w-4 mr-2" />
+            )}
             Visualize Dataset
             <ExternalLink className="h-3 w-3 ml-1.5 opacity-60" />
           </Button>

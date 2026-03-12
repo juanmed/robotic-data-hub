@@ -109,11 +109,11 @@ const DatasetsPage = () => {
                     <div className="flex items-center gap-2 shrink-0">
                       <Button
                         size="sm"
-                        disabled={!isReady}
+                        disabled={!isReady || visualizingId === ds.id}
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          openVisualizer(ds.id);
+                          handleVisualize(ds.id);
                         }}
                         className={`text-[11px] h-7 px-3 transition-all ${
                           isReady
@@ -121,7 +121,11 @@ const DatasetsPage = () => {
                             : "opacity-50 cursor-not-allowed"
                         }`}
                       >
-                        <Eye className="h-3 w-3 mr-1" />
+                        {visualizingId === ds.id ? (
+                          <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                        ) : (
+                          <Eye className="h-3 w-3 mr-1" />
+                        )}
                         Visualize
                       </Button>
                       <Link to={`/dashboard/datasets/${ds.id}`}>

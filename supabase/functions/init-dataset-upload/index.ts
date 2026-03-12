@@ -55,8 +55,8 @@ Deno.serve(async (req) => {
     return jsonError("Missing or malformed Authorization header. Expected: Bearer <upload_key>", 401);
   }
   const rawKey = authHeader.replace("Bearer ", "").trim();
-  if (!rawKey || !rawKey.startsWith("gai_upl_")) {
-    return jsonError("Invalid upload key format. Keys must start with gai_upl_", 401);
+  if (!rawKey || !rawKey.startsWith("gpai_upl_")) {
+    return jsonError("Invalid upload key format. Keys must start with gpai_upl_", 401);
   }
 
   // --- 2. Create service-role Supabase client ---

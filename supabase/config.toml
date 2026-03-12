@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.finalize-dataset-upload]
 verify_jwt = false
+
+[functions.dataset-read-urls]
+verify_jwt = false

@@ -1,0 +1,1 @@
+Project domain is gamiphy.ai - never use Lovable project URLs. All auth redirects must point to https://gamiphy.ai. Deployed via GitHub Pages with Cloudflare DNS. Font: DM Sans (not SF Pro Display). API subdomain: api.gamiphy.ai proxies to Supabase backend (CNAME to pzushceeyhudorsufxaf.supabase.co). CLI command: lerobot_gamiphy_upload --repo_id user/dataset.

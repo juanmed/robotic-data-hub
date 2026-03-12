@@ -17,6 +17,19 @@ const statusConfig: Record<string, { icon: React.ElementType; label: string; cla
 };
 
 const DatasetsPage = () => {
+  const [visualizingId, setVisualizingId] = useState<string | null>(null);
+
+  const handleVisualize = async (datasetId: string) => {
+    setVisualizingId(datasetId);
+    try {
+      await openVisualizer(datasetId);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to open visualizer");
+    } finally {
+      setVisualizingId(null);
+    }
+  };
+
   const [datasets, setDatasets] = useState<(Dataset & { file_count: number })[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.dataset-read-urls]
 verify_jwt = false
+
+[functions.abort-dataset-upload]
+verify_jwt = false

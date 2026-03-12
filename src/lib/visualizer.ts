@@ -14,7 +14,10 @@ export async function openVisualizer(datasetId: string): Promise<void> {
   }
 
   const manifestJson = JSON.stringify(data);
-  const manifestBase64 = btoa(unescape(encodeURIComponent(manifestJson)));
+  const manifestBase64 = btoa(manifestJson)
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
 
   const url = `https://viz.gamiphy.ai/?manifest=${manifestBase64}`;
   window.open(url, "_blank");

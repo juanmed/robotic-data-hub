@@ -103,8 +103,7 @@ Deno.serve(async (req) => {
     .from("datasets")
     .insert({
       user_id: userId,
-      name: body.display_name,
-      source_format: "lerobot",
+      display_name: body.display_name,
       source_repo_id: body.source_repo_id || null,
       metadata: body.metadata || null,
       status: "uploading",

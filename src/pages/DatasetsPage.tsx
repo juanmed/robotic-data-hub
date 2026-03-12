@@ -8,7 +8,6 @@ import { listDatasets } from "@/services/datasetService";
 import type { Dataset } from "@/types";
 
 const statusConfig: Record<string, { icon: React.ElementType; label: string; className: string }> = {
-  draft: { icon: FileText, label: "Draft", className: "bg-muted/20 text-muted-foreground border-border/30" },
   uploading: { icon: Upload, label: "Uploading", className: "bg-secondary/10 text-secondary border-secondary/20" },
   ready: { icon: CheckCircle2, label: "Ready", className: "bg-primary/10 text-primary border-primary/20" },
   failed: { icon: AlertTriangle, label: "Failed", className: "bg-destructive/10 text-destructive border-destructive/20" },
@@ -77,14 +76,14 @@ const DatasetsPage = () => {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <Database className="h-3.5 w-3.5 text-primary shrink-0" />
-                          <span className="text-sm font-medium text-foreground truncate">{ds.name}</span>
+                          <span className="text-sm font-medium text-foreground truncate">{ds.display_name}</span>
                           <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium border ${sc.className}`}>
                             <StatusIcon className="h-3 w-3" />
                             {sc.label}
                           </span>
                         </div>
                         <div className="flex items-center gap-4 text-[10px] text-muted-foreground mt-1.5">
-                          <span>Format: {ds.source_format}</span>
+                          <span>{ds.file_count} file{ds.file_count !== 1 ? "s" : ""}</span>
                           <span>{ds.file_count} file{ds.file_count !== 1 ? "s" : ""}</span>
                           <span className="flex items-center gap-1">
                             <Clock className="h-3 w-3" />

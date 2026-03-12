@@ -97,11 +97,12 @@ export interface UploadKey {
 export interface Dataset {
   id: string;
   user_id: string;
-  name: string;
-  source_format: string;
-  status: "draft" | "uploading" | "ready" | "failed";
+  display_name: string;
+  source_repo_id: string | null;
+  status: "uploading" | "ready" | "failed";
+  metadata: Record<string, unknown> | null;
   created_at: string;
-  updated_at: string;
+  confirmed_at: string | null;
 }
 
 export interface DatasetFile {
@@ -111,7 +112,6 @@ export interface DatasetFile {
   storage_path: string;
   content_type: string | null;
   size_bytes: number | null;
-  checksum: string | null;
-  upload_status: "pending" | "uploaded" | "failed";
+  upload_status: "pending" | "uploaded";
   created_at: string;
 }

@@ -12,11 +12,12 @@ export async function listDatasets(): Promise<(Dataset & { file_count: number })
   return (data ?? []).map((row: any) => ({
     id: row.id,
     user_id: row.user_id,
-    name: row.name,
-    source_format: row.source_format,
+    display_name: row.display_name,
+    source_repo_id: row.source_repo_id,
     status: row.status,
+    metadata: row.metadata,
     created_at: row.created_at,
-    updated_at: row.updated_at,
+    confirmed_at: row.confirmed_at,
     file_count: Array.isArray(row.dataset_files) ? row.dataset_files.length : 0,
   }));
 }
@@ -34,11 +35,12 @@ export async function getDataset(id: string): Promise<Dataset | null> {
   return {
     id: data.id,
     user_id: data.user_id,
-    name: data.name,
-    source_format: data.source_format,
+    display_name: data.display_name,
+    source_repo_id: data.source_repo_id,
     status: data.status as Dataset["status"],
+    metadata: data.metadata as Record<string, unknown> | null,
     created_at: data.created_at,
-    updated_at: data.updated_at,
+    confirmed_at: data.confirmed_at,
   };
 }
 
@@ -58,7 +60,6 @@ export async function getDatasetFiles(datasetId: string): Promise<DatasetFile[]>
     storage_path: row.storage_path,
     content_type: row.content_type,
     size_bytes: row.size_bytes,
-    checksum: row.checksum,
     upload_status: row.upload_status,
     created_at: row.created_at,
   }));

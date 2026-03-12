@@ -12,7 +12,6 @@ import type { Dataset, DatasetFile } from "@/types";
 import type { SignedFileUrl } from "@/services/datasetService";
 
 const statusConfig: Record<string, { icon: React.ElementType; label: string; className: string; vizMessage: string }> = {
-  draft: { icon: FileText, label: "Draft", className: "bg-muted/20 text-muted-foreground border-border/30", vizMessage: "Dataset is in draft state" },
   uploading: { icon: Upload, label: "Uploading", className: "bg-secondary/10 text-secondary border-secondary/20", vizMessage: "Upload in progress" },
   ready: { icon: CheckCircle2, label: "Ready", className: "bg-primary/10 text-primary border-primary/20", vizMessage: "Dataset is ready for visualization" },
   failed: { icon: AlertTriangle, label: "Failed", className: "bg-destructive/10 text-destructive border-destructive/20", vizMessage: "Dataset processing failed" },
@@ -114,17 +113,17 @@ const DatasetDetailPage = () => {
           <div>
             <div className="flex items-center gap-3 mb-1">
               <Database className="h-5 w-5 text-primary" />
-              <h1 className="text-xl font-bold text-foreground">{dataset.name}</h1>
+              <h1 className="text-xl font-bold text-foreground">{dataset.display_name}</h1>
               <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-medium border ${sc.className}`}>
                 <StatusIcon className="h-3 w-3" />
                 {sc.label}
               </span>
             </div>
             <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1">
-              <span>Format: {dataset.source_format}</span>
+              {dataset.source_repo_id && <span>Repo: {dataset.source_repo_id}</span>}
               <span>{files.length} file{files.length !== 1 ? "s" : ""}</span>
               <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> Created {new Date(dataset.created_at).toLocaleDateString()}</span>
-              <span>Updated {new Date(dataset.updated_at).toLocaleDateString()}</span>
+              {dataset.confirmed_at && <span>Confirmed {new Date(dataset.confirmed_at).toLocaleDateString()}</span>}
             </div>
           </div>
         </div>
@@ -160,8 +159,6 @@ const DatasetDetailPage = () => {
                       <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium border ${
                         f.upload_status === "uploaded"
                           ? "bg-primary/10 text-primary border-primary/20"
-                          : f.upload_status === "failed"
-                          ? "bg-destructive/10 text-destructive border-destructive/20"
                           : "bg-muted/20 text-muted-foreground border-border/30"
                       }`}>
                         {f.upload_status}

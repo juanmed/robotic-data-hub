@@ -43,7 +43,6 @@ export type Database = {
       }
       dataset_files: {
         Row: {
-          checksum: string | null
           content_type: string | null
           created_at: string
           dataset_id: string
@@ -54,7 +53,6 @@ export type Database = {
           upload_status: string
         }
         Insert: {
-          checksum?: string | null
           content_type?: string | null
           created_at?: string
           dataset_id: string
@@ -65,7 +63,6 @@ export type Database = {
           upload_status?: string
         }
         Update: {
-          checksum?: string | null
           content_type?: string | null
           created_at?: string
           dataset_id?: string
@@ -87,36 +84,33 @@ export type Database = {
       }
       datasets: {
         Row: {
+          confirmed_at: string | null
           created_at: string
+          display_name: string
           id: string
           metadata: Json | null
-          name: string
-          source_format: string
           source_repo_id: string | null
           status: string
-          updated_at: string
           user_id: string
         }
         Insert: {
+          confirmed_at?: string | null
           created_at?: string
+          display_name: string
           id?: string
           metadata?: Json | null
-          name: string
-          source_format?: string
           source_repo_id?: string | null
           status?: string
-          updated_at?: string
           user_id: string
         }
         Update: {
+          confirmed_at?: string | null
           created_at?: string
+          display_name?: string
           id?: string
           metadata?: Json | null
-          name?: string
-          source_format?: string
           source_repo_id?: string | null
           status?: string
-          updated_at?: string
           user_id?: string
         }
         Relationships: []

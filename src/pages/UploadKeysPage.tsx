@@ -169,10 +169,8 @@ const UploadKeysPage = () => {
               uploader from your LeRobot fork, then run:
             </p>
             <div className="rounded-xl bg-background/80 border border-border/30 p-4 font-mono text-[11px] text-primary leading-relaxed overflow-x-auto">
-              <span className="text-muted-foreground">$</span> gamiphy-upload \{"\n"}
-              {"  "}--project-url https://gamiphy.ai \{"\n"}
-              {"  "}--upload-key gai_upl_xxxxx \{"\n"}
-              {"  "}--dataset-path /path/to/dataset
+              <span className="text-muted-foreground">$</span> lerobot_gamiphy_upload \{"\n"}
+              {"  "}--repo_id user/dataset
             </div>
           </GlassCard>
 

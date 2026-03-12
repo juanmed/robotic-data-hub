@@ -43,6 +43,7 @@ export type Database = {
       }
       dataset_files: {
         Row: {
+          checksum: string | null
           content_type: string | null
           created_at: string
           dataset_id: string
@@ -53,6 +54,7 @@ export type Database = {
           upload_status: string
         }
         Insert: {
+          checksum?: string | null
           content_type?: string | null
           created_at?: string
           dataset_id: string
@@ -63,6 +65,7 @@ export type Database = {
           upload_status?: string
         }
         Update: {
+          checksum?: string | null
           content_type?: string | null
           created_at?: string
           dataset_id?: string

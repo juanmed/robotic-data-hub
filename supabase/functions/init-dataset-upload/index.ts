@@ -132,7 +132,6 @@ Deno.serve(async (req) => {
         storage_path: storagePath,
         content_type: f.content_type || null,
         size_bytes: f.size_bytes || null,
-        checksum: f.checksum || null,
         upload_status: "pending",
       });
 

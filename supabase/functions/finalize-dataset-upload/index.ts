@@ -135,10 +135,12 @@ Deno.serve(async (req) => {
   const uploadedCount = totalCount - missingFiles.length;
   const allUploaded = totalCount > 0 && missingFiles.length === 0;
   const newStatus = allUploaded ? "ready" : "uploading";
+  const updatePayload: Record<string, string> = { status: newStatus };
+  if (allUploaded) updatePayload.confirmed_at = new Date().toISOString();
 
   await supabase
     .from("datasets")
-    .update({ status: newStatus, updated_at: new Date().toISOString() })
+    .update(updatePayload)
     .eq("id", body.dataset_id);
 
   // --- 6. Update last_used_at ---

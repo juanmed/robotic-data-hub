@@ -190,7 +190,7 @@ const DashboardPage = () => {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <Database className="h-3.5 w-3.5 text-primary shrink-0" />
-                          <span className="text-sm font-medium text-foreground truncate">{ds.name}</span>
+                          <span className="text-sm font-medium text-foreground truncate">{ds.display_name}</span>
                           <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium border ${sc.className}`}>
                             <StatusIcon className="h-3 w-3" />
                             {sc.label}

@@ -63,7 +63,7 @@ Deno.serve(async (req) => {
     return jsonError("Missing or malformed Authorization header. Expected: Bearer <upload_key>", 401);
   }
   const rawKey = authHeader.replace("Bearer ", "").trim();
-  if (!rawKey || !rawKey.startsWith("gai_upl_")) {
+  if (!rawKey || !rawKey.startsWith("gpai_upl_")) {
     return jsonError("Invalid upload key format", 401);
   }
 

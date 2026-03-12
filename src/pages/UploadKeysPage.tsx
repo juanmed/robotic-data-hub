@@ -191,8 +191,8 @@ const UploadKeysPage = () => {
               <div className="text-muted-foreground">Authorization: Bearer &lt;upload_key&gt;</div>
               <div className="border-t border-border/30 pt-2 mt-2">
                 <span className="text-muted-foreground">{"{"}</span>{"\n"}
-                {"  "}<span className="text-primary">"dataset_name"</span>: <span className="text-foreground">"my_dataset"</span>,{"\n"}
-                {"  "}<span className="text-primary">"source_format"</span>: <span className="text-foreground">"lerobot"</span>,{"\n"}
+                {"  "}<span className="text-primary">"display_name"</span>: <span className="text-foreground">"my_dataset"</span>,{"\n"}
+                {"  "}<span className="text-primary">"source_repo_id"</span>: <span className="text-foreground">"user/dataset"</span>,{"\n"}
                 {"  "}<span className="text-primary">"files"</span>: [{"\n"}
                 {"    "}{"{"} <span className="text-primary">"relative_path"</span>: <span className="text-foreground">"meta/info.json"</span>,{"\n"}
                 {"      "}<span className="text-primary">"size_bytes"</span>: <span className="text-foreground">1234</span> {"}"}{"\n"}

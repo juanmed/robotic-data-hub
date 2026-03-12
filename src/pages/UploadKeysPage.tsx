@@ -169,10 +169,8 @@ const UploadKeysPage = () => {
               uploader from your LeRobot fork, then run:
             </p>
             <div className="rounded-xl bg-background/80 border border-border/30 p-4 font-mono text-[11px] text-primary leading-relaxed overflow-x-auto">
-              <span className="text-muted-foreground">$</span> gamiphy-upload \{"\n"}
-              {"  "}--project-url https://gamiphy.ai \{"\n"}
-              {"  "}--upload-key gai_upl_xxxxx \{"\n"}
-              {"  "}--dataset-path /path/to/dataset
+              <span className="text-muted-foreground">$</span> lerobot_gamiphy_upload \{"\n"}
+              {"  "}--repo_id user/dataset
             </div>
           </GlassCard>
 
@@ -188,13 +186,13 @@ const UploadKeysPage = () => {
             <div className="rounded-xl bg-background/80 border border-border/30 p-4 font-mono text-[11px] leading-relaxed overflow-x-auto space-y-2">
               <div>
                 <span className="text-secondary">POST</span>{" "}
-                <span className="text-foreground">/functions/v1/init-dataset-upload</span>
+                <span className="text-foreground">https://api.gamiphy.ai/functions/v1/init-dataset-upload</span>
               </div>
               <div className="text-muted-foreground">Authorization: Bearer &lt;upload_key&gt;</div>
               <div className="border-t border-border/30 pt-2 mt-2">
                 <span className="text-muted-foreground">{"{"}</span>{"\n"}
-                {"  "}<span className="text-primary">"dataset_name"</span>: <span className="text-foreground">"my_dataset"</span>,{"\n"}
-                {"  "}<span className="text-primary">"source_format"</span>: <span className="text-foreground">"lerobot"</span>,{"\n"}
+                {"  "}<span className="text-primary">"display_name"</span>: <span className="text-foreground">"my_dataset"</span>,{"\n"}
+                {"  "}<span className="text-primary">"source_repo_id"</span>: <span className="text-foreground">"user/dataset"</span>,{"\n"}
                 {"  "}<span className="text-primary">"files"</span>: [{"\n"}
                 {"    "}{"{"} <span className="text-primary">"relative_path"</span>: <span className="text-foreground">"meta/info.json"</span>,{"\n"}
                 {"      "}<span className="text-primary">"size_bytes"</span>: <span className="text-foreground">1234</span> {"}"}{"\n"}

@@ -63,3 +63,21 @@ export async function getDatasetFiles(datasetId: string): Promise<DatasetFile[]>
     created_at: row.created_at,
   }));
 }
+
+export interface SignedFileUrl {
+  relative_path: string;
+  signed_url: string | null;
+  content_type: string | null;
+}
+
+export async function getDatasetFileUrls(
+  datasetId: string,
+  paths?: string[]
+): Promise<SignedFileUrl[]> {
+  const { data, error } = await supabase.functions.invoke("dataset-read-urls", {
+    body: { dataset_id: datasetId, paths },
+  });
+
+  if (error) throw new Error(error.message || "Failed to get file URLs");
+  return data?.urls ?? [];
+}

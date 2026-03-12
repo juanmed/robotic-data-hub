@@ -121,10 +121,10 @@ const DatasetDetailPage = () => {
               </span>
             </div>
             <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1">
-              <span>Format: {dataset.source_format}</span>
+              {dataset.source_repo_id && <span>Repo: {dataset.source_repo_id}</span>}
               <span>{files.length} file{files.length !== 1 ? "s" : ""}</span>
               <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> Created {new Date(dataset.created_at).toLocaleDateString()}</span>
-              <span>Updated {new Date(dataset.updated_at).toLocaleDateString()}</span>
+              {dataset.confirmed_at && <span>Confirmed {new Date(dataset.confirmed_at).toLocaleDateString()}</span>}
             </div>
           </div>
         </div>

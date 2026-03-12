@@ -1,9 +1,9 @@
 /**
- * finalize-dataset-upload
+ * abort-dataset-upload
  *
- * Finalizes a dataset upload. Only requires { dataset_id }.
- * Verifies all files exist in storage, marks them as uploaded, sets dataset to 'ready'.
+ * Aborts a dataset upload: deletes storage files, file records, and the dataset record.
  *
+ * Body: { dataset_id: string }
  * Authentication: Authorization: Bearer <upload_key>
  */
 
@@ -83,7 +83,7 @@ Deno.serve(async (req) => {
   // --- 3. Verify dataset ownership ---
   const { data: dataset, error: dsError } = await supabase
     .from("datasets")
-    .select("id, user_id, status")
+    .select("id, user_id")
     .eq("id", body.dataset_id)
     .maybeSingle();
 
@@ -94,67 +94,39 @@ Deno.serve(async (req) => {
   if (!dataset) return jsonError("Dataset not found", 404);
   if (dataset.user_id !== userId) return jsonError("Access denied", 403);
 
-  // --- 4. Load all pending files and verify in storage ---
-  const { data: allFiles, error: filesError } = await supabase
+  // --- 4. Load file records to get storage paths ---
+  const { data: files } = await supabase
     .from("dataset_files")
-    .select("id, relative_path, storage_path, upload_status")
+    .select("storage_path")
     .eq("dataset_id", body.dataset_id);
 
-  if (filesError) {
-    console.error("Files lookup error:", filesError);
-    return jsonError("Internal error loading files", 500);
-  }
-
-  const pendingFiles = (allFiles ?? []).filter((f) => f.upload_status !== "uploaded");
-  const missingFiles: string[] = [];
-
-  // Verify each pending file exists in storage
-  for (const f of pendingFiles) {
-    // List the file path to check existence
-    const pathParts = f.storage_path.split("/");
-    const fileName = pathParts.pop()!;
-    const folder = pathParts.join("/");
-
-    const { data: listed } = await supabase.storage
+  // --- 5. Delete files from storage ---
+  if (files && files.length > 0) {
+    const storagePaths = files.map((f) => f.storage_path);
+    const { error: removeError } = await supabase.storage
       .from("datasets")
-      .list(folder, { limit: 1, search: fileName });
+      .remove(storagePaths);
 
-    if (listed && listed.length > 0) {
-      // Mark as uploaded
-      await supabase
-        .from("dataset_files")
-        .update({ upload_status: "uploaded" })
-        .eq("id", f.id);
-    } else {
-      missingFiles.push(f.relative_path);
+    if (removeError) {
+      console.error("Storage cleanup error:", removeError);
+      // Continue anyway to clean up DB records
     }
   }
 
-  // --- 5. Determine final status ---
-  const totalCount = allFiles?.length ?? 0;
-  const uploadedCount = totalCount - missingFiles.length;
-  const allUploaded = totalCount > 0 && missingFiles.length === 0;
-  const newStatus = allUploaded ? "ready" : "uploading";
+  // --- 6. Delete file records ---
+  await supabase
+    .from("dataset_files")
+    .delete()
+    .eq("dataset_id", body.dataset_id);
 
+  // --- 7. Delete dataset record ---
   await supabase
     .from("datasets")
-    .update({ status: newStatus, updated_at: new Date().toISOString() })
+    .delete()
     .eq("id", body.dataset_id);
 
-  // --- 6. Update last_used_at ---
-  await supabase
-    .from("upload_keys")
-    .update({ last_used_at: new Date().toISOString() })
-    .eq("id", keyRow.id);
-
   return new Response(
-    JSON.stringify({
-      dataset_id: body.dataset_id,
-      status: newStatus,
-      uploaded_count: uploadedCount,
-      total_count: totalCount,
-      ...(missingFiles.length > 0 ? { missing_files: missingFiles } : {}),
-    }),
+    JSON.stringify({ dataset_id: body.dataset_id, status: "aborted" }),
     {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

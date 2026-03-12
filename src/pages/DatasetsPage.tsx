@@ -3,8 +3,10 @@ import { Link } from "react-router-dom";
 import PageContainer from "@/layouts/PageContainer";
 import SectionHeader from "@/components/SectionHeader";
 import GlassCard from "@/components/GlassCard";
-import { Database, FileText, Clock, CheckCircle2, AlertTriangle, Upload, Loader2, ChevronRight, Terminal } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Database, FileText, Clock, CheckCircle2, AlertTriangle, Upload, Loader2, ChevronRight, Terminal, Eye } from "lucide-react";
 import { listDatasets } from "@/services/datasetService";
+import { openVisualizer } from "@/lib/visualizer";
 import type { Dataset } from "@/types";
 
 const statusConfig: Record<string, { icon: React.ElementType; label: string; className: string }> = {
@@ -68,32 +70,51 @@ const DatasetsPage = () => {
           ) : (
             <div className="space-y-3">
               {datasets.map((ds) => {
-                const sc = statusConfig[ds.status] || statusConfig.draft;
+                const sc = statusConfig[ds.status] || statusConfig.uploading;
                 const StatusIcon = sc.icon;
+                const isReady = ds.status === "ready";
                 return (
-                  <Link key={ds.id} to={`/dashboard/datasets/${ds.id}`}>
-                    <GlassCard hover className="flex items-center justify-between gap-4 cursor-pointer group">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Database className="h-3.5 w-3.5 text-primary shrink-0" />
-                          <span className="text-sm font-medium text-foreground truncate">{ds.display_name}</span>
-                          <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium border ${sc.className}`}>
-                            <StatusIcon className="h-3 w-3" />
-                            {sc.label}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-4 text-[10px] text-muted-foreground mt-1.5">
-                          <span>{ds.file_count} file{ds.file_count !== 1 ? "s" : ""}</span>
-                          <span>{ds.file_count} file{ds.file_count !== 1 ? "s" : ""}</span>
-                          <span className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            {new Date(ds.created_at).toLocaleDateString()}
-                          </span>
-                        </div>
+                  <GlassCard key={ds.id} hover className="flex items-center justify-between gap-4 group">
+                    <Link to={`/dashboard/datasets/${ds.id}`} className="flex-1 min-w-0 cursor-pointer">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Database className="h-3.5 w-3.5 text-primary shrink-0" />
+                        <span className="text-sm font-medium text-foreground truncate">{ds.display_name}</span>
+                        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium border ${sc.className}`}>
+                          <StatusIcon className="h-3 w-3" />
+                          {sc.label}
+                        </span>
                       </div>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-                    </GlassCard>
-                  </Link>
+                      <div className="flex items-center gap-4 text-[10px] text-muted-foreground mt-1.5">
+                        <span>{ds.file_count} file{ds.file_count !== 1 ? "s" : ""}</span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {new Date(ds.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </Link>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <Button
+                        size="sm"
+                        disabled={!isReady}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          openVisualizer(ds.id);
+                        }}
+                        className={`text-[11px] h-7 px-3 transition-all ${
+                          isReady
+                            ? "bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_12px_hsl(var(--primary)/0.4)] hover:shadow-[0_0_20px_hsl(var(--primary)/0.6)]"
+                            : "opacity-50 cursor-not-allowed"
+                        }`}
+                      >
+                        <Eye className="h-3 w-3 mr-1" />
+                        Visualize
+                      </Button>
+                      <Link to={`/dashboard/datasets/${ds.id}`}>
+                        <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                      </Link>
+                    </div>
+                  </GlassCard>
                 );
               })}
             </div>

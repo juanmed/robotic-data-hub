@@ -8,7 +8,8 @@ import Navbar from "@/components/Navbar";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import LandingPage from "@/pages/LandingPage";
 import DashboardPage from "@/pages/DashboardPage";
-import SessionsPage from "@/pages/SessionsPage";
+import KeysPage from "@/pages/KeysPage";
+import SettingsPage from "@/pages/SettingsPage";
 import SessionDetailPage from "@/pages/SessionDetailPage";
 import SessionViewerPage from "@/pages/SessionViewerPage";
 import MarketplacePage from "@/pages/MarketplacePage";
@@ -17,9 +18,6 @@ import RegisterPage from "@/pages/RegisterPage";
 import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
 import ResetPasswordPage from "@/pages/ResetPasswordPage";
 import AuthCallbackPage from "@/pages/AuthCallbackPage";
-import APIKeysPage from "@/pages/APIKeysPage";
-import UploadKeysPage from "@/pages/UploadKeysPage";
-import DatasetsPage from "@/pages/DatasetsPage";
 import DatasetDetailPage from "@/pages/DatasetDetailPage";
 import ProfilePage from "@/pages/ProfilePage";
 import SearchPage from "@/pages/SearchPage";
@@ -45,12 +43,10 @@ const App = () => (
             <Route path="/auth/*" element={<AuthCallbackPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-            <Route path="/dashboard/api-keys" element={<ProtectedRoute><APIKeysPage /></ProtectedRoute>} />
-            <Route path="/dashboard/upload-keys" element={<ProtectedRoute><UploadKeysPage /></ProtectedRoute>} />
-            <Route path="/dashboard/datasets" element={<ProtectedRoute><DatasetsPage /></ProtectedRoute>} />
             <Route path="/dashboard/datasets/:id" element={<ProtectedRoute><DatasetDetailPage /></ProtectedRoute>} />
+            <Route path="/keys" element={<ProtectedRoute><KeysPage /></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-            <Route path="/sessions" element={<ProtectedRoute><SessionsPage /></ProtectedRoute>} />
             <Route path="/sessions/:id" element={<ProtectedRoute><SessionDetailPage /></ProtectedRoute>} />
             <Route path="/sessions/:id/viewer" element={<ProtectedRoute><SessionViewerPage /></ProtectedRoute>} />
             <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />

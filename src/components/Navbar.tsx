@@ -2,17 +2,18 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { LogOut, UserCircle } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { LogOut, UserCircle, LayoutDashboard, KeyRound, Settings } from "lucide-react";
 
 const publicLinks = [
   { to: "/", label: "Home" },
   { to: "/marketplace", label: "Marketplace" },
-];
-
-const authLinks = [
-  { to: "/search", label: "Search" },
-  { to: "/sessions", label: "Sessions" },
-  { to: "/dashboard", label: "Dashboard" },
 ];
 
 const Navbar = () => {
@@ -48,79 +49,58 @@ const Navbar = () => {
               {label}
             </Link>
           ))}
-          {isAuthenticated && authLinks.map(({ to, label }) => (
+          {isAuthenticated && (
             <Link
-              key={to}
-              to={to}
+              to="/search"
               className={cn(
                 "px-4 py-2 rounded-lg text-sm transition-colors",
-                location.pathname === to
+                location.pathname === "/search"
                   ? "text-primary bg-primary/10"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
               )}
             >
-              {label}
+              Search
             </Link>
-          ))}
-          {isAuthenticated && (
-            <>
-              <Link
-                to="/dashboard/api-keys"
-                className={cn(
-                  "px-4 py-2 rounded-lg text-sm transition-colors",
-                  location.pathname === "/dashboard/api-keys"
-                    ? "text-primary bg-primary/10"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                )}
-              >
-                API Keys
-              </Link>
-              <Link
-                to="/dashboard/upload-keys"
-                className={cn(
-                  "px-4 py-2 rounded-lg text-sm transition-colors",
-                  location.pathname === "/dashboard/upload-keys"
-                    ? "text-primary bg-primary/10"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                )}
-              >
-                Upload Keys
-              </Link>
-              <Link
-                to="/dashboard/datasets"
-                className={cn(
-                  "px-4 py-2 rounded-lg text-sm transition-colors",
-                  location.pathname === "/dashboard/datasets"
-                    ? "text-primary bg-primary/10"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                )}
-              >
-                Datasets
-              </Link>
-            </>
           )}
         </div>
 
         <div className="flex items-center gap-3">
           {isAuthenticated ? (
-            <>
-              <Link
-                to="/profile"
-                className={cn(
-                  "flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm transition-colors",
-                  location.pathname === "/profile"
-                    ? "text-primary bg-primary/10"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                )}
-              >
-                <UserCircle className="h-4 w-4" />
-                <span className="hidden sm:inline">{user?.name}</span>
-              </Link>
-              <Button variant="ghost" size="sm" onClick={handleLogout} className="gap-1.5">
-                <LogOut className="h-3.5 w-3.5" />
-                Sign out
-              </Button>
-            </>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "gap-1.5 px-3 py-2 rounded-lg text-sm transition-colors",
+                    ["/dashboard", "/keys", "/settings"].some((p) => location.pathname.startsWith(p))
+                      ? "text-primary bg-primary/10"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                  )}
+                >
+                  <UserCircle className="h-4 w-4" />
+                  <span className="hidden sm:inline">{user?.name}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={() => navigate("/dashboard")} className="gap-2 cursor-pointer">
+                  <LayoutDashboard className="h-4 w-4" />
+                  Dashboard
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/keys")} className="gap-2 cursor-pointer">
+                  <KeyRound className="h-4 w-4" />
+                  Keys
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/settings")} className="gap-2 cursor-pointer">
+                  <Settings className="h-4 w-4" />
+                  Settings
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout} className="gap-2 cursor-pointer text-destructive focus:text-destructive">
+                  <LogOut className="h-4 w-4" />
+                  Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <>
               <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">

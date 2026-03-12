@@ -5,10 +5,11 @@ import GlassCard from "@/components/GlassCard";
 import { Button } from "@/components/ui/button";
 import {
   ArrowLeft, Database, FileText, Clock, CheckCircle2, AlertTriangle,
-  Upload, Loader2, Eye, Folder, File,
+  Upload, Loader2, Eye, Folder, File, Download, ExternalLink,
 } from "lucide-react";
-import { getDataset, getDatasetFiles } from "@/services/datasetService";
+import { getDataset, getDatasetFiles, getDatasetFileUrls } from "@/services/datasetService";
 import type { Dataset, DatasetFile } from "@/types";
+import type { SignedFileUrl } from "@/services/datasetService";
 
 const statusConfig: Record<string, { icon: React.ElementType; label: string; className: string; vizMessage: string }> = {
   draft: { icon: FileText, label: "Draft", className: "bg-muted/20 text-muted-foreground border-border/30", vizMessage: "Dataset is in draft state" },

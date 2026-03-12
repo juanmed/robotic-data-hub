@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Database, FileText, Clock, CheckCircle2, AlertTriangle, Upload, Loader2, ChevronRight, Terminal, Eye } from "lucide-react";
 import { listDatasets } from "@/services/datasetService";
 import { openVisualizer } from "@/lib/visualizer";
+import { toast } from "sonner";
 import type { Dataset } from "@/types";
 
 const statusConfig: Record<string, { icon: React.ElementType; label: string; className: string }> = {

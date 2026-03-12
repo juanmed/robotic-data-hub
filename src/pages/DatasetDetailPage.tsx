@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { getDataset, getDatasetFiles, getDatasetFileUrls } from "@/services/datasetService";
 import { openVisualizer } from "@/lib/visualizer";
+import { toast } from "sonner";
 import type { Dataset, DatasetFile } from "@/types";
 import type { SignedFileUrl } from "@/services/datasetService";
 
@@ -34,6 +35,19 @@ const DatasetDetailPage = () => {
   const [loadingUrls, setLoadingUrls] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [visualizing, setVisualizing] = useState(false);
+
+  const handleVisualize = async () => {
+    if (!dataset) return;
+    setVisualizing(true);
+    try {
+      await openVisualizer(dataset.id);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to open visualizer");
+    } finally {
+      setVisualizing(false);
+    }
+  };
 
   const fetch = useCallback(async () => {
     if (!id) return;
@@ -130,15 +144,19 @@ const DatasetDetailPage = () => {
 
           {/* Visualize button in header */}
           <Button
-            disabled={!isReady}
-            onClick={() => openVisualizer(dataset.id)}
+            disabled={!isReady || visualizing}
+            onClick={handleVisualize}
             className={`transition-all ${
               isReady
                 ? "bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_16px_hsl(var(--primary)/0.4)] hover:shadow-[0_0_24px_hsl(var(--primary)/0.6)]"
                 : "opacity-50 cursor-not-allowed"
             }`}
           >
-            <Eye className="h-4 w-4 mr-2" />
+            {visualizing ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Eye className="h-4 w-4 mr-2" />
+            )}
             Visualize Dataset
             <ExternalLink className="h-3 w-3 ml-1.5 opacity-60" />
           </Button>
@@ -231,15 +249,19 @@ const DatasetDetailPage = () => {
                 </p>
               </div>
               <Button
-                disabled={!isReady}
-                onClick={() => openVisualizer(dataset.id)}
+                disabled={!isReady || visualizing}
+                onClick={handleVisualize}
                 className={`w-full mt-3 transition-all ${
                   isReady
                     ? "bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_16px_hsl(var(--primary)/0.4)] hover:shadow-[0_0_24px_hsl(var(--primary)/0.6)]"
                     : "opacity-50 cursor-not-allowed"
                 }`}
               >
-                <Eye className="h-4 w-4 mr-2" />
+                {visualizing ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Eye className="h-4 w-4 mr-2" />
+                )}
                 {isReady ? "Open Visualizer" : "Not Available"}
                 {isReady && <ExternalLink className="h-3 w-3 ml-1.5 opacity-60" />}
               </Button>

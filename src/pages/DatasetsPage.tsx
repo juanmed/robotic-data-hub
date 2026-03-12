@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Database, FileText, Clock, CheckCircle2, AlertTriangle, Upload, Loader2, ChevronRight, Terminal, Eye } from "lucide-react";
 import { listDatasets } from "@/services/datasetService";
 import { openVisualizer } from "@/lib/visualizer";
+import { toast } from "sonner";
 import type { Dataset } from "@/types";
 
 const statusConfig: Record<string, { icon: React.ElementType; label: string; className: string }> = {
@@ -16,6 +17,19 @@ const statusConfig: Record<string, { icon: React.ElementType; label: string; cla
 };
 
 const DatasetsPage = () => {
+  const [visualizingId, setVisualizingId] = useState<string | null>(null);
+
+  const handleVisualize = async (datasetId: string) => {
+    setVisualizingId(datasetId);
+    try {
+      await openVisualizer(datasetId);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to open visualizer");
+    } finally {
+      setVisualizingId(null);
+    }
+  };
+
   const [datasets, setDatasets] = useState<(Dataset & { file_count: number })[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -95,11 +109,11 @@ const DatasetsPage = () => {
                     <div className="flex items-center gap-2 shrink-0">
                       <Button
                         size="sm"
-                        disabled={!isReady}
+                        disabled={!isReady || visualizingId === ds.id}
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          openVisualizer(ds.id);
+                          handleVisualize(ds.id);
                         }}
                         className={`text-[11px] h-7 px-3 transition-all ${
                           isReady
@@ -107,7 +121,11 @@ const DatasetsPage = () => {
                             : "opacity-50 cursor-not-allowed"
                         }`}
                       >
-                        <Eye className="h-3 w-3 mr-1" />
+                        {visualizingId === ds.id ? (
+                          <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                        ) : (
+                          <Eye className="h-3 w-3 mr-1" />
+                        )}
                         Visualize
                       </Button>
                       <Link to={`/dashboard/datasets/${ds.id}`}>

@@ -35,6 +35,19 @@ const DatasetDetailPage = () => {
   const [loadingUrls, setLoadingUrls] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [visualizing, setVisualizing] = useState(false);
+
+  const handleVisualize = async () => {
+    if (!dataset) return;
+    setVisualizing(true);
+    try {
+      await openVisualizer(dataset.id);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to open visualizer");
+    } finally {
+      setVisualizing(false);
+    }
+  };
 
   const fetch = useCallback(async () => {
     if (!id) return;

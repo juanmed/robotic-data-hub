@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { getDataset, getDatasetFiles, getDatasetFileUrls } from "@/services/datasetService";
 import { openVisualizer } from "@/lib/visualizer";
+import { toast } from "sonner";
 import type { Dataset, DatasetFile } from "@/types";
 import type { SignedFileUrl } from "@/services/datasetService";
 

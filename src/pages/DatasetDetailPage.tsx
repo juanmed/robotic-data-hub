@@ -30,6 +30,8 @@ const DatasetDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const [dataset, setDataset] = useState<Dataset | null>(null);
   const [files, setFiles] = useState<DatasetFile[]>([]);
+  const [fileUrls, setFileUrls] = useState<Record<string, string>>({});
+  const [loadingUrls, setLoadingUrls] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

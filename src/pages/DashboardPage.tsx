@@ -31,7 +31,6 @@ const sessionStatusColor: Record<string, string> = {
 };
 
 const datasetStatusConfig: Record<string, { icon: React.ElementType; label: string; className: string }> = {
-  draft: { icon: FileText, label: "Draft", className: "bg-muted/20 text-muted-foreground border-border/30" },
   uploading: { icon: Upload, label: "Uploading", className: "bg-secondary/10 text-secondary border-secondary/20" },
   ready: { icon: CheckCircle2, label: "Ready", className: "bg-primary/10 text-primary border-primary/20" },
   failed: { icon: AlertTriangle, label: "Failed", className: "bg-destructive/10 text-destructive border-destructive/20" },

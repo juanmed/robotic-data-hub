@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.abort-dataset-upload]
 verify_jwt = false
+
+[functions.get-dataset-manifest]
+verify_jwt = false

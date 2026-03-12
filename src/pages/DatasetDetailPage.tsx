@@ -141,15 +141,16 @@ const DatasetDetailPage = () => {
               </GlassCard>
             ) : (
               <div className="rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm overflow-hidden">
-                <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 px-4 py-2.5 text-[10px] font-medium text-muted-foreground uppercase tracking-wider border-b border-border/30">
+                <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-x-4 px-4 py-2.5 text-[10px] font-medium text-muted-foreground uppercase tracking-wider border-b border-border/30">
                   <span>Path</span>
                   <span>Size</span>
                   <span>Type</span>
                   <span>Status</span>
+                  <span></span>
                 </div>
                 <div className="divide-y divide-border/20">
                   {files.map((f) => (
-                    <div key={f.id} className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 px-4 py-3 items-center hover:bg-muted/10 transition-colors">
+                    <div key={f.id} className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-x-4 px-4 py-3 items-center hover:bg-muted/10 transition-colors">
                       <div className="flex items-center gap-2 min-w-0">
                         <File className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                         <span className="text-xs text-foreground font-mono truncate">{f.relative_path}</span>
@@ -165,6 +166,19 @@ const DatasetDetailPage = () => {
                       }`}>
                         {f.upload_status}
                       </span>
+                      <div className="flex items-center gap-1">
+                        {fileUrls[f.relative_path] && (
+                          <a href={fileUrls[f.relative_path]} target="_blank" rel="noopener noreferrer">
+                            <Button variant="ghost" size="icon" className="h-6 w-6">
+                              {f.content_type?.startsWith("video/") ? (
+                                <Eye className="h-3 w-3" />
+                              ) : (
+                                <Download className="h-3 w-3" />
+                              )}
+                            </Button>
+                          </a>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>

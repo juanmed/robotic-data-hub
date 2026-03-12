@@ -186,7 +186,7 @@ const UploadKeysPage = () => {
             <div className="rounded-xl bg-background/80 border border-border/30 p-4 font-mono text-[11px] leading-relaxed overflow-x-auto space-y-2">
               <div>
                 <span className="text-secondary">POST</span>{" "}
-                <span className="text-foreground">/functions/v1/init-dataset-upload</span>
+                <span className="text-foreground">https://api.gamiphy.ai/functions/v1/init-dataset-upload</span>
               </div>
               <div className="text-muted-foreground">Authorization: Bearer &lt;upload_key&gt;</div>
               <div className="border-t border-border/30 pt-2 mt-2">

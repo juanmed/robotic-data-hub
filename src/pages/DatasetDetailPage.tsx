@@ -114,7 +114,7 @@ const DatasetDetailPage = () => {
           <div>
             <div className="flex items-center gap-3 mb-1">
               <Database className="h-5 w-5 text-primary" />
-              <h1 className="text-xl font-bold text-foreground">{dataset.name}</h1>
+              <h1 className="text-xl font-bold text-foreground">{dataset.display_name}</h1>
               <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-medium border ${sc.className}`}>
                 <StatusIcon className="h-3 w-3" />
                 {sc.label}

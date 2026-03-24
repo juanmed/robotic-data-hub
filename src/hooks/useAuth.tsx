@@ -14,6 +14,7 @@ interface AuthContextType {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isLoginLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -41,6 +42,7 @@ async function fetchProfile(userId: string): Promise<AuthUser | null> {
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoginLoading, setIsLoginLoading] = useState(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -67,13 +69,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw new Error(error.message);
+    setIsLoginLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw new Error(error.message);
 
-    // Check if email is verified
-    if (!data.user?.email_confirmed_at) {
-      await supabase.auth.signOut();
-      throw new Error("Please verify your email before signing in. Check your inbox for the verification link.");
+      if (!data.user?.email_confirmed_at) {
+        await supabase.auth.signOut();
+        throw new Error("Please verify your email before signing in. Check your inbox for the verification link.");
+      }
+    } finally {
+      setIsLoginLoading(false);
     }
   }, []);
 
@@ -112,6 +118,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         user,
         isAuthenticated: !!user && user.email_verified,
         isLoading,
+        isLoginLoading,
         login,
         register,
         logout,

@@ -13,7 +13,7 @@ const LoginPage = () => {
   const [needsVerification, setNeedsVerification] = useState(false);
   const [resendingEmail, setResendingEmail] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
-  const { login, isLoading } = useAuth();
+  const { login, isLoginLoading } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -133,9 +133,9 @@ const LoginPage = () => {
             </div>
           </div>
 
-          <Button variant="neon" className="w-full" size="lg" disabled={isLoading}>
-            {isLoading ? "Signing in..." : "Sign in"}
-            {!isLoading && <ArrowRight className="h-4 w-4" />}
+          <Button variant="neon" className="w-full" size="lg" disabled={isLoginLoading}>
+            {isLoginLoading ? "Signing in..." : "Sign in"}
+            {!isLoginLoading && <ArrowRight className="h-4 w-4" />}
           </Button>
 
           <div className="relative my-2">
@@ -152,7 +152,7 @@ const LoginPage = () => {
             variant="outline"
             className="w-full gap-2"
             size="lg"
-            disabled={isLoading}
+            disabled={isLoginLoading}
             onClick={async () => {
               setError("");
               const result = await lovable.auth.signInWithOAuth("google", {

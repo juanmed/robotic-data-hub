@@ -67,13 +67,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw new Error(error.message);
+    setIsLoginLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw new Error(error.message);
 
-    // Check if email is verified
-    if (!data.user?.email_confirmed_at) {
-      await supabase.auth.signOut();
-      throw new Error("Please verify your email before signing in. Check your inbox for the verification link.");
+      if (!data.user?.email_confirmed_at) {
+        await supabase.auth.signOut();
+        throw new Error("Please verify your email before signing in. Check your inbox for the verification link.");
+      }
+    } finally {
+      setIsLoginLoading(false);
     }
   }, []);
 

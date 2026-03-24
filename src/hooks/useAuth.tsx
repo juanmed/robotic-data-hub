@@ -46,12 +46,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const hydrateProfile = useCallback((sessionUser: SupabaseUser) => {
     const ver = ++versionRef.current;
     // Fire-and-forget profile enrichment
-    supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", sessionUser.id)
-      .single()
-      .then(({ data }) => {
+    (async () => {
+      try {
+        const { data } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", sessionUser.id)
+          .single();
         if (versionRef.current !== ver) return; // stale
         if (data) {
           setUser({
@@ -61,8 +62,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             email_verified: data.email_verified,
           });
         }
-      })
-      .catch(() => {/* keep session-based user */});
+      } catch {
+        /* keep session-based user */
+      }
+    })();
   }, []);
 
   const handleSession = useCallback(

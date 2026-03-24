@@ -82,20 +82,20 @@ const Navbar = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={() => navigate("/dashboard")} className="gap-2 cursor-pointer">
+                <DropdownMenuItem onSelect={() => navigate("/dashboard")} className="gap-2 cursor-pointer">
                   <LayoutDashboard className="h-4 w-4" />
                   Dashboard
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate("/keys")} className="gap-2 cursor-pointer">
+                <DropdownMenuItem onSelect={() => navigate("/keys")} className="gap-2 cursor-pointer">
                   <KeyRound className="h-4 w-4" />
                   Keys
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate("/settings")} className="gap-2 cursor-pointer">
+                <DropdownMenuItem onSelect={() => navigate("/settings")} className="gap-2 cursor-pointer">
                   <Settings className="h-4 w-4" />
                   Settings
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="gap-2 cursor-pointer text-destructive focus:text-destructive">
+                <DropdownMenuItem onSelect={handleLogout} className="gap-2 cursor-pointer text-destructive focus:text-destructive">
                   <LogOut className="h-4 w-4" />
                   Sign out
                 </DropdownMenuItem>

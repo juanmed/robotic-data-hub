@@ -49,12 +49,14 @@ const DashboardPage = () => {
       sessionService.list(),
       listingService.list(),
       listDatasets(),
-    ]).then(([s, l, d]) => {
-      setSessions(s);
-      setListings(l);
-      setDatasets(d);
-      setLoading(false);
-    });
+    ])
+      .then(([s, l, d]) => {
+        setSessions(s);
+        setListings(l);
+        setDatasets(d);
+      })
+      .catch((err) => console.error("Dashboard load error:", err))
+      .finally(() => setLoading(false));
   }, []);
 
   const handleCreate = useCallback((name: string, description: string) => {

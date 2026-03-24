@@ -30,7 +30,9 @@ async function fetchProfile(userId: string): Promise<AuthUser | null> {
     .select("*")
     .eq("id", userId)
     .single();
+
   if (error || !data) return null;
+
   return {
     id: data.id,
     email: data.email,
@@ -39,34 +41,53 @@ async function fetchProfile(userId: string): Promise<AuthUser | null> {
   };
 }
 
+function mapSessionUser(user: SupabaseUser): AuthUser {
+  const metadata = user.user_metadata ?? {};
+
+  return {
+    id: user.id,
+    email: user.email ?? "",
+    name: metadata.full_name ?? metadata.name ?? user.email?.split("@")[0] ?? "User",
+    avatar_url: metadata.avatar_url,
+    email_verified: !!user.email_confirmed_at,
+  };
+}
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoginLoading, setIsLoginLoading] = useState(false);
 
+  const resolveUser = useCallback(async (sessionUser: SupabaseUser) => {
+    const profile = await fetchProfile(sessionUser.id);
+    return profile ?? mapSessionUser(sessionUser);
+  }, []);
+
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        if (session?.user) {
-          const profile = await fetchProfile(session.user.id);
-          setUser(profile);
-        } else {
-          setUser(null);
-        }
-        setIsLoading(false);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user) {
+        setUser(mapSessionUser(session.user));
+        const resolvedUser = await resolveUser(session.user);
+        setUser(resolvedUser);
+      } else {
+        setUser(null);
       }
-    );
+      setIsLoading(false);
+    });
 
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session?.user) {
-        const profile = await fetchProfile(session.user.id);
-        setUser(profile);
+        setUser(mapSessionUser(session.user));
+        const resolvedUser = await resolveUser(session.user);
+        setUser(resolvedUser);
+      } else {
+        setUser(null);
       }
       setIsLoading(false);
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [resolveUser]);
 
   const login = useCallback(async (email: string, password: string) => {
     setIsLoginLoading(true);
@@ -78,10 +99,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         await supabase.auth.signOut();
         throw new Error("Please verify your email before signing in. Check your inbox for the verification link.");
       }
+
+      if (data.user) {
+        setUser(mapSessionUser(data.user));
+        const resolvedUser = await resolveUser(data.user);
+        setUser(resolvedUser);
+      }
     } finally {
       setIsLoginLoading(false);
     }
-  }, []);
+  }, [resolveUser]);
 
   const register = useCallback(async (email: string, password: string, name: string) => {
     const { error } = await supabase.auth.signUp({

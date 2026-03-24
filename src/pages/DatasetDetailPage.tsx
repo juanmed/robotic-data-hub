@@ -102,7 +102,7 @@ const DatasetDetailPage = () => {
         <GlassCard hover={false} className="text-center py-12 max-w-lg mx-auto">
           <AlertTriangle className="h-8 w-8 text-destructive mx-auto mb-3" />
           <p className="text-sm text-destructive mb-4">{error || "Dataset not found"}</p>
-          <Link to="/dashboard/datasets">
+          <Link to="/dashboard">
             <Button variant="outline" size="sm"><ArrowLeft className="h-4 w-4 mr-1" /> Back to Datasets</Button>
           </Link>
         </GlassCard>
@@ -119,7 +119,7 @@ const DatasetDetailPage = () => {
     <PageContainer>
       <div className="max-w-5xl space-y-6">
         {/* Back nav */}
-        <Link to="/dashboard/datasets" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
+        <Link to="/dashboard" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="h-3.5 w-3.5" /> Back to Datasets
         </Link>
 

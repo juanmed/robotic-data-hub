@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, useRef, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
@@ -24,109 +24,92 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-async function fetchProfile(userId: string): Promise<AuthUser | null> {
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", userId)
-    .single();
-
-  if (error || !data) return null;
-
+function mapSessionUser(su: SupabaseUser): AuthUser {
+  const m = su.user_metadata ?? {};
   return {
-    id: data.id,
-    email: data.email,
-    name: data.name,
-    email_verified: data.email_verified,
-  };
-}
-
-function mapSessionUser(user: SupabaseUser): AuthUser {
-  const metadata = user.user_metadata ?? {};
-
-  return {
-    id: user.id,
-    email: user.email ?? "",
-    name: metadata.full_name ?? metadata.name ?? user.email?.split("@")[0] ?? "User",
-    avatar_url: metadata.avatar_url,
-    email_verified: !!user.email_confirmed_at,
+    id: su.id,
+    email: su.email ?? "",
+    name: m.full_name ?? m.name ?? su.email?.split("@")[0] ?? "User",
+    avatar_url: m.avatar_url,
+    email_verified: !!su.email_confirmed_at,
   };
 }
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false);
   const [isLoginLoading, setIsLoginLoading] = useState(false);
-  const [activeUserId, setActiveUserId] = useState<string | null>(null);
 
-  const resolveUser = useCallback(async (sessionUser: SupabaseUser) => {
-    const profile = await fetchProfile(sessionUser.id);
-    return profile ?? mapSessionUser(sessionUser);
+  // Guard stale profile fetches: increment on every session change
+  const versionRef = useRef(0);
+
+  const hydrateProfile = useCallback((sessionUser: SupabaseUser) => {
+    const ver = ++versionRef.current;
+    // Fire-and-forget profile enrichment
+    (async () => {
+      try {
+        const { data } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", sessionUser.id)
+          .single();
+        if (versionRef.current !== ver) return; // stale
+        if (data) {
+          setUser({
+            id: data.id,
+            email: data.email,
+            name: data.name,
+            email_verified: data.email_verified,
+          });
+        }
+      } catch {
+        /* keep session-based user */
+      }
+    })();
   }, []);
 
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (session?.user) {
-        const uid = session.user.id;
-        setActiveUserId(uid);
-        setUser(mapSessionUser(session.user));
-        const resolvedUser = await resolveUser(session.user);
-        setActiveUserId((current) => {
-          if (current === uid) setUser(resolvedUser);
-          return current;
-        });
+  const handleSession = useCallback(
+    (sessionUser: SupabaseUser | null) => {
+      if (sessionUser) {
+        setUser(mapSessionUser(sessionUser));
+        hydrateProfile(sessionUser);
       } else {
-        setActiveUserId(null);
+        versionRef.current++;
         setUser(null);
       }
-      setIsLoading(false);
-    });
+      setIsInitialized(true);
+    },
+    [hydrateProfile],
+  );
 
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (session?.user) {
-        const uid = session.user.id;
-        setActiveUserId(uid);
-        setUser(mapSessionUser(session.user));
-        const resolvedUser = await resolveUser(session.user);
-        setActiveUserId((current) => {
-          if (current === uid) setUser(resolvedUser);
-          return current;
-        });
-      } else {
-        setActiveUserId(null);
-        setUser(null);
-      }
-      setIsLoading(false);
+  useEffect(() => {
+    // 1. Listen for auth changes (fires for login, logout, token refresh)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => handleSession(session?.user ?? null),
+    );
+
+    // 2. Bootstrap from existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      handleSession(session?.user ?? null);
     });
 
     return () => subscription.unsubscribe();
-  }, [resolveUser]);
+  }, [handleSession]);
 
   const login = useCallback(async (email: string, password: string) => {
     setIsLoginLoading(true);
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw new Error(error.message);
-
       if (!data.user?.email_confirmed_at) {
         await supabase.auth.signOut();
         throw new Error("Please verify your email before signing in. Check your inbox for the verification link.");
       }
-
-      if (data.user) {
-        const uid = data.user.id;
-        setActiveUserId(uid);
-        setUser(mapSessionUser(data.user));
-        const resolvedUser = await resolveUser(data.user);
-        setActiveUserId((current) => {
-          if (current === uid) setUser(resolvedUser);
-          return current;
-        });
-      }
+      // onAuthStateChange will handle setting user state
     } finally {
       setIsLoginLoading(false);
     }
-  }, [resolveUser]);
+  }, []);
 
   const register = useCallback(async (email: string, password: string, name: string) => {
     const { error } = await supabase.auth.signUp({
@@ -141,8 +124,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const logout = useCallback(async () => {
-    await supabase.auth.signOut();
+    versionRef.current++;
     setUser(null);
+    await supabase.auth.signOut();
   }, []);
 
   const resetPassword = useCallback(async (email: string) => {
@@ -162,7 +146,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       value={{
         user,
         isAuthenticated: !!user && user.email_verified,
-        isLoading,
+        isLoading: !isInitialized,
         isLoginLoading,
         login,
         register,

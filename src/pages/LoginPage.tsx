@@ -13,7 +13,7 @@ const LoginPage = () => {
   const [needsVerification, setNeedsVerification] = useState(false);
   const [resendingEmail, setResendingEmail] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
-  const { login, isLoading } = useAuth();
+  const { login, isLoginLoading } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {

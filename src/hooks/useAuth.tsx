@@ -114,9 +114,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       if (data.user) {
+        const uid = data.user.id;
+        setActiveUserId(uid);
         setUser(mapSessionUser(data.user));
         const resolvedUser = await resolveUser(data.user);
-        setUser(resolvedUser);
+        setActiveUserId((current) => {
+          if (current === uid) setUser(resolvedUser);
+          return current;
+        });
       }
     } finally {
       setIsLoginLoading(false);

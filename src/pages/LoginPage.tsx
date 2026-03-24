@@ -133,9 +133,9 @@ const LoginPage = () => {
             </div>
           </div>
 
-          <Button variant="neon" className="w-full" size="lg" disabled={isLoading}>
-            {isLoading ? "Signing in..." : "Sign in"}
-            {!isLoading && <ArrowRight className="h-4 w-4" />}
+          <Button variant="neon" className="w-full" size="lg" disabled={isLoginLoading}>
+            {isLoginLoading ? "Signing in..." : "Sign in"}
+            {!isLoginLoading && <ArrowRight className="h-4 w-4" />}
           </Button>
 
           <div className="relative my-2">

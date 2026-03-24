@@ -1,25 +1,36 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Dataset, DatasetFile } from "@/types";
 
-export async function listDatasets(): Promise<(Dataset & { file_count: number })[]> {
+export interface DatasetListItem extends Dataset {
+  file_count: number;
+  total_size_bytes: number;
+  file_paths: string[];
+}
+
+export async function listDatasets(): Promise<DatasetListItem[]> {
   const { data, error } = await supabase
     .from("datasets")
-    .select("*, dataset_files(id)")
+    .select("*, dataset_files(id, size_bytes, relative_path)")
     .order("created_at", { ascending: false });
 
   if (error) throw new Error(error.message);
 
-  return (data ?? []).map((row: any) => ({
-    id: row.id,
-    user_id: row.user_id,
-    display_name: row.display_name,
-    source_repo_id: row.source_repo_id,
-    status: row.status,
-    metadata: row.metadata,
-    created_at: row.created_at,
-    confirmed_at: row.confirmed_at,
-    file_count: Array.isArray(row.dataset_files) ? row.dataset_files.length : 0,
-  }));
+  return (data ?? []).map((row: any) => {
+    const files = Array.isArray(row.dataset_files) ? row.dataset_files : [];
+    return {
+      id: row.id,
+      user_id: row.user_id,
+      display_name: row.display_name,
+      source_repo_id: row.source_repo_id,
+      status: row.status,
+      metadata: row.metadata,
+      created_at: row.created_at,
+      confirmed_at: row.confirmed_at,
+      file_count: files.length,
+      total_size_bytes: files.reduce((sum: number, f: any) => sum + (f.size_bytes || 0), 0),
+      file_paths: files.map((f: any) => f.relative_path as string),
+    };
+  });
 }
 
 export async function getDataset(id: string): Promise<Dataset | null> {

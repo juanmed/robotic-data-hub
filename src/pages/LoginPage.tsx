@@ -152,7 +152,7 @@ const LoginPage = () => {
             variant="outline"
             className="w-full gap-2"
             size="lg"
-            disabled={isLoading}
+            disabled={isLoginLoading}
             onClick={async () => {
               setError("");
               const result = await lovable.auth.signInWithOAuth("google", {

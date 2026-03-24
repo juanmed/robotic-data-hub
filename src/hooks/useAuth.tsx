@@ -57,6 +57,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoginLoading, setIsLoginLoading] = useState(false);
+  const [activeUserId, setActiveUserId] = useState<string | null>(null);
 
   const resolveUser = useCallback(async (sessionUser: SupabaseUser) => {
     const profile = await fetchProfile(sessionUser.id);
@@ -66,10 +67,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
+        const uid = session.user.id;
+        setActiveUserId(uid);
         setUser(mapSessionUser(session.user));
         const resolvedUser = await resolveUser(session.user);
-        setUser(resolvedUser);
+        setActiveUserId((current) => {
+          if (current === uid) setUser(resolvedUser);
+          return current;
+        });
       } else {
+        setActiveUserId(null);
         setUser(null);
       }
       setIsLoading(false);
@@ -77,10 +84,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session?.user) {
+        const uid = session.user.id;
+        setActiveUserId(uid);
         setUser(mapSessionUser(session.user));
         const resolvedUser = await resolveUser(session.user);
-        setUser(resolvedUser);
+        setActiveUserId((current) => {
+          if (current === uid) setUser(resolvedUser);
+          return current;
+        });
       } else {
+        setActiveUserId(null);
         setUser(null);
       }
       setIsLoading(false);

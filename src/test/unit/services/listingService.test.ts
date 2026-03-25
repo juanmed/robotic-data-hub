@@ -27,7 +27,7 @@ describe("listingService", () => {
 
   describe("getByDataset", () => {
     it("returns undefined when no listing for dataset", async () => {
-      const listing = await listingService.getByDataset("ds_nonexistent");
+      const listing = await listingService.getByDataset("00000000-0000-0000-0000-000000000000");
       expect(listing).toBeUndefined();
     });
   });

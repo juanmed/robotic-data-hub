@@ -308,6 +308,75 @@ const DatasetDetailPage = () => {
               </Button>
             </GlassCard>
 
+            {/* Marketplace card */}
+            {isReady && (
+              <GlassCard hover={false} className="border-primary/20">
+                <div className="flex items-center gap-2 mb-3">
+                  <Store className="h-4 w-4 text-primary" />
+                  <h3 className="text-sm font-semibold text-foreground">Marketplace</h3>
+                </div>
+                {listing ? (
+                  <div className="space-y-3">
+                    <div className="rounded-xl px-4 py-3 bg-primary/5 border border-primary/20">
+                      <p className="text-xs text-muted-foreground mb-1">Listed as</p>
+                      <p className="text-sm font-semibold text-foreground">{listing.title}</p>
+                      <p className="text-xs text-primary font-bold mt-1">
+                        {formatPrice(listing.price_amount, listing.currency)}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="neon-outline"
+                        size="sm"
+                        className="flex-1 gap-1.5"
+                        onClick={() => setPublishOpen(true)}
+                      >
+                        <Pencil className="h-3.5 w-3.5" /> Edit
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-1.5"
+                        disabled={unpublishing}
+                        onClick={async () => {
+                          setUnpublishing(true);
+                          try {
+                            await listingService.unpublish(listing.id);
+                            setListing(null);
+                            toast.success("Listing unpublished");
+                          } catch (err: any) {
+                            toast.error(err.message || "Failed to unpublish");
+                          } finally {
+                            setUnpublishing(false);
+                          }
+                        }}
+                      >
+                        {unpublishing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <XCircle className="h-3.5 w-3.5" />}
+                      </Button>
+                    </div>
+                    <Button variant="neon-outline" size="sm" className="w-full gap-1.5" asChild>
+                      <Link to={`/marketplace/${listing.id}`}>
+                        <ExternalLink className="h-3.5 w-3.5" /> View on Marketplace
+                      </Link>
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <p className="text-[11px] text-muted-foreground">
+                      Share this dataset on the marketplace for others to discover and purchase.
+                    </p>
+                    <Button
+                      variant="neon"
+                      className="w-full gap-2"
+                      onClick={() => setPublishOpen(true)}
+                    >
+                      <Store className="h-4 w-4" /> Publish to Marketplace
+                    </Button>
+                  </div>
+                )}
+              </GlassCard>
+            )}
+
             {/* CLI Upload Flow */}
             <GlassCard hover={false} className="border-border/30">
               <h3 className="text-sm font-semibold text-foreground mb-3">CLI Upload Flow</h3>

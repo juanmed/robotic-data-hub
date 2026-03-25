@@ -51,7 +51,11 @@ const DatasetDetailPage = () => {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteConfirmName, setDeleteConfirmName] = useState("");
   const [deleting, setDeleting] = useState(false);
+  const [listing, setListing] = useState<Listing | null>(null);
+  const [publishOpen, setPublishOpen] = useState(false);
+  const [unpublishing, setUnpublishing] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleDelete = async () => {
     if (!dataset || deleteConfirmName !== dataset.display_name) return;

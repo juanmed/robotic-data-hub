@@ -92,7 +92,7 @@ const Navbar = () => {
                 </DropdownMenuItem>
                 <DropdownMenuItem onSelect={() => navigate("/settings")} className="gap-2 cursor-pointer">
                   <Settings className="h-4 w-4" />
-                  Settings
+                  Profile
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onSelect={handleLogout} className="gap-2 cursor-pointer text-destructive focus:text-destructive">

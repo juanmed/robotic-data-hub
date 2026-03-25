@@ -1,0 +1,155 @@
+import type {
+  User,
+  Session,
+  Stream,
+  AssetFile,
+  Annotation,
+  Dataset,
+  DatasetFile,
+  UploadKey,
+  APIKey,
+  Listing,
+  Order,
+} from '@/types';
+
+let sessionCounter = 1;
+let streamCounter = 1;
+let annotationCounter = 1;
+let datasetCounter = 1;
+let fileCounter = 1;
+let keyCounter = 1;
+
+export const resetCounters = () => {
+  sessionCounter = 1;
+  streamCounter = 1;
+  annotationCounter = 1;
+  datasetCounter = 1;
+  fileCounter = 1;
+  keyCounter = 1;
+};
+
+export const createMockUser = (overrides?: Partial<User>): User => ({
+  id: 'usr_test_001',
+  email: 'test@example.com',
+  name: 'Test User',
+  created_at: new Date().toISOString(),
+  ...overrides,
+});
+
+export const createMockSession = (overrides?: Partial<Session>): Session => ({
+  id: `ses_test_${sessionCounter++}`,
+  user_id: 'usr_test_001',
+  name: `Test Session ${sessionCounter}`,
+  description: 'A test session',
+  status: 'draft',
+  stream_count: 0,
+  total_size_bytes: 0,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+  ...overrides,
+});
+
+export const createMockStream = (sessionId: string, overrides?: Partial<Stream>): Stream => ({
+  id: `str_test_${streamCounter++}`,
+  session_id: sessionId,
+  name: `Test Stream ${streamCounter}`,
+  type: 'video',
+  format: 'mp4',
+  file_count: 0,
+  ...overrides,
+});
+
+export const createMockAssetFile = (streamId: string, overrides?: Partial<AssetFile>): AssetFile => ({
+  id: `af_test_${fileCounter++}`,
+  stream_id: streamId,
+  filename: `file_${fileCounter}.mp4`,
+  size_bytes: 1000000,
+  content_type: 'video/mp4',
+  s3_key: `sessions/${streamId}/file_${fileCounter}.mp4`,
+  uploaded_at: new Date().toISOString(),
+  ...overrides,
+});
+
+export const createMockAnnotation = (
+  assetFileId: string,
+  overrides?: Partial<Annotation>
+): Annotation => ({
+  id: `ann_test_${annotationCounter++}`,
+  asset_file_id: assetFileId,
+  author_id: 'usr_test_001',
+  type: 'bounding_box',
+  data: { label: 'test', x: 10, y: 20, w: 30, h: 40 },
+  created_at: new Date().toISOString(),
+  ...overrides,
+});
+
+export const createMockDataset = (overrides?: Partial<Dataset>): Dataset => ({
+  id: `ds_test_${datasetCounter++}`,
+  user_id: 'usr_test_001',
+  display_name: `Test Dataset ${datasetCounter}`,
+  source_repo_id: null,
+  status: 'ready',
+  metadata: null,
+  created_at: new Date().toISOString(),
+  confirmed_at: new Date().toISOString(),
+  ...overrides,
+});
+
+export const createMockDatasetFile = (datasetId: string, overrides?: Partial<DatasetFile>): DatasetFile => ({
+  id: `df_test_${fileCounter++}`,
+  dataset_id: datasetId,
+  relative_path: `files/file_${fileCounter}.txt`,
+  storage_path: `datasets/${datasetId}/file_${fileCounter}.txt`,
+  content_type: 'text/plain',
+  size_bytes: 1000,
+  upload_status: 'uploaded',
+  created_at: new Date().toISOString(),
+  ...overrides,
+});
+
+export const createMockUploadKey = (overrides?: Partial<UploadKey>): UploadKey => ({
+  id: `key_test_${keyCounter++}`,
+  user_id: 'usr_test_001',
+  name: `Test Key ${keyCounter}`,
+  key_prefix: `test_prefix_${keyCounter}`,
+  raw_key: `raw_key_value_${keyCounter}`,
+  created_at: new Date().toISOString(),
+  last_used_at: null,
+  revoked_at: null,
+  active: true,
+  ...overrides,
+});
+
+export const createMockAPIKey = (overrides?: Partial<APIKey>): APIKey => ({
+  id: `apikey_test_${keyCounter++}`,
+  user_id: 'usr_test_001',
+  name: `Test API Key ${keyCounter}`,
+  key_prefix: `api_prefix_${keyCounter}`,
+  created_at: new Date().toISOString(),
+  ...overrides,
+});
+
+export const createMockListing = (sessionId: string, overrides?: Partial<Listing>): Listing => ({
+  id: `lst_test_${sessionCounter}`,
+  user_id: 'usr_test_001',
+  session_id: sessionId,
+  title: `Test Listing for ${sessionId}`,
+  description: 'A test listing',
+  price_cents: 4900,
+  tags: ['test', 'sample'],
+  download_count: 0,
+  published: false,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+  ...overrides,
+});
+
+export const createMockOrder = (listingId: string, overrides?: Partial<Order>): Order => ({
+  id: `ord_test_${sessionCounter}`,
+  buyer_id: 'usr_test_002',
+  listing_id: listingId,
+  amount_cents: 4900,
+  status: 'completed',
+  created_at: new Date().toISOString(),
+  ...overrides,
+});

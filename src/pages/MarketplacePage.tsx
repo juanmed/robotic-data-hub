@@ -1,16 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { listingService } from "@/services/listingService";
+import { formatPrice } from "@/lib/marketplace";
 import type { Listing } from "@/types";
 import {
-  Download,
-  Search,
-  Sparkles,
-  Store,
-  Tag,
-  User,
-  ArrowRight,
-  Star,
+  Download, Search, Store, Tag, User, ArrowRight, Star,
 } from "lucide-react";
 
 const PREVIEW_IMAGES = [
@@ -32,7 +26,7 @@ const MarketplacePage = () => {
     listingService.list().then((l) => {
       setListings(l);
       setLoading(false);
-    });
+    }).catch(() => setLoading(false));
   }, []);
 
   const allTags = [...new Set(listings.flatMap((l) => l.tags))];
@@ -59,19 +53,14 @@ const MarketplacePage = () => {
           <div className="text-center mb-10">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-secondary/20 bg-secondary/5 mb-6">
               <Store className="h-3.5 w-3.5 text-secondary" />
-              <span className="text-xs font-medium text-secondary">
-                Dataset Marketplace
-              </span>
+              <span className="text-xs font-medium text-secondary">Dataset Marketplace</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4 tracking-tight">
               Discover robotics{" "}
-              <span className="bg-clip-text text-transparent bg-[image:var(--gradient-neon)]">
-                datasets
-              </span>
+              <span className="bg-clip-text text-transparent bg-[image:var(--gradient-neon)]">datasets</span>
             </h1>
             <p className="text-muted-foreground text-sm max-w-lg mx-auto">
-              Browse high-quality datasets from the community. Free and premium
-              options available.
+              Browse high-quality datasets from the community. Free and premium options available.
             </p>
           </div>
 
@@ -126,39 +115,28 @@ const MarketplacePage = () => {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="h-80 rounded-2xl bg-muted/20 animate-pulse"
-              />
+              <div key={i} className="h-80 rounded-2xl bg-muted/20 animate-pulse" />
             ))}
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-20">
             <Tag className="h-10 w-10 text-muted-foreground/40 mx-auto mb-4" />
-            <p className="text-muted-foreground text-sm">
-              No datasets match your filters.
-            </p>
+            <p className="text-muted-foreground text-sm">No datasets match your filters.</p>
           </div>
         ) : (
           <>
             <p className="text-xs text-muted-foreground mb-6">
-              {filtered.length} dataset{filtered.length !== 1 ? "s" : ""}{" "}
-              available
+              {filtered.length} dataset{filtered.length !== 1 ? "s" : ""} available
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filtered.map((listing, idx) => {
-                const isFree = listing.price_cents === 0;
+                const isFree = listing.price_amount === 0;
                 const creator = CREATORS[idx % CREATORS.length];
                 const image = PREVIEW_IMAGES[idx % PREVIEW_IMAGES.length];
 
                 return (
-                  <Link
-                    key={listing.id}
-                    to={`/marketplace/${listing.id}`}
-                    className="group block"
-                  >
+                  <Link key={listing.id} to={`/marketplace/${listing.id}`} className="group block">
                     <div className="relative rounded-2xl border border-border/40 bg-card/50 backdrop-blur-sm overflow-hidden transition-all duration-500 hover:border-primary/40 hover:shadow-[0_0_40px_hsl(var(--primary)/0.12)] hover:-translate-y-1">
-                      {/* Hover glow */}
                       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--secondary)/0.06),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                       {/* Preview image */}
@@ -179,12 +157,11 @@ const MarketplacePage = () => {
                             </span>
                           ) : (
                             <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider bg-secondary/20 text-secondary border border-secondary/30 backdrop-blur-sm shadow-[0_0_12px_hsl(var(--secondary)/0.3)]">
-                              ${(listing.price_cents / 100).toFixed(2)}
+                              {formatPrice(listing.price_amount, listing.currency)}
                             </span>
                           )}
                         </div>
 
-                        {/* Featured star for popular items */}
                         {listing.download_count > 100 && (
                           <div className="absolute top-3 left-3">
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold bg-card/80 backdrop-blur-sm text-yellow-400 border border-yellow-400/20">
@@ -207,14 +184,18 @@ const MarketplacePage = () => {
                         {/* Tags */}
                         <div className="flex flex-wrap gap-1.5 mb-4">
                           {listing.tags.slice(0, 4).map((tag) => (
-                            <span
-                              key={tag}
-                              className="px-2 py-0.5 rounded-full text-[9px] font-medium bg-muted/40 text-muted-foreground border border-border/30"
-                            >
+                            <span key={tag} className="px-2 py-0.5 rounded-full text-[9px] font-medium bg-muted/40 text-muted-foreground border border-border/30">
                               {tag}
                             </span>
                           ))}
                         </div>
+
+                        {/* License badge */}
+                        {listing.license && (
+                          <span className="inline-block px-2 py-0.5 rounded-full text-[9px] font-medium bg-primary/10 text-primary border border-primary/20 mb-3">
+                            {listing.license}
+                          </span>
+                        )}
 
                         {/* Footer */}
                         <div className="flex items-center justify-between pt-3 border-t border-border/20">

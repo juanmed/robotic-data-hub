@@ -129,13 +129,16 @@ export const createMockAPIKey = (overrides?: Partial<APIKey>): APIKey => ({
   ...overrides,
 });
 
-export const createMockListing = (sessionId: string, overrides?: Partial<Listing>): Listing => ({
+export const createMockListing = (datasetId: string, overrides?: Partial<Listing>): Listing => ({
   id: `lst_test_${sessionCounter}`,
   user_id: 'usr_test_001',
-  session_id: sessionId,
-  title: `Test Listing for ${sessionId}`,
+  dataset_id: datasetId,
+  title: `Test Listing for ${datasetId}`,
   description: 'A test listing',
-  price_cents: 4900,
+  price_amount: 4900,
+  currency: 'USD',
+  platform_fee_bps: 1000,
+  license: 'CC-BY-4.0',
   tags: ['test', 'sample'],
   download_count: 0,
   published: false,
@@ -148,7 +151,8 @@ export const createMockOrder = (listingId: string, overrides?: Partial<Order>): 
   id: `ord_test_${sessionCounter}`,
   buyer_id: 'usr_test_002',
   listing_id: listingId,
-  amount_cents: 4900,
+  amount: 4900,
+  currency: 'USD',
   status: 'completed',
   created_at: new Date().toISOString(),
   ...overrides,

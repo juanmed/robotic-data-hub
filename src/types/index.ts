@@ -76,6 +76,11 @@ export interface Listing {
   updated_at: string;
 }
 
+export interface EnrichedListing extends Listing {
+  creator_name: string;
+  file_paths: string[];
+}
+
 export interface Order {
   id: string;
   buyer_id: string;

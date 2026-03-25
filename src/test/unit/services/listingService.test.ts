@@ -20,7 +20,7 @@ describe("listingService", () => {
     });
 
     it("returns undefined for non-existent listing", async () => {
-      const listing = await listingService.get("lst_nonexistent");
+      const listing = await listingService.get("00000000-0000-0000-0000-000000000000");
       expect(listing).toBeUndefined();
     });
   });

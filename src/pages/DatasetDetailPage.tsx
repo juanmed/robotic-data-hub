@@ -444,6 +444,51 @@ const DatasetDetailPage = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Publish modal */}
+      {dataset && (
+        <PublishDatasetModal
+          open={publishOpen}
+          onClose={() => setPublishOpen(false)}
+          datasetName={dataset.display_name}
+          initial={listing ? {
+            title: listing.title,
+            description: listing.description,
+            price_amount: listing.price_amount,
+            currency: listing.currency,
+            license: listing.license,
+            tags: listing.tags,
+          } : undefined}
+          onPublish={async (data) => {
+            if (!user) { toast.error("You must be logged in"); return; }
+            try {
+              if (listing) {
+                const updated = await listingService.update(listing.id, data);
+                setListing(updated);
+                toast.success("Listing updated");
+              } else {
+                const newListing = await listingService.publish({
+                  user_id: user.id,
+                  dataset_id: dataset.id,
+                  title: data.title,
+                  description: data.description,
+                  price_amount: data.price_amount,
+                  currency: data.currency,
+                  platform_fee_bps: DEFAULT_PLATFORM_FEE_BPS,
+                  license: data.license,
+                  tags: data.tags,
+                  published: true,
+                });
+                setListing(newListing);
+                toast.success("Published to marketplace!");
+              }
+            } catch (err: any) {
+              toast.error(err.message || "Failed to publish");
+              throw err;
+            }
+          }}
+        />
+      )}
     </PageContainer>
   );
 };

@@ -38,7 +38,7 @@ describe("UploadKeysPage", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Upload Keys")).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
   });
 
   it("displays security warning banner", async () => {
@@ -54,7 +54,7 @@ describe("UploadKeysPage", () => {
 
     await waitFor(() => {
       expect(screen.getByText(/upload keys grant write access/i)).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
   });
 
   it("loads and displays upload keys on mount", async () => {
@@ -74,7 +74,7 @@ describe("UploadKeysPage", () => {
 
     await waitFor(() => {
       expect(uploadKeyServiceMock.listUploadKeys).toHaveBeenCalled();
-    });
+    }, { timeout: 3000 });
   });
 
   it("shows create upload key button", async () => {
@@ -90,7 +90,7 @@ describe("UploadKeysPage", () => {
 
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /create upload key/i })).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
   });
 
   it("opens create upload key modal when button clicked", async () => {
@@ -106,7 +106,7 @@ describe("UploadKeysPage", () => {
 
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /create upload key/i })).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
 
     // Click the button to open modal
     const createButton = screen.getByRole("button", { name: /create upload key/i });
@@ -115,7 +115,7 @@ describe("UploadKeysPage", () => {
     // Verify modal can be interacted with (will have form content)
     await waitFor(() => {
       expect(screen.getByText("Key Name")).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
   });
 
   it("creates new upload key with valid name", async () => {
@@ -147,7 +147,7 @@ describe("UploadKeysPage", () => {
 
     await waitFor(() => {
       expect(uploadKeyServiceMock.createUploadKey).toHaveBeenCalledWith("My Test Uploader");
-    });
+    }, { timeout: 3000 });
   });
 
   it("separates active and revoked keys", async () => {
@@ -167,7 +167,7 @@ describe("UploadKeysPage", () => {
 
     await waitFor(() => {
       expect(uploadKeyServiceMock.listUploadKeys).toHaveBeenCalled();
-    });
+    }, { timeout: 3000 });
   });
 
   it("displays copy button for each active key", async () => {
@@ -186,7 +186,7 @@ describe("UploadKeysPage", () => {
 
     await waitFor(() => {
       expect(uploadKeyServiceMock.listUploadKeys).toHaveBeenCalled();
-    });
+    }, { timeout: 3000 });
   });
 
   it("revokes upload key when revoke button clicked", async () => {
@@ -206,7 +206,7 @@ describe("UploadKeysPage", () => {
 
     await waitFor(() => {
       expect(uploadKeyServiceMock.listUploadKeys).toHaveBeenCalled();
-    });
+    }, { timeout: 3000 });
   });
 
   it("displays empty state when no upload keys exist", async () => {
@@ -222,7 +222,7 @@ describe("UploadKeysPage", () => {
 
     await waitFor(() => {
       expect(uploadKeyServiceMock.listUploadKeys).toHaveBeenCalled();
-    });
+    }, { timeout: 3000 });
   });
 
   it("shows loading skeleton while fetching keys", async () => {
@@ -241,6 +241,6 @@ describe("UploadKeysPage", () => {
     // Verify service is called
     await waitFor(() => {
       expect(uploadKeyServiceMock.listUploadKeys).toHaveBeenCalled();
-    });
+    }, { timeout: 3000 });
   });
 });

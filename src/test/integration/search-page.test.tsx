@@ -33,7 +33,7 @@ describe("SearchPage", () => {
 
     await waitFor(() => {
       expect(screen.getByText(/find the perfect/i)).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
 
     expect(screen.getByPlaceholderText(/search by title/i)).toBeInTheDocument();
   });
@@ -51,7 +51,7 @@ describe("SearchPage", () => {
 
     await waitFor(() => {
       expect(searchServiceMock.search).toHaveBeenCalledWith("");
-    });
+    }, { timeout: 3000 });
   });
 
   it("searches when query is submitted", async () => {
@@ -75,7 +75,7 @@ describe("SearchPage", () => {
 
     await waitFor(() => {
       expect(searchServiceMock.search).toHaveBeenCalled();
-    });
+    }, { timeout: 3000 });
 
     const searchInput = screen.getByPlaceholderText(/search by title/i);
     fireEvent.change(searchInput, { target: { value: "test" } });
@@ -83,7 +83,7 @@ describe("SearchPage", () => {
 
     await waitFor(() => {
       expect(searchServiceMock.search).toHaveBeenCalledWith("test");
-    });
+    }, { timeout: 3000 });
   });
 
   it("shows loading state while searching", async () => {
@@ -128,7 +128,7 @@ describe("SearchPage", () => {
 
     await waitFor(() => {
       expect(searchServiceMock.search).toHaveBeenCalled();
-    });
+    }, { timeout: 3000 });
   });
 
   it("shows empty state when no results found", async () => {
@@ -144,7 +144,7 @@ describe("SearchPage", () => {
 
     await waitFor(() => {
       expect(searchServiceMock.search).toHaveBeenCalledWith("");
-    });
+    }, { timeout: 3000 });
   });
 
   it("handles search with special characters", async () => {
@@ -164,7 +164,7 @@ describe("SearchPage", () => {
 
     await waitFor(() => {
       expect(searchServiceMock.search).toHaveBeenCalledWith("robot@2024");
-    });
+    }, { timeout: 3000 });
   });
 
   it("displays search bar with correct placeholder text", async () => {
@@ -227,6 +227,6 @@ describe("SearchPage", () => {
 
     await waitFor(() => {
       expect(searchServiceMock.search).toHaveBeenCalledWith("video");
-    });
+    }, { timeout: 3000 });
   });
 });

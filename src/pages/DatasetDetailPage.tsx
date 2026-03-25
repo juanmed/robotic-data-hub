@@ -1,13 +1,18 @@
 import { useState, useEffect, useCallback } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import PageContainer from "@/layouts/PageContainer";
 import GlassCard from "@/components/GlassCard";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 import {
   ArrowLeft, Database, FileText, Clock, CheckCircle2, AlertTriangle,
-  Upload, Loader2, Eye, Folder, File, Download, ExternalLink,
+  Upload, Loader2, Eye, Folder, File, Download, ExternalLink, Trash2,
 } from "lucide-react";
-import { getDataset, getDatasetFiles, getDatasetFileUrls } from "@/services/datasetService";
+import { getDataset, getDatasetFiles, getDatasetFileUrls, deleteDataset } from "@/services/datasetService";
 import { openVisualizer } from "@/lib/visualizer";
 import { toast } from "sonner";
 import type { Dataset, DatasetFile } from "@/types";
@@ -36,6 +41,24 @@ const DatasetDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [visualizing, setVisualizing] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteConfirmName, setDeleteConfirmName] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const navigate = useNavigate();
+
+  const handleDelete = async () => {
+    if (!dataset || deleteConfirmName !== dataset.display_name) return;
+    setDeleting(true);
+    try {
+      await deleteDataset(dataset.id);
+      toast.success("Dataset deleted successfully");
+      navigate("/dashboard");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete dataset");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const handleVisualize = async () => {
     if (!dataset) return;
@@ -288,7 +311,52 @@ const DatasetDetailPage = () => {
             </GlassCard>
           </div>
         </div>
+        {/* Delete section */}
+        <div className="flex justify-end pt-4">
+          <Button
+            variant="destructive"
+            onClick={() => { setDeleteConfirmName(""); setDeleteOpen(true); }}
+            className="gap-2"
+          >
+            <Trash2 className="h-4 w-4" />
+            Delete this dataset
+          </Button>
+        </div>
       </div>
+
+      {/* Delete confirmation dialog */}
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Dataset</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-3">
+              <span className="block">
+                This action is <strong className="text-destructive">permanent and irreversible</strong>. All files associated with this dataset will be deleted.
+              </span>
+              <span className="block">
+                To confirm, type the dataset name <strong className="text-foreground">{dataset.display_name}</strong> below:
+              </span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <Input
+            placeholder="Type dataset name to confirm"
+            value={deleteConfirmName}
+            onChange={(e) => setDeleteConfirmName(e.target.value)}
+            className="mt-2"
+          />
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <Button
+              variant="destructive"
+              disabled={deleteConfirmName !== dataset.display_name || deleting}
+              onClick={handleDelete}
+            >
+              {deleting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Delete permanently
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </PageContainer>
   );
 };

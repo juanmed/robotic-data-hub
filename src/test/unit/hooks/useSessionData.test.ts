@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { useSessionData } from '@/hooks/useSessionData';
 import { sessionService } from '@/services/sessionService';
 
@@ -77,6 +77,9 @@ describe('useSessionData hook', () => {
     (sessionService.getStreams as any).mockResolvedValue(mockStreams);
 
     const { result } = renderHook(() => useSessionData('ses_001'));
+    await act(async () => {
+      await Promise.resolve();
+    });
 
     // Wait for data to load
     await waitFor(
@@ -95,6 +98,9 @@ describe('useSessionData hook', () => {
     (sessionService.getStreams as any).mockResolvedValue([]);
 
     const { result } = renderHook(() => useSessionData('nonexistent'));
+    await act(async () => {
+      await Promise.resolve();
+    });
 
     await waitFor(
       () => {

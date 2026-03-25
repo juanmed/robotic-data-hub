@@ -92,6 +92,13 @@ const DatasetDetailPage = () => {
       if (!ds) { setError("Dataset not found"); return; }
       setDataset(ds);
       setFiles(fs);
+      // Fetch existing listing for this dataset
+      try {
+        const existingListing = await listingService.getByDataset(id);
+        setListing(existingListing ?? null);
+      } catch {
+        // no listing yet
+      }
     } catch (err: any) {
       setError(err.message || "Failed to load dataset");
     } finally {

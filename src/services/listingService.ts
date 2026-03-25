@@ -18,7 +18,7 @@ export const listingService = {
     if (listings.length === 0) return [];
 
     // 2. Batch-fetch datasets with file paths
-    const datasetIds = [...new Set(listings.map((l) => l.dataset_id))];
+    const datasetIds = [...new Set(listings.map((l) => l.dataset_id))] as string[];
     const { data: datasets, error: dsError } = await supabase
       .from("datasets")
       .select("id, dataset_files(relative_path)")
@@ -32,7 +32,7 @@ export const listingService = {
     }
 
     // 3. Batch-fetch creator profiles
-    const userIds = [...new Set(listings.map((l) => l.user_id))];
+    const userIds = [...new Set(listings.map((l) => l.user_id))] as string[];
     const { data: profiles, error: profError } = await supabase
       .from("profiles")
       .select("id, name")

@@ -118,6 +118,103 @@ export type Database = {
         }
         Relationships: []
       }
+      listings: {
+        Row: {
+          created_at: string
+          currency: string
+          dataset_id: string
+          description: string
+          download_count: number
+          id: string
+          license: string
+          platform_fee_bps: number
+          price_amount: number
+          published: boolean
+          tags: string[]
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          dataset_id: string
+          description?: string
+          download_count?: number
+          id?: string
+          license?: string
+          platform_fee_bps?: number
+          price_amount?: number
+          published?: boolean
+          tags?: string[]
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          dataset_id?: string
+          description?: string
+          download_count?: number
+          id?: string
+          license?: string
+          platform_fee_bps?: number
+          price_amount?: number
+          published?: boolean
+          tags?: string[]
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listings_dataset_id_fkey"
+            columns: ["dataset_id"]
+            isOneToOne: true
+            referencedRelation: "datasets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          amount: number
+          buyer_id: string
+          created_at: string
+          currency: string
+          id: string
+          listing_id: string
+          status: string
+        }
+        Insert: {
+          amount?: number
+          buyer_id: string
+          created_at?: string
+          currency?: string
+          id?: string
+          listing_id: string
+          status?: string
+        }
+        Update: {
+          amount?: number
+          buyer_id?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          listing_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string

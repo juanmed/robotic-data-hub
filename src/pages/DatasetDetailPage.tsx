@@ -41,6 +41,24 @@ const DatasetDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [visualizing, setVisualizing] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteConfirmName, setDeleteConfirmName] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const navigate = useNavigate();
+
+  const handleDelete = async () => {
+    if (!dataset || deleteConfirmName !== dataset.display_name) return;
+    setDeleting(true);
+    try {
+      await deleteDataset(dataset.id);
+      toast.success("Dataset deleted successfully");
+      navigate("/dashboard");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete dataset");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const handleVisualize = async () => {
     if (!dataset) return;

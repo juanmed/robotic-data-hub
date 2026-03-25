@@ -11,12 +11,19 @@ import {
 import {
   ArrowLeft, Database, FileText, Clock, CheckCircle2, AlertTriangle,
   Upload, Loader2, Eye, Folder, File, Download, ExternalLink, Trash2,
+  Store, Pencil, XCircle,
 } from "lucide-react";
 import { getDataset, getDatasetFiles, getDatasetFileUrls, deleteDataset } from "@/services/datasetService";
+import { listingService } from "@/services/listingService";
 import { openVisualizer } from "@/lib/visualizer";
+import { formatPrice } from "@/lib/marketplace";
 import { toast } from "sonner";
-import type { Dataset, DatasetFile } from "@/types";
+import type { Dataset, DatasetFile, Listing } from "@/types";
 import type { SignedFileUrl } from "@/services/datasetService";
+import PublishDatasetModal from "@/components/PublishDatasetModal";
+import { useAuth } from "@/hooks/useAuth";
+import { DEFAULT_PLATFORM_FEE_BPS } from "@/lib/marketplace";
+import type { CurrencyCode, LicenseValue } from "@/lib/marketplace";
 
 const statusConfig: Record<string, { icon: React.ElementType; label: string; className: string; vizMessage: string }> = {
   uploading: { icon: Upload, label: "Uploading", className: "bg-secondary/10 text-secondary border-secondary/20", vizMessage: "Upload in progress" },

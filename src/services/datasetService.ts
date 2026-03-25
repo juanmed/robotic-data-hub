@@ -93,3 +93,20 @@ export async function getDatasetFileUrls(
   if (error) throw new Error(error.message || "Failed to get file URLs");
   return data?.urls ?? [];
 }
+
+export async function deleteDataset(datasetId: string): Promise<void> {
+  // Delete dataset files first (cascade should handle this, but be explicit)
+  const { error: filesError } = await supabase
+    .from("dataset_files")
+    .delete()
+    .eq("dataset_id", datasetId);
+
+  if (filesError) throw new Error(filesError.message);
+
+  const { error } = await supabase
+    .from("datasets")
+    .delete()
+    .eq("id", datasetId);
+
+  if (error) throw new Error(error.message);
+}

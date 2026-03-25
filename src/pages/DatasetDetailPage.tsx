@@ -1,13 +1,18 @@
 import { useState, useEffect, useCallback } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import PageContainer from "@/layouts/PageContainer";
 import GlassCard from "@/components/GlassCard";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 import {
   ArrowLeft, Database, FileText, Clock, CheckCircle2, AlertTriangle,
-  Upload, Loader2, Eye, Folder, File, Download, ExternalLink,
+  Upload, Loader2, Eye, Folder, File, Download, ExternalLink, Trash2,
 } from "lucide-react";
-import { getDataset, getDatasetFiles, getDatasetFileUrls } from "@/services/datasetService";
+import { getDataset, getDatasetFiles, getDatasetFileUrls, deleteDataset } from "@/services/datasetService";
 import { openVisualizer } from "@/lib/visualizer";
 import { toast } from "sonner";
 import type { Dataset, DatasetFile } from "@/types";

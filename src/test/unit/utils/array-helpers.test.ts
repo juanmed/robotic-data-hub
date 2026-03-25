@@ -28,9 +28,9 @@ const chunk = <T,>(arr: T[], size: number): T[][] => {
 };
 
 const flatten = <T,>(arr: (T | T[])[]): T[] => {
-  return arr.reduce((flat, item) => {
-    return flat.concat(Array.isArray(item) ? flatten(item as (T | T[])[]) : item);
-  }, [] as T[]);
+  return arr.reduce<T[]>((flat, item) => {
+    return [...flat, ...(Array.isArray(item) ? flatten(item as (T | T[])[]) : [item])];
+  }, []);
 };
 
 const findIndex = <T,>(arr: T[], predicate: (item: T) => boolean): number => {

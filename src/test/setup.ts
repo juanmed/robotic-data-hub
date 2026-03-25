@@ -1,11 +1,38 @@
-import { afterEach, beforeEach, vi } from 'vitest';
+import { afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
+
+// Mock localStorage and sessionStorage for Supabase auth
+const createStorageMock = () => {
+  let store: Record<string, string> = {};
+  return {
+    getItem: (key: string) => store[key] || null,
+    setItem: (key: string, value: string) => {
+      store[key] = value.toString();
+    },
+    removeItem: (key: string) => {
+      delete store[key];
+    },
+    clear: () => {
+      store = {};
+    },
+  };
+};
+
+Object.defineProperty(window, 'localStorage', {
+  value: createStorageMock(),
+});
+
+Object.defineProperty(window, 'sessionStorage', {
+  value: createStorageMock(),
+});
 
 // Cleanup after each test
 afterEach(() => {
   cleanup();
   vi.clearAllMocks();
+  window.localStorage.clear();
+  window.sessionStorage.clear();
 });
 
 // Mock window.open for visualizer tests (use window, not global)

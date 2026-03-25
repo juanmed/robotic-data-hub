@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, UserCircle, LayoutDashboard, KeyRound, Settings } from "lucide-react";
+import { LogOut, LayoutDashboard, KeyRound, Settings } from "lucide-react";
 
 const publicLinks = [
   { to: "/", label: "Home" },
@@ -71,13 +72,22 @@ const Navbar = () => {
                 <Button
                   variant="ghost"
                   className={cn(
-                    "gap-1.5 px-3 py-2 rounded-lg text-sm transition-colors",
+                    "gap-1.5 px-2.5 py-2 rounded-lg text-sm transition-colors",
                     ["/dashboard", "/keys", "/settings"].some((p) => location.pathname.startsWith(p))
                       ? "text-primary bg-primary/10"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
                   )}
                 >
-                  <UserCircle className="h-4 w-4" />
+                  <Avatar className="h-5 w-5">
+                    {user?.avatar_url && (
+                      <AvatarImage src={user.avatar_url} alt={user?.name} />
+                    )}
+                    <AvatarFallback className="text-[9px] bg-primary/10 text-primary">
+                      {user?.name
+                        ? user.name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2)
+                        : "?"}
+                    </AvatarFallback>
+                  </Avatar>
                   <span className="hidden sm:inline">{user?.name}</span>
                 </Button>
               </DropdownMenuTrigger>

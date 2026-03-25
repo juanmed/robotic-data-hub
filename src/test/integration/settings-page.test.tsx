@@ -24,6 +24,7 @@ describe("SettingsPage", () => {
     useAuthMock.useAuth.mockReturnValue({
       user: { id: "user_001", email: "test@example.com", name: "John Doe", email_verified: true },
       isAuthenticated: true,
+      refreshUser: vi.fn(),
     });
 
     render(
@@ -36,7 +37,7 @@ describe("SettingsPage", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Settings")).toBeInTheDocument();
-      expect(screen.getByText(/your personal information/i)).toBeInTheDocument();
+      expect(screen.getByText(/manage your account/i)).toBeInTheDocument();
     });
   });
 
@@ -44,6 +45,7 @@ describe("SettingsPage", () => {
     useAuthMock.useAuth.mockReturnValue({
       user: { id: "user_001", email: "john@example.com", name: "John Doe", email_verified: true },
       isAuthenticated: true,
+      refreshUser: vi.fn(),
     });
 
     render(

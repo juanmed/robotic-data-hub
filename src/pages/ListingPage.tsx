@@ -2,7 +2,9 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { listingService } from "@/services/listingService";
 import { orderService } from "@/services/orderService";
+import { getMarketplaceFileUrls } from "@/services/marketplaceService";
 import { formatPrice, getLicense } from "@/lib/marketplace";
+import { supabase } from "@/integrations/supabase/client";
 import CheckoutModal from "@/components/CheckoutModal";
 import DownloadModal from "@/components/DownloadModal";
 import GlassCard from "@/components/GlassCard";
@@ -11,17 +13,32 @@ import { useAuth } from "@/hooks/useAuth";
 import type { Listing } from "@/types";
 import {
   ArrowLeft, Download, ShoppingCart, CheckCircle2, Tag, User,
-  Calendar, Star, Loader2, LogIn, Scale,
+  Calendar, Star, Loader2, LogIn, Scale, Film,
+  Bot, Layers, LayoutGrid,
 } from "lucide-react";
 
-const PREVIEW_IMAGES = [
-  "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600&q=80",
-  "https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80",
-  "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&q=80",
-  "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=600&q=80",
-];
+interface DatasetMeta {
+  robot_type?: string;
+  total_episodes?: number;
+  total_frames?: number;
+  total_tasks?: number;
+}
 
-const CREATORS = ["Alex Chen", "Robotics Lab", "DataForge AI", "Chen Wei"];
+function findVideoPath(paths: string[]): string | null {
+  const videoDirs = [
+    "videos/observation.images.front/chunk-000",
+    "videos/observation.images.top/chunk-000",
+    "videos/observation.images/chunk-000",
+    "videos/",
+  ];
+  for (const dir of videoDirs) {
+    const match = paths.find(
+      (p) => p.startsWith(dir) && (p.endsWith(".mp4") || p.endsWith(".webm") || p.endsWith(".avi"))
+    );
+    if (match) return match;
+  }
+  return paths.find((p) => p.endsWith(".mp4")) ?? null;
+}
 
 const ListingPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -32,6 +49,9 @@ const ListingPage = () => {
   const [acquiring, setAcquiring] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [downloadOpen, setDownloadOpen] = useState(false);
+  const [creatorName, setCreatorName] = useState("Unknown");
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
+  const [meta, setMeta] = useState<DatasetMeta | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -44,6 +64,50 @@ const ListingPage = () => {
         if (l) {
           setListing(l);
           if (existingOrder) setPurchased(true);
+
+          // Fetch creator name
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("name")
+            .eq("id", l.user_id)
+            .maybeSingle();
+          if (profile?.name) setCreatorName(profile.name);
+
+          // Fetch file paths for thumbnail + metadata
+          const { data: files } = await supabase
+            .from("dataset_files")
+            .select("relative_path")
+            .eq("dataset_id", l.dataset_id);
+          const filePaths = (files ?? []).map((f: any) => f.relative_path as string);
+
+          const videoPath = findVideoPath(filePaths);
+          const metaPath = filePaths.find((p: string) => p === "meta/info.json");
+          const pathsToFetch = [videoPath, metaPath].filter(Boolean) as string[];
+
+          if (pathsToFetch.length > 0) {
+            try {
+              const urls = await getMarketplaceFileUrls(l.dataset_id, pathsToFetch);
+
+              const videoUrl = urls.find((u) => u.relative_path === videoPath);
+              if (videoUrl?.signed_url) setThumbnailUrl(videoUrl.signed_url);
+
+              const metaUrl = urls.find((u) => u.relative_path === "meta/info.json");
+              if (metaUrl?.signed_url) {
+                const res = await fetch(metaUrl.signed_url);
+                if (res.ok) {
+                  const json = await res.json();
+                  setMeta({
+                    robot_type: json.robot_type,
+                    total_episodes: json.total_episodes,
+                    total_frames: json.total_frames,
+                    total_tasks: json.total_tasks,
+                  });
+                }
+              }
+            } catch {
+              // silent - thumbnail/meta are optional
+            }
+          }
         }
       } catch {
         // handled by !listing state
@@ -95,9 +159,6 @@ const ListingPage = () => {
   }
 
   const isFree = listing.price_amount === 0;
-  const imageIdx = parseInt(listing.id.replace(/\D/g, ""), 10) || 0;
-  const previewImage = PREVIEW_IMAGES[imageIdx % PREVIEW_IMAGES.length];
-  const creator = CREATORS[imageIdx % CREATORS.length];
   const licenseInfo = getLicense(listing.license);
 
   return (
@@ -115,9 +176,21 @@ const ListingPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Hero image */}
-            <div className="relative rounded-2xl overflow-hidden border border-border/40">
-              <img src={previewImage} alt={`Preview of ${listing.title}`} className="w-full h-64 md:h-80 object-cover" />
+            {/* Hero image/video */}
+            <div className="relative rounded-2xl overflow-hidden border border-border/40 bg-muted/20">
+              {thumbnailUrl ? (
+                <video
+                  src={thumbnailUrl}
+                  muted
+                  preload="metadata"
+                  className="w-full h-64 md:h-80 object-cover"
+                  onLoadedData={(e) => { e.currentTarget.currentTime = 0.1; }}
+                />
+              ) : (
+                <div className="w-full h-64 md:h-80 flex items-center justify-center">
+                  <Film className="h-16 w-16 text-muted-foreground/30" />
+                </div>
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
               {listing.download_count > 100 && (
                 <div className="absolute top-4 left-4">
@@ -133,6 +206,35 @@ const ListingPage = () => {
               <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-3">{listing.title}</h1>
               <p className="text-sm text-muted-foreground leading-relaxed">{listing.description}</p>
             </div>
+
+            {/* Metadata */}
+            {meta && (
+              <GlassCard hover={false}>
+                <h3 className="text-xs font-semibold text-foreground mb-3">Dataset Info</h3>
+                <div className="flex flex-wrap gap-x-6 gap-y-2 text-[11px] text-muted-foreground">
+                  {meta.robot_type && (
+                    <span className="flex items-center gap-1.5">
+                      <Bot className="h-3.5 w-3.5 text-primary" /> {meta.robot_type}
+                    </span>
+                  )}
+                  {meta.total_episodes != null && (
+                    <span className="flex items-center gap-1.5">
+                      <Layers className="h-3.5 w-3.5 text-primary" /> {meta.total_episodes} episodes
+                    </span>
+                  )}
+                  {meta.total_frames != null && (
+                    <span className="flex items-center gap-1.5">
+                      <Film className="h-3.5 w-3.5 text-primary" /> {meta.total_frames.toLocaleString()} frames
+                    </span>
+                  )}
+                  {meta.total_tasks != null && (
+                    <span className="flex items-center gap-1.5">
+                      <LayoutGrid className="h-3.5 w-3.5 text-primary" /> {meta.total_tasks} task{meta.total_tasks !== 1 ? "s" : ""}
+                    </span>
+                  )}
+                </div>
+              </GlassCard>
+            )}
 
             {/* Tags */}
             <div className="flex flex-wrap gap-2">
@@ -178,7 +280,7 @@ const ListingPage = () => {
                 <div className="space-y-3 text-[11px]">
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <User className="h-3.5 w-3.5 shrink-0" />
-                    <span>Creator: <span className="text-foreground font-medium">{creator}</span></span>
+                    <span>Creator: <span className="text-foreground font-medium">{creatorName}</span></span>
                   </div>
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Download className="h-3.5 w-3.5 shrink-0" />
@@ -223,7 +325,6 @@ const ListingPage = () => {
         </div>
       </div>
 
-      {/* Checkout modal */}
       {listing && (
         <CheckoutModal
           open={checkoutOpen}
@@ -234,7 +335,6 @@ const ListingPage = () => {
         />
       )}
 
-      {/* Download modal */}
       {listing && (
         <DownloadModal
           open={downloadOpen}

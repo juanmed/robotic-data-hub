@@ -43,9 +43,9 @@ describe("DatasetDetailPage", () => {
   });
 
   it("loads and displays dataset details", async () => {
-    const mockDataset = createMockDataset({ id: "dataset_001", name: "Test Dataset" });
+    const mockDataset = createMockDataset({ id: "dataset_001", display_name: "Test Dataset" });
     const mockFiles = [
-      createMockDatasetFile({ id: "file_001", filename: "data.csv" }),
+      createMockDatasetFile({ id: "file_001", relative_path: "data.csv" }),
     ];
 
     datasetServiceMock.getDataset.mockResolvedValue(mockDataset);
@@ -81,7 +81,6 @@ describe("DatasetDetailPage", () => {
       </MemoryRouter>
     );
 
-    // Verify service is called to load dataset
     await waitFor(() => {
       expect(datasetServiceMock.getDataset).toHaveBeenCalledWith("dataset_001");
     });
@@ -127,9 +126,9 @@ describe("DatasetDetailPage", () => {
   it("displays list of dataset files", async () => {
     const mockDataset = createMockDataset({ id: "dataset_001" });
     const mockFiles = [
-      createMockDatasetFile({ id: "file_001", filename: "sensor_data.csv" }),
-      createMockDatasetFile({ id: "file_002", filename: "video.mp4" }),
-      createMockDatasetFile({ id: "file_003", filename: "metadata.json" }),
+      createMockDatasetFile({ id: "file_001", relative_path: "sensor_data.csv" }),
+      createMockDatasetFile({ id: "file_002", relative_path: "video.mp4" }),
+      createMockDatasetFile({ id: "file_003", relative_path: "metadata.json" }),
     ];
 
     datasetServiceMock.getDataset.mockResolvedValue(mockDataset);
@@ -191,7 +190,7 @@ describe("DatasetDetailPage", () => {
   it("fetches file URLs when dataset is ready", async () => {
     const mockDataset = createMockDataset({ id: "dataset_001", status: "ready" });
     const mockFiles = [
-      createMockDatasetFile({ id: "file_001", filename: "data.csv", upload_status: "uploaded" }),
+      createMockDatasetFile({ id: "file_001", relative_path: "data.csv", upload_status: "uploaded" }),
     ];
 
     datasetServiceMock.getDataset.mockResolvedValue(mockDataset);
@@ -235,8 +234,8 @@ describe("DatasetDetailPage", () => {
   it("displays formatted file sizes", async () => {
     const mockDataset = createMockDataset({ id: "dataset_001" });
     const mockFiles = [
-      createMockDatasetFile({ id: "file_001", filename: "small.txt", file_size: 1024 }),
-      createMockDatasetFile({ id: "file_002", filename: "large.bin", file_size: 1024 * 1024 * 100 }),
+      createMockDatasetFile({ id: "file_001", relative_path: "small.txt", size_bytes: 1024 }),
+      createMockDatasetFile({ id: "file_002", relative_path: "large.bin", size_bytes: 1024 * 1024 * 100 }),
     ];
 
     datasetServiceMock.getDataset.mockResolvedValue(mockDataset);

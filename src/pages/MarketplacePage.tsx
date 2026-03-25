@@ -1,29 +1,17 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { listingService } from "@/services/listingService";
-import { formatPrice } from "@/lib/marketplace";
-import type { Listing } from "@/types";
-import {
-  Download, Search, Store, Tag, User, ArrowRight, Star,
-} from "lucide-react";
-
-const PREVIEW_IMAGES = [
-  "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600&q=80",
-  "https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80",
-  "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&q=80",
-  "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=600&q=80",
-];
-
-const CREATORS = ["Alex Chen", "Robotics Lab", "DataForge AI", "Chen Wei"];
+import MarketplaceCard from "@/components/MarketplaceCard";
+import type { EnrichedListing } from "@/types";
+import { Search, Store, Tag } from "lucide-react";
 
 const MarketplacePage = () => {
-  const [listings, setListings] = useState<Listing[]>([]);
+  const [listings, setListings] = useState<EnrichedListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
 
   useEffect(() => {
-    listingService.list().then((l) => {
+    listingService.listEnriched().then((l) => {
       setListings(l);
       setLoading(false);
     }).catch(() => setLoading(false));
@@ -37,7 +25,7 @@ const MarketplacePage = () => {
       !q ||
       l.title.toLowerCase().includes(q) ||
       l.description.toLowerCase().includes(q) ||
-      l.tags.some((t) => t.includes(q));
+      l.tags.some((t) => t.toLowerCase().includes(q));
     const matchTag = !activeTag || l.tags.includes(activeTag);
     return matchQuery && matchTag;
   });
@@ -129,93 +117,9 @@ const MarketplacePage = () => {
               {filtered.length} dataset{filtered.length !== 1 ? "s" : ""} available
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filtered.map((listing, idx) => {
-                const isFree = listing.price_amount === 0;
-                const creator = CREATORS[idx % CREATORS.length];
-                const image = PREVIEW_IMAGES[idx % PREVIEW_IMAGES.length];
-
-                return (
-                  <Link key={listing.id} to={`/marketplace/${listing.id}`} className="group block">
-                    <div className="relative rounded-2xl border border-border/40 bg-card/50 backdrop-blur-sm overflow-hidden transition-all duration-500 hover:border-primary/40 hover:shadow-[0_0_40px_hsl(var(--primary)/0.12)] hover:-translate-y-1">
-                      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--secondary)/0.06),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                      {/* Preview image */}
-                      <div className="relative h-44 overflow-hidden">
-                        <img
-                          src={image}
-                          alt={`Preview of ${listing.title}`}
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                          loading="lazy"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
-
-                        {/* Price badge */}
-                        <div className="absolute top-3 right-3">
-                          {isFree ? (
-                            <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary/20 text-primary border border-primary/30 backdrop-blur-sm shadow-[0_0_12px_hsl(var(--primary)/0.3)]">
-                              Free
-                            </span>
-                          ) : (
-                            <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider bg-secondary/20 text-secondary border border-secondary/30 backdrop-blur-sm shadow-[0_0_12px_hsl(var(--secondary)/0.3)]">
-                              {formatPrice(listing.price_amount, listing.currency)}
-                            </span>
-                          )}
-                        </div>
-
-                        {listing.download_count > 100 && (
-                          <div className="absolute top-3 left-3">
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold bg-card/80 backdrop-blur-sm text-yellow-400 border border-yellow-400/20">
-                              <Star className="h-2.5 w-2.5 fill-yellow-400" />
-                              Popular
-                            </span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Content */}
-                      <div className="relative p-5">
-                        <h3 className="text-sm font-semibold text-foreground mb-1.5 group-hover:text-primary transition-colors">
-                          {listing.title}
-                        </h3>
-                        <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2 mb-4">
-                          {listing.description}
-                        </p>
-
-                        {/* Tags */}
-                        <div className="flex flex-wrap gap-1.5 mb-4">
-                          {listing.tags.slice(0, 4).map((tag) => (
-                            <span key={tag} className="px-2 py-0.5 rounded-full text-[9px] font-medium bg-muted/40 text-muted-foreground border border-border/30">
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-
-                        {/* License badge */}
-                        {listing.license && (
-                          <span className="inline-block px-2 py-0.5 rounded-full text-[9px] font-medium bg-primary/10 text-primary border border-primary/20 mb-3">
-                            {listing.license}
-                          </span>
-                        )}
-
-                        {/* Footer */}
-                        <div className="flex items-center justify-between pt-3 border-t border-border/20">
-                          <div className="flex items-center gap-4 text-[10px] text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <User className="h-3 w-3" />
-                              {creator}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Download className="h-3 w-3" />
-                              {listing.download_count}
-                            </span>
-                          </div>
-                          <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
+              {filtered.map((listing) => (
+                <MarketplaceCard key={listing.id} listing={listing} />
+              ))}
             </div>
           </>
         )}

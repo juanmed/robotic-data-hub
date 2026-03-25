@@ -39,8 +39,8 @@ describe("DatasetsPage", () => {
 
   it("renders datasets list on load", async () => {
     const mockDatasets = [
-      createMockDataset({ id: "dataset_001", name: "Dataset 1" }),
-      createMockDataset({ id: "dataset_002", name: "Dataset 2" }),
+      createMockDataset({ id: "dataset_001", display_name: "Dataset 1" }),
+      createMockDataset({ id: "dataset_002", display_name: "Dataset 2" }),
     ];
     datasetServiceMock.listDatasets.mockResolvedValue(mockDatasets);
 
@@ -74,7 +74,6 @@ describe("DatasetsPage", () => {
       </MemoryRouter>
     );
 
-    // Should show loading state initially - verify the component is loading
     expect(datasetServiceMock.listDatasets).toHaveBeenCalled();
   });
 
@@ -113,9 +112,9 @@ describe("DatasetsPage", () => {
 
   it("displays dataset status badges (uploading, ready, failed)", async () => {
     const mockDatasets = [
-      createMockDataset({ id: "ds_001", name: "Uploading Dataset", status: "uploading" }),
-      createMockDataset({ id: "ds_002", name: "Ready Dataset", status: "ready" }),
-      createMockDataset({ id: "ds_003", name: "Failed Dataset", status: "failed" }),
+      createMockDataset({ id: "ds_001", display_name: "Uploading Dataset", status: "uploading" }),
+      createMockDataset({ id: "ds_002", display_name: "Ready Dataset", status: "ready" }),
+      createMockDataset({ id: "ds_003", display_name: "Failed Dataset", status: "failed" }),
     ];
     datasetServiceMock.listDatasets.mockResolvedValue(mockDatasets);
 
@@ -150,7 +149,7 @@ describe("DatasetsPage", () => {
 
   it("shows datasets with file count information", async () => {
     const mockDatasets = [
-      createMockDataset({ id: "ds_001", name: "Test Dataset" }),
+      createMockDataset({ id: "ds_001", display_name: "Test Dataset" }),
     ];
     datasetServiceMock.listDatasets.mockResolvedValue(mockDatasets);
 
@@ -187,7 +186,7 @@ describe("DatasetsPage", () => {
 
   it("refetches datasets when refresh is triggered", async () => {
     const initialDatasets = [
-      createMockDataset({ id: "ds_001", name: "Dataset 1" }),
+      createMockDataset({ id: "ds_001", display_name: "Dataset 1" }),
     ];
     datasetServiceMock.listDatasets.mockResolvedValue(initialDatasets);
 

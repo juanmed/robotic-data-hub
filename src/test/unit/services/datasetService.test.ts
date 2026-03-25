@@ -22,19 +22,23 @@ describe("datasetService", () => {
       expect(datasetService.getDatasetFileUrls).toBeDefined();
       expect(typeof datasetService.getDatasetFileUrls).toBe("function");
     });
+
+    it("exports deleteDataset function", () => {
+      expect(datasetService.deleteDataset).toBeDefined();
+      expect(typeof datasetService.deleteDataset).toBe("function");
+    });
   });
 
   describe("service structure", () => {
-    it("provides dataset retrieval operations", () => {
-      // Verify all dataset operations are exported
+    it("provides dataset retrieval and deletion operations", () => {
       expect(datasetService.listDatasets).toBeDefined();
       expect(datasetService.getDataset).toBeDefined();
       expect(datasetService.getDatasetFiles).toBeDefined();
       expect(datasetService.getDatasetFileUrls).toBeDefined();
+      expect(datasetService.deleteDataset).toBeDefined();
     });
 
     it("all functions are async", () => {
-      // Functions should return Promises
       const listResult = datasetService.listDatasets();
       expect(listResult).toBeInstanceOf(Promise);
     });

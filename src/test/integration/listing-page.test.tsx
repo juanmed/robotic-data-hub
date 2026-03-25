@@ -44,6 +44,25 @@ vi.mock("@/hooks/useAuth", () => ({
   useAuth: useAuthMock.useAuth,
 }));
 
+vi.mock("@/services/marketplaceService", () => ({
+  getMarketplaceFileUrls: vi.fn().mockResolvedValue([]),
+}));
+
+vi.mock("@/integrations/supabase/client", () => ({
+  supabase: {
+    from: () => ({
+      select: () => ({
+        eq: () => ({
+          maybeSingle: () => Promise.resolve({ data: { name: "Test User" }, error: null }),
+          in: () => Promise.resolve({ data: [], error: null }),
+        }),
+      }),
+    }),
+    auth: { getUser: () => Promise.resolve({ data: { user: { id: "user_001" } } }) },
+    functions: { invoke: () => Promise.resolve({ data: { urls: [] }, error: null }) },
+  },
+}));
+
 describe("ListingPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -56,11 +75,8 @@ describe("ListingPage", () => {
 
   it("loads and displays listing details", async () => {
     const mockListing = createMockListing({ id: "listing_001", title: "Robot Navigation Dataset" });
-    const mockSession = createMockSession({ id: "session_001" });
-
     listingServiceMock.get.mockResolvedValue(mockListing);
     orderServiceMock.getByListing.mockResolvedValue(null);
-    sessionServiceMock.get.mockResolvedValue(mockSession);
 
     render(
       <MemoryRouter initialEntries={["/marketplace/listing_001"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
@@ -77,10 +93,9 @@ describe("ListingPage", () => {
 
   it("shows loading state while fetching listing", async () => {
     listingServiceMock.get.mockImplementation(
-      () => new Promise((resolve) => setTimeout(() => resolve(createMockListing()), 100))
+      () => new Promise((resolve) => setTimeout(() => resolve(createMockListing({ id: "listing_001" })), 100))
     );
     orderServiceMock.getByListing.mockResolvedValue(null);
-    sessionServiceMock.get.mockResolvedValue(createMockSession());
 
     render(
       <MemoryRouter initialEntries={["/marketplace/listing_001"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
@@ -99,7 +114,6 @@ describe("ListingPage", () => {
     const mockListing = createMockListing({ id: "listing_001" });
     listingServiceMock.get.mockResolvedValue(mockListing);
     orderServiceMock.getByListing.mockResolvedValue(null);
-    sessionServiceMock.get.mockResolvedValue(createMockSession());
 
     render(
       <MemoryRouter initialEntries={["/marketplace/listing_001"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
@@ -116,10 +130,9 @@ describe("ListingPage", () => {
   });
 
   it("shows free purchase button for free listing", async () => {
-    const mockListing = createMockListing({ id: "listing_001", price_cents: 0 });
+    const mockListing = createMockListing({ id: "listing_001", price_amount: 0 });
     listingServiceMock.get.mockResolvedValue(mockListing);
     orderServiceMock.getByListing.mockResolvedValue(null);
-    sessionServiceMock.get.mockResolvedValue(createMockSession());
 
     render(
       <MemoryRouter initialEntries={["/marketplace/listing_001"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
@@ -135,10 +148,9 @@ describe("ListingPage", () => {
   });
 
   it("shows purchase button for paid listing", async () => {
-    const mockListing = createMockListing({ id: "listing_001", price_cents: 9999 });
+    const mockListing = createMockListing({ id: "listing_001", price_amount: 9999 });
     listingServiceMock.get.mockResolvedValue(mockListing);
     orderServiceMock.getByListing.mockResolvedValue(null);
-    sessionServiceMock.get.mockResolvedValue(createMockSession());
 
     render(
       <MemoryRouter initialEntries={["/marketplace/listing_001"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
@@ -159,7 +171,6 @@ describe("ListingPage", () => {
 
     listingServiceMock.get.mockResolvedValue(mockListing);
     orderServiceMock.getByListing.mockResolvedValue(mockOrder);
-    sessionServiceMock.get.mockResolvedValue(createMockSession());
 
     render(
       <MemoryRouter initialEntries={["/marketplace/listing_001"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
@@ -176,11 +187,10 @@ describe("ListingPage", () => {
 
   it("shows login prompt when not authenticated", async () => {
     useAuthMock.useAuth.mockReturnValue({ isAuthenticated: false });
-    const mockListing = createMockListing({ id: "listing_001", price_cents: 9999 });
+    const mockListing = createMockListing({ id: "listing_001", price_amount: 9999 });
 
     listingServiceMock.get.mockResolvedValue(mockListing);
     orderServiceMock.getByListing.mockResolvedValue(null);
-    sessionServiceMock.get.mockResolvedValue(createMockSession());
 
     render(
       <MemoryRouter initialEntries={["/marketplace/listing_001"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
@@ -196,11 +206,10 @@ describe("ListingPage", () => {
   });
 
   it("creates order when free purchase is initiated", async () => {
-    const mockListing = createMockListing({ id: "listing_001", price_cents: 0 });
+    const mockListing = createMockListing({ id: "listing_001", price_amount: 0 });
     listingServiceMock.get.mockResolvedValue(mockListing);
     orderServiceMock.getByListing.mockResolvedValue(null);
     orderServiceMock.create.mockResolvedValue({ id: "order_001" });
-    sessionServiceMock.get.mockResolvedValue(createMockSession());
 
     render(
       <MemoryRouter initialEntries={["/marketplace/listing_001"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
@@ -222,7 +231,6 @@ describe("ListingPage", () => {
     });
     listingServiceMock.get.mockResolvedValue(mockListing);
     orderServiceMock.getByListing.mockResolvedValue(null);
-    sessionServiceMock.get.mockResolvedValue(createMockSession());
 
     render(
       <MemoryRouter initialEntries={["/marketplace/listing_001"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
@@ -244,7 +252,6 @@ describe("ListingPage", () => {
     });
     listingServiceMock.get.mockResolvedValue(mockListing);
     orderServiceMock.getByListing.mockResolvedValue(null);
-    sessionServiceMock.get.mockResolvedValue(createMockSession());
 
     render(
       <MemoryRouter initialEntries={["/marketplace/listing_001"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
@@ -259,13 +266,11 @@ describe("ListingPage", () => {
     });
   });
 
-  it("displays associated session information", async () => {
-    const mockListing = createMockListing({ id: "listing_001", session_id: "session_001" });
-    const mockSession = createMockSession({ id: "session_001", name: "Warehouse Nav Run" });
+  it("displays associated dataset information", async () => {
+    const mockListing = createMockListing({ id: "listing_001", dataset_id: "ds_001" });
 
     listingServiceMock.get.mockResolvedValue(mockListing);
     orderServiceMock.getByListing.mockResolvedValue(null);
-    sessionServiceMock.get.mockResolvedValue(mockSession);
 
     render(
       <MemoryRouter initialEntries={["/marketplace/listing_001"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>

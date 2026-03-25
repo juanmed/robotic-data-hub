@@ -311,7 +311,52 @@ const DatasetDetailPage = () => {
             </GlassCard>
           </div>
         </div>
+        {/* Delete section */}
+        <div className="flex justify-end pt-4">
+          <Button
+            variant="destructive"
+            onClick={() => { setDeleteConfirmName(""); setDeleteOpen(true); }}
+            className="gap-2"
+          >
+            <Trash2 className="h-4 w-4" />
+            Delete this dataset
+          </Button>
+        </div>
       </div>
+
+      {/* Delete confirmation dialog */}
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Dataset</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-3">
+              <span className="block">
+                This action is <strong className="text-destructive">permanent and irreversible</strong>. All files associated with this dataset will be deleted.
+              </span>
+              <span className="block">
+                To confirm, type the dataset name <strong className="text-foreground">{dataset.display_name}</strong> below:
+              </span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <Input
+            placeholder="Type dataset name to confirm"
+            value={deleteConfirmName}
+            onChange={(e) => setDeleteConfirmName(e.target.value)}
+            className="mt-2"
+          />
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <Button
+              variant="destructive"
+              disabled={deleteConfirmName !== dataset.display_name || deleting}
+              onClick={handleDelete}
+            >
+              {deleting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Delete permanently
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </PageContainer>
   );
 };

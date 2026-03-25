@@ -29,7 +29,7 @@ const chunk = <T,>(arr: T[], size: number): T[][] => {
 
 const flatten = <T,>(arr: (T | T[])[]): T[] => {
   return arr.reduce((flat, item) => {
-    return flat.concat(Array.isArray(item) ? flatten(item as (T | T[])[]) : item);
+    return flat.concat(Array.isArray(item) ? flatten(item as (T | T[])[]) : [item]);
   }, [] as T[]);
 };
 

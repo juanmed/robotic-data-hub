@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, waitFor } from "@testing-library/react";
+import { act, renderHook, waitFor } from "@testing-library/react";
 
 // Mock async hook - this would normally be imported from your hooks
 const useAsync = <T,>(asyncFunction: () => Promise<T>, immediate = true) => {
@@ -67,7 +67,9 @@ describe("useAsync Hook", () => {
 
       expect(result.current.status).toBe("idle");
 
-      result.current.execute();
+      await act(async () => {
+        await result.current.execute();
+      });
 
       await waitFor(
         () => {
@@ -88,7 +90,9 @@ describe("useAsync Hook", () => {
 
       expect(result.current.status).toBe("idle");
 
-      result.current.execute();
+      await act(async () => {
+        await result.current.execute();
+      });
 
       await waitFor(() => {
         expect(result.current.status).toBe("success");

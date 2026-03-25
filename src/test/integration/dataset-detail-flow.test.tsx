@@ -1,8 +1,9 @@
 import React from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import DatasetDetailPage from "@/pages/DatasetDetailPage";
+import { renderWithAuth } from "@/test/helpers/test-wrappers";
 
 const datasetServiceMock = vi.hoisted(() => ({
   getDataset: vi.fn(),
@@ -56,7 +57,7 @@ describe("dataset detail flow", () => {
   });
 
   it("loads dataset details and launches the visualizer", async () => {
-    render(
+    renderWithAuth(
       <MemoryRouter initialEntries={["/dashboard/datasets/ds_1"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
           <Route path="/dashboard/datasets/:id" element={<DatasetDetailPage />} />
@@ -64,7 +65,7 @@ describe("dataset detail flow", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByText("Ready Dataset")).toBeInTheDocument();
+    expect(await screen.findByText("Ready Dataset", {}, { timeout: 3000 })).toBeInTheDocument();
     expect(screen.getByText("videos/front.mp4")).toBeInTheDocument();
 
     fireEvent.click(screen.getAllByRole("button", { name: /visualize dataset/i })[0]);

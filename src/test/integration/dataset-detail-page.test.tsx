@@ -1,8 +1,9 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import DatasetDetailPage from "@/pages/DatasetDetailPage";
 import { createMockDataset, createMockDatasetFile } from "@/test/helpers/factories";
+import { renderWithAuth } from "@/test/helpers/test-wrappers";
 
 const datasetServiceMock = vi.hoisted(() => ({
   getDataset: vi.fn(),
@@ -51,7 +52,7 @@ describe("DatasetDetailPage", () => {
     datasetServiceMock.getDatasetFiles.mockResolvedValue(mockFiles);
     datasetServiceMock.getDatasetFileUrls.mockResolvedValue([]);
 
-    render(
+    renderWithAuth(
       <MemoryRouter initialEntries={["/datasets/dataset_001"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
           <Route path="/datasets/:id" element={<DatasetDetailPage />} />
@@ -72,7 +73,7 @@ describe("DatasetDetailPage", () => {
     datasetServiceMock.getDatasetFiles.mockResolvedValue([]);
     datasetServiceMock.getDatasetFileUrls.mockResolvedValue([]);
 
-    render(
+    renderWithAuth(
       <MemoryRouter initialEntries={["/datasets/dataset_001"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
           <Route path="/datasets/:id" element={<DatasetDetailPage />} />
@@ -91,7 +92,7 @@ describe("DatasetDetailPage", () => {
     datasetServiceMock.getDatasetFiles.mockResolvedValue([]);
     datasetServiceMock.getDatasetFileUrls.mockResolvedValue([]);
 
-    render(
+    renderWithAuth(
       <MemoryRouter initialEntries={["/datasets/invalid_id"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
           <Route path="/datasets/:id" element={<DatasetDetailPage />} />
@@ -110,7 +111,7 @@ describe("DatasetDetailPage", () => {
     datasetServiceMock.getDatasetFiles.mockResolvedValue([]);
     datasetServiceMock.getDatasetFileUrls.mockResolvedValue([]);
 
-    render(
+    renderWithAuth(
       <MemoryRouter initialEntries={["/datasets/dataset_001"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
           <Route path="/datasets/:id" element={<DatasetDetailPage />} />
@@ -135,7 +136,7 @@ describe("DatasetDetailPage", () => {
     datasetServiceMock.getDatasetFiles.mockResolvedValue(mockFiles);
     datasetServiceMock.getDatasetFileUrls.mockResolvedValue([]);
 
-    render(
+    renderWithAuth(
       <MemoryRouter initialEntries={["/datasets/dataset_001"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
           <Route path="/datasets/:id" element={<DatasetDetailPage />} />
@@ -154,7 +155,7 @@ describe("DatasetDetailPage", () => {
     datasetServiceMock.getDatasetFiles.mockResolvedValue([]);
     datasetServiceMock.getDatasetFileUrls.mockResolvedValue([]);
 
-    render(
+    renderWithAuth(
       <MemoryRouter initialEntries={["/datasets/dataset_001"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
           <Route path="/datasets/:id" element={<DatasetDetailPage />} />
@@ -174,7 +175,7 @@ describe("DatasetDetailPage", () => {
     datasetServiceMock.getDatasetFiles.mockResolvedValue([]);
     datasetServiceMock.getDatasetFileUrls.mockResolvedValue([]);
 
-    render(
+    renderWithAuth(
       <MemoryRouter initialEntries={["/datasets/dataset_001"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
           <Route path="/datasets/:id" element={<DatasetDetailPage />} />
@@ -199,7 +200,7 @@ describe("DatasetDetailPage", () => {
       { relative_path: "data.csv", signed_url: "https://example.com/data.csv" },
     ]);
 
-    render(
+    renderWithAuth(
       <MemoryRouter initialEntries={["/datasets/dataset_001"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
           <Route path="/datasets/:id" element={<DatasetDetailPage />} />
@@ -218,7 +219,7 @@ describe("DatasetDetailPage", () => {
     datasetServiceMock.getDatasetFiles.mockResolvedValue([]);
     datasetServiceMock.getDatasetFileUrls.mockResolvedValue([]);
 
-    render(
+    renderWithAuth(
       <MemoryRouter initialEntries={["/datasets/dataset_001"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
           <Route path="/datasets/:id" element={<DatasetDetailPage />} />
@@ -242,7 +243,7 @@ describe("DatasetDetailPage", () => {
     datasetServiceMock.getDatasetFiles.mockResolvedValue(mockFiles);
     datasetServiceMock.getDatasetFileUrls.mockResolvedValue([]);
 
-    render(
+    renderWithAuth(
       <MemoryRouter initialEntries={["/datasets/dataset_001"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
           <Route path="/datasets/:id" element={<DatasetDetailPage />} />

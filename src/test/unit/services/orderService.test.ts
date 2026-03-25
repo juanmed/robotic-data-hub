@@ -11,7 +11,7 @@ describe("orderService", () => {
 
   describe("getByListing", () => {
     it("returns undefined if no completed order for listing", async () => {
-      const order = await orderService.getByListing("lst_nonexistent");
+      const order = await orderService.getByListing("00000000-0000-0000-0000-000000000000");
       expect(order).toBeUndefined();
     });
   });

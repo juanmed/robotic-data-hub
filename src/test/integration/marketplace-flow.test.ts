@@ -58,7 +58,7 @@ describe("Marketplace Flow Integration Tests", () => {
     });
 
     it("returns undefined for non-existent listing order", async () => {
-      const order = await orderService.getByListing("lst_nonexistent");
+      const order = await orderService.getByListing("00000000-0000-0000-0000-000000000000");
       expect(order).toBeUndefined();
     });
   });

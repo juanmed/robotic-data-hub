@@ -127,6 +127,7 @@ const PaymentInfoTab = () => {
       }
 
       const response = await supabase.functions.invoke("get-payment-info", {
+        method: "GET",
         headers: { Authorization: `Bearer ${jwt}` },
       });
 

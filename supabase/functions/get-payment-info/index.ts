@@ -134,7 +134,7 @@ Deno.serve(async (req) => {
         country: paymentMethod.billing_details?.address?.country || "",
         postal_code: paymentMethod.billing_details?.address?.postal_code || "",
       },
-      charges: charges.data.map((charge) => ({
+      charges: charges.data.map((charge: any) => ({
         id: charge.id,
         amount: charge.amount,
         currency: charge.currency,

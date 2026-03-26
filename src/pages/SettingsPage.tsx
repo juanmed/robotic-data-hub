@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import PageContainer from "@/layouts/PageContainer";
 import SectionHeader from "@/components/SectionHeader";
 import GlassCard from "@/components/GlassCard";
+import PaymentInfoTab from "@/components/PaymentInfoTab";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -259,13 +260,7 @@ const SettingsPage = () => {
         </TabsContent>
 
         <TabsContent value="payment">
-          <GlassCard hover={false}>
-            <div className="flex flex-col items-center justify-center py-16 text-center">
-              <p className="text-muted-foreground text-sm">
-                Payment information coming soon.
-              </p>
-            </div>
-          </GlassCard>
+          <PaymentInfoTab />
         </TabsContent>
       </Tabs>
     </PageContainer>

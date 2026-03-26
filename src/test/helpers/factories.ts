@@ -165,3 +165,32 @@ export const createMockOrder = (listingId: string, overrides?: Partial<Order>): 
   created_at: new Date().toISOString(),
   ...overrides,
 });
+
+export const createMockPaymentMethod = (overrides?: any) => ({
+  id: 'pm_test_001',
+  type: 'card',
+  card: {
+    last4: '4242',
+    brand: 'visa',
+    exp_month: 12,
+    exp_year: 2028,
+  },
+  billing_details: {
+    name: 'John Doe',
+    address: {
+      country: 'US',
+      postal_code: '10001',
+    },
+  },
+  ...overrides,
+});
+
+export const createMockCharge = (overrides?: any) => ({
+  id: 'ch_test_001',
+  amount: 4900,
+  currency: 'usd',
+  status: 'succeeded',
+  description: 'Navigation Dataset',
+  created: Math.floor(Date.now() / 1000),
+  ...overrides,
+});

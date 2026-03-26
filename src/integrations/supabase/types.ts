@@ -215,6 +215,27 @@ export type Database = {
           },
         ]
       }
+      payment_audit_log: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -242,6 +263,27 @@ export type Database = {
           id?: string
           name?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      stripe_customers: {
+        Row: {
+          created_at: string
+          id: string
+          stripe_customer_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          stripe_customer_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          stripe_customer_id?: string
+          user_id?: string
         }
         Relationships: []
       }

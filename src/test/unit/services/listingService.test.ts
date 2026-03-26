@@ -32,28 +32,40 @@ describe("listingService", () => {
       updated_at: new Date().toISOString(),
     };
 
-    // Mock all possible from().select().* chains with main's schema
-    supabaseMock.supabase.from.mockReturnValue({
-      select: vi.fn().mockReturnValue({
-        eq: vi.fn().mockReturnValue({
-          order: vi.fn().mockResolvedValue({
-            data: [mockListingData],
-            error: null,
+    // Mock from() to handle listings queries
+    supabaseMock.supabase.from.mockImplementation((table: string) => {
+      if (table === "listings") {
+        return {
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockImplementation((key: string, value: any) => ({
+              order: vi.fn().mockResolvedValue({
+                data: [mockListingData],
+                error: null,
+              }),
+              maybeSingle: vi.fn().mockResolvedValue({
+                // Return undefined if querying for a non-existent ID
+                data: value === "lst_001" ? mockListingData : null,
+                error: null,
+              }),
+            })),
+            order: vi.fn().mockResolvedValue({
+              data: [mockListingData],
+              error: null,
+            }),
+            maybeSingle: vi.fn().mockResolvedValue({
+              data: null,
+              error: null,
+            }),
           }),
-          maybeSingle: vi.fn().mockResolvedValue({
-            data: mockListingData,
-            error: null,
+        };
+      }
+      return {
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
           }),
         }),
-        order: vi.fn().mockResolvedValue({
-          data: [mockListingData],
-          error: null,
-        }),
-        maybeSingle: vi.fn().mockResolvedValue({
-          data: null,
-          error: null,
-        }),
-      }),
+      };
     });
   });
 

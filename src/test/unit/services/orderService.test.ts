@@ -15,28 +15,45 @@ describe("orderService", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    // Mock all possible from().select().* chains with main's schema (amount, currency, not amount_cents)
-    supabaseMock.supabase.from.mockReturnValue({
-      select: vi.fn().mockReturnValue({
-        eq: vi.fn().mockReturnValue({
-          order: vi.fn().mockResolvedValue({
-            data: [],
-            error: null,
+    // Mock from() to handle orders queries
+    supabaseMock.supabase.from.mockImplementation((table: string) => {
+      if (table === "orders") {
+        return {
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockImplementation((key: string, value: any) => ({
+              order: vi.fn().mockResolvedValue({
+                data: [],
+                error: null,
+              }),
+              eq: vi.fn().mockImplementation((key2: string, value2: any) => ({
+                maybeSingle: vi.fn().mockResolvedValue({
+                  data: null,
+                  error: null,
+                }),
+              })),
+              maybeSingle: vi.fn().mockResolvedValue({
+                data: null,
+                error: null,
+              }),
+            })),
+            order: vi.fn().mockResolvedValue({
+              data: [],
+              error: null,
+            }),
+            maybeSingle: vi.fn().mockResolvedValue({
+              data: null,
+              error: null,
+            }),
           }),
-          maybeSingle: vi.fn().mockResolvedValue({
-            data: null,
-            error: null,
+        };
+      }
+      return {
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
           }),
         }),
-        order: vi.fn().mockResolvedValue({
-          data: [],
-          error: null,
-        }),
-        maybeSingle: vi.fn().mockResolvedValue({
-          data: null,
-          error: null,
-        }),
-      }),
+      };
     });
   });
 

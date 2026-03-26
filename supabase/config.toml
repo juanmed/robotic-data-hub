@@ -14,3 +14,12 @@ verify_jwt = false
 
 [functions.get-dataset-manifest]
 verify_jwt = false
+
+[functions.get-payment-info]
+verify_jwt = false
+
+[functions.create-setup-intent]
+verify_jwt = false
+
+[functions.update-payment-method]
+verify_jwt = false

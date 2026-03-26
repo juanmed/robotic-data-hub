@@ -95,17 +95,21 @@ export const createMockDataset = (overrides?: Partial<Dataset>): Dataset => ({
   ...overrides,
 });
 
-export const createMockDatasetFile = (datasetId: string, overrides?: Partial<DatasetFile>): DatasetFile => ({
-  id: `df_test_${fileCounter++}`,
-  dataset_id: datasetId,
-  relative_path: `files/file_${fileCounter}.txt`,
-  storage_path: `datasets/${datasetId}/file_${fileCounter}.txt`,
-  content_type: 'text/plain',
-  size_bytes: 1000,
-  upload_status: 'uploaded',
-  created_at: new Date().toISOString(),
-  ...overrides,
-});
+export const createMockDatasetFile = (datasetIdOrOverrides?: string | Partial<DatasetFile>, overrides?: Partial<DatasetFile>): DatasetFile => {
+  const datasetId = typeof datasetIdOrOverrides === 'string' ? datasetIdOrOverrides : 'ds_test_default';
+  const finalOverrides = typeof datasetIdOrOverrides === 'string' ? overrides : datasetIdOrOverrides;
+  return {
+    id: `df_test_${fileCounter++}`,
+    dataset_id: datasetId,
+    relative_path: `files/file_${fileCounter}.txt`,
+    storage_path: `datasets/${datasetId}/file_${fileCounter}.txt`,
+    content_type: 'text/plain',
+    size_bytes: 1000,
+    upload_status: 'uploaded',
+    created_at: new Date().toISOString(),
+    ...finalOverrides,
+  };
+};
 
 export const createMockUploadKey = (overrides?: Partial<UploadKey>): UploadKey => ({
   id: `key_test_${keyCounter++}`,
@@ -129,27 +133,64 @@ export const createMockAPIKey = (overrides?: Partial<APIKey>): APIKey => ({
   ...overrides,
 });
 
-export const createMockListing = (sessionId: string, overrides?: Partial<Listing>): Listing => ({
-  id: `lst_test_${sessionCounter}`,
-  user_id: 'usr_test_001',
-  session_id: sessionId,
-  title: `Test Listing for ${sessionId}`,
-  description: 'A test listing',
-  price_cents: 4900,
-  tags: ['test', 'sample'],
-  download_count: 0,
-  published: false,
-  created_at: new Date().toISOString(),
-  updated_at: new Date().toISOString(),
-  ...overrides,
-});
+export const createMockListing = (datasetIdOrOverrides?: string | Partial<Listing>, overrides?: Partial<Listing>): Listing => {
+  const datasetId = typeof datasetIdOrOverrides === 'string' ? datasetIdOrOverrides : 'ds_test_default';
+  const finalOverrides = typeof datasetIdOrOverrides === 'string' ? overrides : datasetIdOrOverrides;
+  return {
+    id: `lst_test_${sessionCounter}`,
+    user_id: 'usr_test_001',
+    dataset_id: datasetId,
+    title: `Test Listing for ${datasetId}`,
+    description: 'A test listing',
+    price_amount: 4900,
+    currency: 'USD',
+    platform_fee_bps: 1000,
+    license: 'CC-BY-4.0',
+    tags: ['test', 'sample'],
+    download_count: 0,
+    published: false,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    ...finalOverrides,
+  };
+};
 
 export const createMockOrder = (listingId: string, overrides?: Partial<Order>): Order => ({
   id: `ord_test_${sessionCounter}`,
   buyer_id: 'usr_test_002',
   listing_id: listingId,
-  amount_cents: 4900,
+  amount: 4900,
+  currency: 'USD',
   status: 'completed',
   created_at: new Date().toISOString(),
+  ...overrides,
+});
+
+export const createMockPaymentMethod = (overrides?: any) => ({
+  id: 'pm_test_001',
+  type: 'card',
+  card: {
+    last4: '4242',
+    brand: 'visa',
+    exp_month: 12,
+    exp_year: 2028,
+  },
+  billing_details: {
+    name: 'John Doe',
+    address: {
+      country: 'US',
+      postal_code: '10001',
+    },
+  },
+  ...overrides,
+});
+
+export const createMockCharge = (overrides?: any) => ({
+  id: 'ch_test_001',
+  amount: 4900,
+  currency: 'usd',
+  status: 'succeeded',
+  description: 'Navigation Dataset',
+  created: Math.floor(Date.now() / 1000),
   ...overrides,
 });

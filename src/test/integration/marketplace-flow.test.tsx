@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import MarketplacePage from "@/pages/MarketplacePage";
 
 const listingServiceMock = vi.hoisted(() => ({
-  list: vi.fn(),
+  listEnriched: vi.fn(),
 }));
 
 vi.mock("@/services/listingService", () => ({ listingService: listingServiceMock }));
@@ -13,17 +13,19 @@ vi.mock("@/services/listingService", () => ({ listingService: listingServiceMock
 describe("marketplace flow", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    listingServiceMock.list.mockResolvedValue([
+    listingServiceMock.listEnriched.mockResolvedValue([
       {
         id: "lst_1",
         user_id: "usr_1",
         session_id: "ses_1",
         title: "Warehouse Navigation Dataset",
         description: "LiDAR and RGB data",
-        price_cents: 4900,
+        price_amount: 49.00,
         tags: ["lidar", "warehouse", "navigation"],
         download_count: 120,
         published: true,
+        creator_name: "Test Creator 1",
+        file_paths: [],
         created_at: "2026-03-25T00:00:00Z",
         updated_at: "2026-03-25T00:00:00Z",
       },
@@ -33,10 +35,12 @@ describe("marketplace flow", () => {
         session_id: "ses_2",
         title: "Kitchen Manipulation Set",
         description: "Robotics kitchen data",
-        price_cents: 0,
+        price_amount: 0,
         tags: ["kitchen", "manipulation"],
         download_count: 15,
         published: true,
+        creator_name: "Test Creator 2",
+        file_paths: [],
         created_at: "2026-03-25T00:00:00Z",
         updated_at: "2026-03-25T00:00:00Z",
       },

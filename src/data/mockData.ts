@@ -48,12 +48,14 @@ export const mockAnnotations: Annotation[] = [
   { id: "ann_001", asset_file_id: "af_001", author_id: "usr_001", type: "bounding_box", data: { label: "forklift", x: 120, y: 80, w: 200, h: 150 }, created_at: "2026-02-21T10:00:00Z" },
 ];
 
+// Mock listings are no longer used for real data (now backed by Supabase),
+// but kept for reference/testing purposes with the new schema.
 export const mockListings: Listing[] = [
-  { id: "lst_001", user_id: "usr_001", session_id: "ses_001", title: "Warehouse Navigation Dataset", description: "High-fidelity LiDAR + RGB data from a 10,000 sq ft warehouse. Includes IMU and annotated obstacle maps.", price_cents: 4900, tags: ["lidar", "warehouse", "navigation", "indoor"], download_count: 127, published: true, created_at: "2026-02-22T00:00:00Z", updated_at: "2026-03-01T00:00:00Z" },
-  { id: "lst_002", user_id: "usr_001", session_id: "ses_004", title: "Kitchen Robot Manipulation v2", description: "Multi-angle depth + RGB of pick-and-place tasks in a real kitchen environment. 6 hours of continuous capture.", price_cents: 7900, tags: ["manipulation", "kitchen", "depth", "rgb"], download_count: 54, published: true, created_at: "2026-01-15T00:00:00Z", updated_at: "2026-02-10T00:00:00Z" },
-  { id: "lst_003", user_id: "usr_001", session_id: "ses_002", title: "Rocky Terrain Traversal Data", description: "Stereo camera and IMU data from outdoor rocky terrain. Ideal for off-road autonomy research.", price_cents: 0, tags: ["outdoor", "terrain", "imu", "stereo"], download_count: 312, published: true, created_at: "2026-03-06T00:00:00Z", updated_at: "2026-03-06T00:00:00Z" },
+  { id: "lst_001", user_id: "usr_001", dataset_id: "ds_001", title: "Warehouse Navigation Dataset", description: "High-fidelity LiDAR + RGB data from a 10,000 sq ft warehouse. Includes IMU and annotated obstacle maps.", price_amount: 4900, currency: "USD", platform_fee_bps: 1000, license: "CC-BY-4.0", tags: ["lidar", "warehouse", "navigation", "indoor"], download_count: 127, published: true, created_at: "2026-02-22T00:00:00Z", updated_at: "2026-03-01T00:00:00Z" },
+  { id: "lst_002", user_id: "usr_001", dataset_id: "ds_002", title: "Kitchen Robot Manipulation v2", description: "Multi-angle depth + RGB of pick-and-place tasks in a real kitchen environment. 6 hours of continuous capture.", price_amount: 7900, currency: "USD", platform_fee_bps: 1000, license: "CC-BY-4.0", tags: ["manipulation", "kitchen", "depth", "rgb"], download_count: 54, published: true, created_at: "2026-01-15T00:00:00Z", updated_at: "2026-02-10T00:00:00Z" },
+  { id: "lst_003", user_id: "usr_001", dataset_id: "ds_003", title: "Rocky Terrain Traversal Data", description: "Stereo camera and IMU data from outdoor rocky terrain. Ideal for off-road autonomy research.", price_amount: 0, currency: "USD", platform_fee_bps: 1000, license: "MIT", tags: ["outdoor", "terrain", "imu", "stereo"], download_count: 312, published: true, created_at: "2026-03-06T00:00:00Z", updated_at: "2026-03-06T00:00:00Z" },
 ];
 
 export const mockOrders: Order[] = [
-  { id: "ord_001", buyer_id: "usr_002", listing_id: "lst_001", amount_cents: 4900, status: "completed", created_at: "2026-03-01T00:00:00Z" },
+  { id: "ord_001", buyer_id: "usr_002", listing_id: "lst_001", amount: 4900, currency: "USD", status: "completed", created_at: "2026-03-01T00:00:00Z" },
 ];

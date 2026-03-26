@@ -62,10 +62,13 @@ export interface Annotation {
 export interface Listing {
   id: string;
   user_id: string;
-  session_id: string;
+  dataset_id: string;
   title: string;
   description: string;
-  price_cents: number;
+  price_amount: number;
+  currency: string;
+  platform_fee_bps: number;
+  license: string;
   tags: string[];
   download_count: number;
   published: boolean;
@@ -73,11 +76,17 @@ export interface Listing {
   updated_at: string;
 }
 
+export interface EnrichedListing extends Listing {
+  creator_name: string;
+  file_paths: string[];
+}
+
 export interface Order {
   id: string;
   buyer_id: string;
   listing_id: string;
-  amount_cents: number;
+  amount: number;
+  currency: string;
   status: "pending" | "completed" | "refunded" | "cancelled";
   created_at: string;
 }

@@ -1,17 +1,29 @@
 import { useState, useEffect, useCallback } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import PageContainer from "@/layouts/PageContainer";
 import GlassCard from "@/components/GlassCard";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 import {
   ArrowLeft, Database, FileText, Clock, CheckCircle2, AlertTriangle,
-  Upload, Loader2, Eye, Folder, File, Download, ExternalLink,
+  Upload, Loader2, Eye, Folder, File, Download, ExternalLink, Trash2,
+  Store, Pencil, XCircle,
 } from "lucide-react";
-import { getDataset, getDatasetFiles, getDatasetFileUrls } from "@/services/datasetService";
+import { getDataset, getDatasetFiles, getDatasetFileUrls, deleteDataset } from "@/services/datasetService";
+import { listingService } from "@/services/listingService";
 import { openVisualizer } from "@/lib/visualizer";
+import { formatPrice } from "@/lib/marketplace";
 import { toast } from "sonner";
-import type { Dataset, DatasetFile } from "@/types";
+import type { Dataset, DatasetFile, Listing } from "@/types";
 import type { SignedFileUrl } from "@/services/datasetService";
+import PublishDatasetModal from "@/components/PublishDatasetModal";
+import { useAuth } from "@/hooks/useAuth";
+import { DEFAULT_PLATFORM_FEE_BPS } from "@/lib/marketplace";
+import type { CurrencyCode, LicenseValue } from "@/lib/marketplace";
 
 const statusConfig: Record<string, { icon: React.ElementType; label: string; className: string; vizMessage: string }> = {
   uploading: { icon: Upload, label: "Uploading", className: "bg-secondary/10 text-secondary border-secondary/20", vizMessage: "Upload in progress" },
@@ -36,6 +48,28 @@ const DatasetDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [visualizing, setVisualizing] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteConfirmName, setDeleteConfirmName] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [listing, setListing] = useState<Listing | null>(null);
+  const [publishOpen, setPublishOpen] = useState(false);
+  const [unpublishing, setUnpublishing] = useState(false);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const handleDelete = async () => {
+    if (!dataset || deleteConfirmName !== dataset.display_name) return;
+    setDeleting(true);
+    try {
+      await deleteDataset(dataset.id);
+      toast.success("Dataset deleted successfully");
+      navigate("/dashboard");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete dataset");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const handleVisualize = async () => {
     if (!dataset) return;
@@ -58,6 +92,13 @@ const DatasetDetailPage = () => {
       if (!ds) { setError("Dataset not found"); return; }
       setDataset(ds);
       setFiles(fs);
+      // Fetch existing listing for this dataset
+      try {
+        const existingListing = await listingService.getByDataset(id);
+        setListing(existingListing ?? null);
+      } catch {
+        // no listing yet
+      }
     } catch (err: any) {
       setError(err.message || "Failed to load dataset");
     } finally {
@@ -267,6 +308,75 @@ const DatasetDetailPage = () => {
               </Button>
             </GlassCard>
 
+            {/* Marketplace card */}
+            {isReady && (
+              <GlassCard hover={false} className="border-primary/20">
+                <div className="flex items-center gap-2 mb-3">
+                  <Store className="h-4 w-4 text-primary" />
+                  <h3 className="text-sm font-semibold text-foreground">Marketplace</h3>
+                </div>
+                {listing ? (
+                  <div className="space-y-3">
+                    <div className="rounded-xl px-4 py-3 bg-primary/5 border border-primary/20">
+                      <p className="text-xs text-muted-foreground mb-1">Listed as</p>
+                      <p className="text-sm font-semibold text-foreground">{listing.title}</p>
+                      <p className="text-xs text-primary font-bold mt-1">
+                        {formatPrice(listing.price_amount, listing.currency)}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="neon-outline"
+                        size="sm"
+                        className="flex-1 gap-1.5"
+                        onClick={() => setPublishOpen(true)}
+                      >
+                        <Pencil className="h-3.5 w-3.5" /> Edit
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-1.5"
+                        disabled={unpublishing}
+                        onClick={async () => {
+                          setUnpublishing(true);
+                          try {
+                            await listingService.unpublish(listing.id);
+                            setListing(null);
+                            toast.success("Listing unpublished");
+                          } catch (err: any) {
+                            toast.error(err.message || "Failed to unpublish");
+                          } finally {
+                            setUnpublishing(false);
+                          }
+                        }}
+                      >
+                        {unpublishing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <XCircle className="h-3.5 w-3.5" />}
+                      </Button>
+                    </div>
+                    <Button variant="neon-outline" size="sm" className="w-full gap-1.5" asChild>
+                      <Link to={`/marketplace/${listing.id}`}>
+                        <ExternalLink className="h-3.5 w-3.5" /> View on Marketplace
+                      </Link>
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <p className="text-[11px] text-muted-foreground">
+                      Share this dataset on the marketplace for others to discover and purchase.
+                    </p>
+                    <Button
+                      variant="neon"
+                      className="w-full gap-2"
+                      onClick={() => setPublishOpen(true)}
+                    >
+                      <Store className="h-4 w-4" /> Publish to Marketplace
+                    </Button>
+                  </div>
+                )}
+              </GlassCard>
+            )}
+
             {/* CLI Upload Flow */}
             <GlassCard hover={false} className="border-border/30">
               <h3 className="text-sm font-semibold text-foreground mb-3">CLI Upload Flow</h3>
@@ -288,7 +398,97 @@ const DatasetDetailPage = () => {
             </GlassCard>
           </div>
         </div>
+        {/* Delete section */}
+        <div className="flex justify-end pt-4">
+          <Button
+            variant="destructive"
+            onClick={() => { setDeleteConfirmName(""); setDeleteOpen(true); }}
+            className="gap-2"
+          >
+            <Trash2 className="h-4 w-4" />
+            Delete this dataset
+          </Button>
+        </div>
       </div>
+
+      {/* Delete confirmation dialog */}
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Dataset</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-3">
+              <span className="block">
+                This action is <strong className="text-destructive">permanent and irreversible</strong>. All files associated with this dataset will be deleted.
+              </span>
+              <span className="block">
+                To confirm, type the dataset name <strong className="text-foreground">{dataset.display_name}</strong> below:
+              </span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <Input
+            placeholder="Type dataset name to confirm"
+            value={deleteConfirmName}
+            onChange={(e) => setDeleteConfirmName(e.target.value)}
+            className="mt-2"
+          />
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <Button
+              variant="destructive"
+              disabled={deleteConfirmName !== dataset.display_name || deleting}
+              onClick={handleDelete}
+            >
+              {deleting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Delete permanently
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Publish modal */}
+      {dataset && (
+        <PublishDatasetModal
+          open={publishOpen}
+          onClose={() => setPublishOpen(false)}
+          datasetName={dataset.display_name}
+          initial={listing ? {
+            title: listing.title,
+            description: listing.description,
+            price_amount: listing.price_amount,
+            currency: listing.currency,
+            license: listing.license,
+            tags: listing.tags,
+          } : undefined}
+          onPublish={async (data) => {
+            if (!user) { toast.error("You must be logged in"); return; }
+            try {
+              if (listing) {
+                const updated = await listingService.update(listing.id, data);
+                setListing(updated);
+                toast.success("Listing updated");
+              } else {
+                const newListing = await listingService.publish({
+                  user_id: user.id,
+                  dataset_id: dataset.id,
+                  title: data.title,
+                  description: data.description,
+                  price_amount: data.price_amount,
+                  currency: data.currency,
+                  platform_fee_bps: DEFAULT_PLATFORM_FEE_BPS,
+                  license: data.license,
+                  tags: data.tags,
+                  published: true,
+                });
+                setListing(newListing);
+                toast.success("Published to marketplace!");
+              }
+            } catch (err: any) {
+              toast.error(err.message || "Failed to publish");
+              throw err;
+            }
+          }}
+        />
+      )}
     </PageContainer>
   );
 };

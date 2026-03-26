@@ -20,6 +20,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   updatePassword: (newPassword: string) => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -59,6 +60,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             id: data.id,
             email: data.email,
             name: data.name,
+            avatar_url: data.avatar_url ?? undefined,
             email_verified: data.email_verified,
           });
         }
@@ -141,6 +143,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (error) throw new Error(error.message);
   }, []);
 
+  const refreshUser = useCallback(async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) hydrateProfile(session.user);
+  }, [hydrateProfile]);
+
   return (
     <AuthContext.Provider
       value={{
@@ -153,6 +160,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         logout,
         resetPassword,
         updatePassword,
+        refreshUser,
       }}
     >
       {children}

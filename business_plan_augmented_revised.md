@@ -35,178 +35,309 @@ Robotics does not enjoy the same data conditions.
 
 The contrast is visible in public dataset scale. Open X-Embodiment was a major robotics milestone, yet even that effort combined data from **60 datasets across 22 embodiments** and just **~1M+ trajectories / 500+ skills**, which is still tiny compared with web-scale text corpora.
 
-### 2.2 What problem GamiphyAI solves
+## 2.2 What problem GamiphyAI solves
 
-GamiphyAI addresses two linked bottlenecks:
+GamiphyAI addresses two linked bottlenecks, but the investor story should begin globally and only then narrow to Korea.
 
-1. **SME automation bottleneck:** Korean SMEs with repetitive but variable packing, kitting, labeling, and light assembly work often cannot justify traditional fixed automation because engineering cost, lead time, and SKU variability are too high.
-2. **Robot-data bottleneck:** robotics teams lack a fast way to source, validate, version, license, and monetize task-specific physical-world data and derived skills.
+### 2.2.1 Global SME automation bottleneck
 
-**GamiphyAI thesis:** start from concrete automation jobs-to-be-done, use paid PoCs to define task KPIs, collect or commission missing data, convert validated workflows into repeatable skill/data packages, and gradually turn those assets into a broader platform.
+Across the world, SMEs account for roughly **90% of businesses** and more than **50% of employment**. In manufacturing, they represent the long tail of sites where repetitive work exists, but the workflow is too variable, too small-batch, or too engineering-intensive for traditional fixed automation to be economical. In Europe alone, manufacturing included **2.2 million enterprises**, **30 million workers**, and **€9.9 trillion** in turnover in 2023. In the United States, there were **632,885 small manufacturing businesses** in the latest SBA profile, including **235,088 small manufacturing employers** with **4.98 million employees**. In Japan, SMEs still account for **99.7% of all enterprises**; in ASEAN, MSMEs account for roughly **97.2% to 99.9% of establishments** depending on the country. Together, these figures show that the relevant global opportunity is not a narrow “robotics market” in the traditional sense. It is a very large installed base of under-automated, labor-constrained, highly fragmented manufacturing and fulfillment workflows.
+
+The core bottleneck is the same across regions:
+- automation works well in stable, high-volume environments,
+- but many SME workflows are **high-mix, low-volume (HMLV)** or semi-structured,
+- meaning SKU changes, packaging changes, fixture changes, exception handling, and frequent reconfiguration destroy the economics of conventional automation,
+- while fully custom systems remain too expensive and too slow to deploy.
+
+The global wedge for GamiphyAI is therefore not “all robotics.” It is the subset of repetitive but variable tasks in light manufacturing, packaging, kitting, inspection, labeling, and small-parts handling where labor is expensive enough, turnover is painful enough, and workflow variance is high enough that SMEs need a cheaper intelligent automation layer.
+
+### 2.2.2 Korea-first narrowing
+
+That same bottleneck is especially visible in South Korea, where manufacturing density is high, labor costs continue to rise, robot adoption at large industrial firms is already advanced, and smaller factories still struggle to automate variable workflows. South Korea is therefore not the whole story; it is the **best first proving ground** for a broader global thesis.
+
+GamiphyAI should therefore present the problem statement as:
+
+> The company starts in Korea because Korea is a dense, automation-aware beachhead. But the underlying problem is global: millions of SMEs in HMLV manufacturing and packaging still sit between two bad options — manual labor or over-engineered automation. GamiphyAI’s thesis is that a robotics data and skill layer can make low-cost intelligent workcells economically viable first in Korea, then in other advanced manufacturing markets.
 
 ---
 
 ## 3. Market Sizing: TAM / SAM / SOM
 
-### 3.1 Korea beachhead TAM (bottom-up)
+The section should move from a global opportunity frame to a Korea-first operating plan.
+
+### 3.1 Global top-down TAM
+
+A clean top-down investor view starts with the size of global manufacturing and the size of the SME base inside it.
+
+- Global SMEs account for roughly **90% of businesses** and more than **50% of employment worldwide**.
+- Global manufacturing value added is a **multi-trillion-dollar market** and remains one of the largest sectors in the world economy.
+- In 2024, the industrial robotics market remained structurally large, with **542,076 industrial robot installations** and an operational stock of **4,663,773 industrial robots** worldwide.
+- Asia accounted for **74%** of new industrial robot deployments in 2024, Europe **16%**, and the Americas **9%**.
+
+However, these robot counts understate GamiphyAI’s true opportunity, because the installed robot base is concentrated in larger and more standardized production environments. The better denominator is not “robots already deployed,” but rather **manufacturing sites with repetitive manual work that are still too variable for standard automation**.
+
+### 3.2 Global site-based TAM for the HMLV wedge
+
+Because there is no single official global dataset for “HMLV SME sites suited to low-cost intelligent robot cells,” the most defensible approach is a conservative triangulation from major manufacturing regions.
+
+**Anchor-market manufacturing base already visible in official data**
+- **European Union:** **2.2 million** manufacturing enterprises in 2023.
+- **United States:** **632,885** small manufacturing businesses, including **235,088** small manufacturing employers.
+- **South Korea:** **504,728** manufacturing establishments in the preliminary 2024 Census on Establishments.
+
+Even before counting Japan, Taiwan, most of ASEAN, India, or Latin America, these three markets alone already imply an observable base of roughly **3.34 million manufacturing sites/businesses**. Not all of those are relevant. Many are too small, too artisanal, or outside the workflow types GamiphyAI wants first. But the denominator is clearly large enough for a venture-scale opportunity.
+
+A disciplined global wedge model should then apply three filters:
+
+1. **Workflow-fit filter:** only sites with repetitive but variable manual tasks in packaging, kitting, light assembly, inspection, labeling, or machine-tending adjacencies.
+2. **Economic-fit filter:** labor cost, turnover, quality leakage, or throughput pain must be large enough to justify automation.
+3. **Digital-readiness filter:** buyer must be able to adopt a software-mediated automation product rather than a one-off engineering science project.
+
+A conservative first-wave assumption is that only **5% to 10%** of the observable anchor-market base meets the first useful version of that wedge. That yields roughly **167,000 to 334,000 candidate sites**.
+
+### 3.3 Global revenue opportunity per site
+
+GamiphyAI should keep the economic logic simple: price as a fraction of annual labor and quality value created, not as an arbitrary software multiple.
+
+Across the U.S. and Europe, the public labor data already support meaningful automation budgets:
+- In the U.S., production occupations averaged **$50,090** in annual wages in May 2024.
+- In the EU, average hourly labour costs in industry were **€33.9** in 2024, and **€39.8** in the euro area.
+
+For an HMLV cell that affects only **1.5 to 2 workers**, annual labor value is often already material. On a global blended basis, a realistic early recurring capture assumption is roughly **$18,000 to $35,000 per site per year**, with one-time PoC and deployment revenue on top.
+
+Using that blended recurring assumption:
+- **167,000 sites × $18,000** ≈ **$3.0B** annual recurring opportunity
+- **334,000 sites × $35,000** ≈ **$11.7B** annual recurring opportunity
+
+That is the right way to present the global TAM: large enough to justify a platform path, but still grounded in a conservative site-based wedge rather than a speculative “every robot in the world” narrative.
+
+### 3.4 Global SAM versus Korea beachhead SAM
+
+The company should separate:
+
+- **Global TAM:** the broader long-term HMLV automation and robotics-skill opportunity across advanced manufacturing regions.
+- **Initial global SAM:** the first-wave candidate sites in the U.S., Europe, Korea, and adjacent high-income Asian markets.
+- **Operational beachhead SAM:** Korea only, because the first deployments, reference sites, and repeatable playbooks are built there.
+
+This sequencing is important for investors. It shows that the company is not pretending to sell everywhere on Day 1, but it is also not limiting the long-term story to one country.
+
+### 3.5 Korea beachhead TAM and SAM
+
+The Korea analysis should then follow, largely unchanged.
 
 **Official manufacturing base and automation readiness**
 - Statistics Korea’s preliminary 2023 Census on Establishments reported **532,325 manufacturing establishments** in South Korea, and the preliminary end-2024 result shows **504,728** manufacturing establishments.
 - Among **163,273** factory-owning SME and mid-sized firms, the Ministry of SMEs and Startups reported **19.5%** smart-factory adoption, with **75.5%** of smart factories still at the **basic stage**.
-- South Korea remains one of the most automated manufacturing economies in the world, with **1,012 industrial robots per 10,000 manufacturing employees** in 2023, according to IFR.
-- South Korea installed **31,444 industrial robots** in 2023, the world’s fourth-largest annual market.
+- South Korea remains one of the most automated manufacturing economies in the world, with **1,012 industrial robots per 10,000 manufacturing employees** in 2023.
+- South Korea installed **31,444 industrial robots** in 2023.
 
-**SME relevance**
-- Under Korea’s SME criteria, manufacturing businesses are generally classified by size using average sales thresholds and an upper asset cap; for many manufacturing categories, the threshold is **up to KRW 120–150 billion in average sales**, with total assets capped at **KRW 500 billion**.
-- This means the overwhelming majority of Korean manufacturing establishments are, in practice, SMEs or small firms, even though not all are relevant to GamiphyAI’s initial workflow.
+For planning purposes, the most defensible Korea beachhead denominator remains the smart-factory adopter pool:
 
-### 3.2 Beachhead SAM definition
+**163,273 × 19.5% ≈ 31,838 sites**.
 
-GamiphyAI is **not** targeting all manufacturing establishments. The realistic initial SAM is:
+Applying a narrower workflow-fit filter of **10% to 20%** for HMLV-ish light assembly, packing, kitting, labeling, and small-parts workflows yields an initial Korea candidate pool of roughly **3,200 to 6,400 sites**.
 
-- Korean SMEs
-- light manufacturing / packaging / kitting / labeling / small-parts assembly
-- repetitive but variable workflows
-- lines where 1–3 workers currently perform tasks manually
-- tasks feasible with a constrained dual-arm or small-arm workcell
+### 3.6 Korea revenue opportunity per site
 
-Because no official Korean statistic directly publishes “high-mix / low-volume packing or kitting lines addressable by two small robot arms,” the following should be treated as a **modeled proxy**, not an official published figure:
+The Korean economics can remain close to the current plan.
 
-- **Top-of-funnel site base:** use total manufacturing establishments only as the broad universe.
-- **Readiness filter:** use the official smart-factory adopter pool as the more realistic digitally-enabled buyer pool.
-- **Workflow filter:** within that pool, assume only a subset matches the initial GamiphyAI workflow archetype.
-
-For planning purposes, the cleaner beachhead denominator is the smart-factory adopter pool: **163,273 × 19.5% ≈ 31,838 sites**. A further workflow filter of **10%–20%** for HMLV-ish light assembly, packing, kitting, labeling, or small-parts workflows implies an initial candidate pool of roughly **3,200–6,400 sites**.
-
-This is more defensible than applying a flat percentage to all manufacturing establishments, because it separates general manufacturing presence from digital readiness and task fit.
-
-### 3.3 Annual revenue opportunity per site
-
-For a realistic SME line, the economic anchor is labor displacement and quality / uptime improvement.
-
-Relevant public wage anchors:
-- Korea’s **2026 minimum wage** is **KRW 10,320/hour**, or **KRW 2,156,880/month** on the official 209-hour basis.
-- Korea’s 2024 average nominal monthly wage across surveyed workers was **KRW 4,079,000**, while a 2021 government manufacturing-policy release cited manufacturing monthly pay around **KRW 3.96M**.
-
-For the target workflow, GamiphyAI should model a modest value case:
-- 2 workers affected
-- blended monthly labor burden of roughly **KRW 2.5M–3.5M per worker** once employer burden, turnover, and coordination cost are included
-- annual economic impact per line roughly **KRW 60M–84M**
-- smart-factory CAPEX benchmarks in Korea indicate projects often sit far above pure software price points, with an average reported total build cost around **KRW 151M** and average company-borne cost around **KRW 96M**, which means GamiphyAI pricing must clearly describe what is included and excluded.
-
-GamiphyAI should target capturing only part of that value.
-
-**Base-case annual GamiphyAI revenue per deployed line**
-- recurring software + support: **KRW 24M–30M / year**
-- initial PoC + deployment fees: additional one-time revenue
-
-### 3.4 Korea TAM / SAM / SOM summary
-
-Using the site-based smart-factory filter:
-
-- **Digitally enabled buyer pool:** about **31,838 sites**
-- **Initial workflow candidate pool:** about **3,200–6,400 sites** after a 10%–20% workflow-fit filter
-- **Base recurring revenue opportunity:** 3,200–6,400 × KRW 24M ≈ **KRW 76.8B–153.6B / year**
-- **Upper recurring case:** 3,200–6,400 × KRW 30M ≈ **KRW 96.0B–192.0B / year**
-
-This is a more credible **Korea-first recurring revenue opportunity** for the beachhead workflow before adding one-time deployment revenue.
-
-### 3.5 SOM (share of market) — realistic capture path
-
-A credible seed-stage capture plan is small.
-
-- **Year 1:** 3 deployed sites on paid recurring contracts
-- **Year 3:** 18 deployed sites on recurring contracts
-- **Year 5:** 70 deployed sites on recurring contracts
+Using Korea’s wage and smart-factory cost structure, a realistic early recurring revenue layer remains:
+- **KRW 24M–30M per year** for software + support,
+- plus one-time PoC and deployment revenue.
 
 That implies:
-- **Year 5 site share:** 70 / 3,200 = **2.2%** at the tighter low-end beachhead, or 70 / 6,400 = **1.1%** at the high-end beachhead
+- **3,200 × KRW 24M = KRW 76.8B** annual recurring opportunity
+- **6,400 × KRW 30M = KRW 192.0B** annual recurring opportunity
 
-This is low enough to be believable.
+This is still the right Korea-first operating case.
+
+### 3.7 SOM: what the company should actually promise
+
+The operational SOM for the first 3–5 years should remain Korea-led.
+
+A believable path remains:
+- **Year 1:** 3 recurring production sites
+- **Year 3:** 18 recurring production sites
+- **Year 5:** 70 recurring production sites
+
+That corresponds to only about **1.1% to 2.2%** of the Korea beachhead SAM by Year 5, which is conservative enough to be believable.
+
+The investor takeaway should be:
+
+> Korea is the first SOM. Global HMLV manufacturing is the long-term TAM.
 
 ---
 
 ## 4. Global TAM for the Robotics Data / Skill Platform
 
-A clean official statistic for “global robotics training-data marketplace TAM” does not exist today. Any claim of a precise standalone number would be false precision.
+The current section is directionally correct, but still too dependent on industrial robot stock alone. That misses a major part of the real opportunity.
 
-The defensible approach is **triangulation**.
+### 4.1 Why the current framing is incomplete
 
-### 4.1 Observable global robotics base
+An investor reading the current draft could conclude that the platform opportunity scales only with installed industrial robots. That is too narrow.
 
-- IFR recorded **4,281,585 industrial robots operating in factories worldwide** in 2023.
-- IFR reported **541,302 industrial robot installations** in 2023.
-- IFR later reported global industrial installations of roughly **542,000** in 2024.
-- IFR’s service-robot reporting shows professional service robot sales passed **205,000 units** in 2023 and reached roughly **200,000 units** in 2024.
+Industrial robot data does matter:
+- the global installed base reached **4,663,773** units in 2024,
+- annual industrial robot installations were **542,076** in 2024,
+- and Asia represented **74%** of new deployments.
 
-### 4.2 Inferred platform TAM
+But those numbers mostly describe the existing automation core. GamiphyAI’s more important long-term upside is in the **broader set of manufacturing sites that do not yet have enough reusable skills, data, and evaluation tooling to automate HMLV work economically**.
 
-If an early third-party data/skill platform eventually serves only a fraction of this installed and newly deployed robotics base, the market is already meaningful.
+### 4.2 HMLV manufacturing is the missing denominator
 
-**Illustrative inference, not an official published market size:**
-- If only **2%** of the ~4.28M industrial installed base plus annual professional-service demand maps to third-party data / skill spend,
-- and annual spend is only **USD 10,000 per customer-equivalent**, 
-- the implied annual market is already on the order of **USD ~0.85B+**.
+The better denominator for the platform story is not “robots installed,” but **sites and workflows that could become robotized if the data, skill, evaluation, and deployment stack becomes cheaper and more reusable**.
 
-However, this should be framed only as a directional ceiling check. The better operating model is site-based, not robot-count based, because software, data, and support are usually bought by a site, line, workcell, or integrator rather than by each robot individually.
+The official enterprise data already show how large that under-automated base is:
+- the EU had **2.2 million** manufacturing enterprises in 2023,
+- the U.S. had **632,885** small manufacturing businesses,
+- Korea had **504,728** manufacturing establishments,
+- Japan’s economy remains overwhelmingly SME-based, with SMEs accounting for **99.7%** of enterprises,
+- and ASEAN economies remain MSME-dense, with MSMEs accounting for roughly **97.2% to 99.9%** of establishments.
 
-**Conclusion:** the global platform TAM is likely large enough to matter, but the company should **not** raise money on a speculative global marketplace story alone. It should raise on the Korea services wedge that creates the proprietary assets needed to earn that platform upside, and it should model adoption on buyer units rather than robot units.
+Most of those firms are not large automotive plants. They are exactly the types of sites where production is fragmented, volumes are lower, SKUs change, and process variability makes generic automation underperform.
+
+### 4.3 Revised platform TAM logic
+
+The platform TAM should therefore be shown through two lenses.
+
+#### Lens A: robot-centric TAM
+This is the narrower, near-term platform TAM tied to the existing installed robotics base.
+
+Illustrative logic:
+- if a small share of industrial robot operators, OEMs, and integrators buys third-party data, skill packages, evaluation tools, or continuous tuning services,
+- then even a modest annual spend per active customer can support a meaningful software and data market.
+
+#### Lens B: workflow-centric HMLV TAM
+This is the larger strategic TAM.
+
+A reasonable seed-to-Series A framing is to model only the observable anchor-market HMLV base and assume a modest annual platform spend for active users.
+
+If only **1%** of the roughly **3.34 million** observable anchor-market manufacturing sites/businesses eventually buy some form of data, skill, evaluation, or retraining layer, that implies roughly **33,000 active buying sites**. At only **$5,000 to $15,000** in annual platform spend per site, that already implies roughly **$167M to $501M** in annual platform revenue potential.
+
+If penetration reaches **5%** over time, the same logic yields roughly:
+- **167,000 active buying sites**, and
+- **$836M to $2.5B** in annual platform spend potential.
+
+These numbers are still conservative because they do **not** include:
+- China,
+- most of India,
+- most of Latin America,
+- a full accounting of ASEAN,
+- or additional revenue from creators, integrators, OEM tooling, certification, benchmark services, and marketplace transaction take rates.
+
+### 4.4 How to present the platform story to investors
+
+The message should be:
+
+1. **Today’s revenue engine** is Korea-first services + software.
+2. **Tomorrow’s platform** is built on repeatable workflows, proprietary task data, evaluation, and versioned skills.
+3. The platform TAM is larger than the currently installed robot base because low-cost intelligent robotization can expand into the HMLV long tail.
+
+That is a much stronger transformation story than a marketplace that depends only on the current industrial-robot installed base.
 
 ---
 
-## 5. Revised Business Model and Pricing
+## 5.1 Revised pricing architecture
 
-The original pricing in `business_plan_template.md` is too low for investor-grade scrutiny. It makes the company look like it is underpricing labor and hiding negative gross margin.
+The Korea pricing section should stay, but it should no longer look Korea-specific. It should be presented as one regional instance of a broader global pricing logic.
 
-### 5.1 Revised pricing architecture
+### 5.1.1 Global pricing principle
 
-#### A. Paid discovery / PoC
-- **Target price:** **KRW 8M–15M** per PoC
-- **Target duration:** 2–4 weeks
-- **Deliverable:** process study, task decomposition, safety and feasibility analysis, KPI baseline, workcell concept, economics memo, go / no-go recommendation
-- **Policy:** partial credit to deployment only for qualified conversions
+GamiphyAI should price around the same rule in every market:
 
-#### B. Deployment / integration
-- **Target service fee:** **KRW 12M–25M** per line/workcell for **software/data enablement only** in simple deployments
-- **Recommended tiered structure:**
-  - **KRW 12M–18M** for light configuration and activation
-  - **KRW 18M–30M+** for heavier commissioning, fixture iteration, and stabilization
-- Covers: system configuration, cell integration, fixtures, test runs, acceptance criteria, operator training, and early stabilization
-- Excludes major hardware, tooling, guarding, safety retrofits, and broad SI scope unless separately quoted
+> Capture a minority share of annual labor, uptime, quality, and throughput value created, while keeping upfront scope narrow enough to make first adoption easy.
 
-#### C. Hardware
-- **Recommendation:** hardware should mostly be **customer-direct purchase** or financed through channel partners.  
-GamiphyAI should avoid carrying inventory unless required by a turnkey contract.
-- If GamiphyAI coordinates procurement, keep economics simple:
-  - referral / integration coordination fee, or
-  - transparent low single-digit to low-teens margin
+The structure is globally consistent:
+- paid discovery / PoC,
+- deployment / activation fee,
+- recurring software / data / skill subscription,
+- recurring support / SLA,
+- hardware kept mostly customer-direct or partner-financed.
 
-#### D. Recurring software / data / skill subscription
-- **Target:** **KRW 1.0M–2.0M / month** per site in early deployments
-- **Recommended entry tier:** start closer to **KRW 0.8M–1.2M / month** for basic-stage factories, with add-ons for connected lines, SKU complexity, evaluation modules, and retraining cadence
-- Includes: skill versioning, data curation, evaluation dashboards, retraining triggers, SKU-change updates, remote issue triage
+What changes by region is not the structure, but the **price band**, driven by wage levels, integration complexity, subsidy availability, and buyer expectations around service.
 
-#### E. Support / maintenance
-- **Target:** **KRW 0.6M–1.2M / month** per site for remote SLA
-- **Important change:** bill **on-site visits separately** after an included threshold. Do not bury unlimited field support inside a small flat fee.
-- Support should be described as uptime diagnostics, remote troubleshooting, software/skill updates, and SLA response coverage rather than as generic robot maintenance.
+### 5.1.2 United States pricing band
 
+Public U.S. labor data support a meaningfully higher pricing envelope than Korea. Production occupations averaged **$50,090** in annual wages in May 2024, and small manufacturing still includes **235,088** small employers with **4.98 million employees**.
 
-### 5.3 Pricing realism summary
+For a cell that affects 1.5–2 production workers, the gross wage value alone can justify meaningful annual software spend before quality and uptime gains are counted.
 
-The proposed architecture is workable only if GamiphyAI is explicit about scope. The PoC range is realistic for a tightly scoped paid discovery engagement. The deployment fee is realistic only when it represents a narrow software/data layer or a very light commissioning package. The recurring model is viable if it is tied to measurable ROI and tiered for basic-stage factories, which still make up most of the Korean smart-factory installed base.
+**Recommended U.S. pricing band**
+- **Paid discovery / PoC:** **$8,000–$20,000**
+- **Deployment / activation:** **$20,000–$50,000** for software/data enablement and light commissioning only
+- **Recurring software / data / skill layer:** **$1,500–$4,000 per month**
+- **Remote support / SLA:** **$750–$2,000 per month**
+- **On-site visits:** billed separately
 
-### 5.2 Why this pricing is better
+This pricing is still modest relative to U.S. labor costs and leaves room for partner-led hardware procurement and integrator margin.
 
-It answers the investor’s key question: **is the PoC and deployment business subsidizing losses?**
+### 5.1.3 Europe pricing band
 
-With the revised model, the answer should be **no**.
+Europe can support a similar or slightly higher recurring model in many countries because labor costs in industry are already high. In 2024, average hourly labour costs in industry were **€33.9** in the EU and **€39.8** in the euro area.
 
-The company should state clearly that:
-- PoCs are intended to be **positive gross margin**
-- deployments are intended to be **positive or near-neutral gross margin**
-- recurring software/support is the **highest-margin revenue layer**
-- hardware is **not** the core business and is not treated as a major profit center
+That means even narrow automation cells can justify recurring software and support spend if the workflow is genuinely repetitive and labor-intensive.
+
+**Recommended Europe pricing band**
+- **Paid discovery / PoC:** **€7,000–€18,000**
+- **Deployment / activation:** **€18,000–€45,000**
+- **Recurring software / data / skill layer:** **€1,200–€3,500 per month**
+- **Remote support / SLA:** **€800–€2,000 per month**
+- **On-site support:** metered or separately quoted
+
+A Europe strategy should also assume more channel dependence than Korea, especially through integrators and machine builders.
+
+### 5.1.4 Asia pricing band
+
+Asia should not be treated as one uniform market.
+
+The right approach is two sub-bands:
+
+#### A. High-income Asia: Korea, Japan, Taiwan, Singapore
+These markets have stronger labor-cost support for automation, but SME price sensitivity remains real.
+
+Japan’s 2024 SME policy framing explicitly highlights labor shortage and the need for labor-saving investment. Korea already shows strong smart-factory policy support and a dense manufacturing base.
+
+**Recommended high-income Asia pricing band**
+- **Paid discovery / PoC:** **$5,000–$15,000 equivalent**
+- **Deployment / activation:** **$12,000–$35,000 equivalent**
+- **Recurring software / data / skill layer:** **$800–$2,500 per month equivalent**
+- **Remote support / SLA:** **$500–$1,500 per month equivalent**
+
+#### B. Cost-sensitive Asia: ASEAN and India entry markets
+These markets are often strategically attractive because of factory density and MSME share, but labor-cost economics are more variable. Adoption often requires either:
+- narrower single-task automation,
+- stronger partner-led sales,
+- lower entry pricing,
+- or financing / RaaS-like structures.
+
+**Recommended cost-sensitive Asia pricing band**
+- **Paid discovery / PoC:** **$3,000–$10,000 equivalent**
+- **Deployment / activation:** **$8,000–$25,000 equivalent**
+- **Recurring software / data / skill layer:** **$400–$1,500 per month equivalent**
+- **Support:** lighter remote tier, with paid field service
+
+The important investor message is that Asia expansion should not assume Korea pricing everywhere. It should assume a **segmented pricing architecture** tied to local labor economics and partner structures.
+
+### 5.1.5 Korea pricing band
+
+The Korea section can remain close to the current plan, because it is already one of the stronger parts of the pricing logic.
+
+**Korea pricing architecture**
+- **Paid discovery / PoC:** **KRW 8M–15M**
+- **Deployment / integration:** **KRW 12M–25M** in simple software/data enablement cases, rising to **KRW 18M–30M+** where commissioning and stabilization are heavier
+- **Recurring software / data / skill layer:** **KRW 1.0M–2.0M per month**
+- **Support / maintenance:** **KRW 0.6M–1.2M per month**
+- **On-site field work:** billed separately after a defined threshold
+
+### 5.1.6 Pricing conclusion investors should hear
+
+GamiphyAI should not be presented as a low-cost Korean integrator with a local pricing model. It should be presented as a company with:
+- a globally portable commercial structure,
+- regionally adjusted pricing bands,
+- Korea as the first wedge,
+- and an eventual shift of revenue mix from services toward recurring software, data, and skills.
+
+That framing makes the transition from services to platform much more credible.
 
 ---
 
@@ -593,19 +724,6 @@ The following points cannot be responsibly fabricated and must be filled in by t
 
 > GamiphyAI is building a Korea-first automation business with a data-platform wedge. We start by solving a narrow set of SME automation problems through paid PoCs and repeatable deployments. Those deployments generate proprietary datasets, benchmark results, and playbooks that later become the foundation of a broader robotics data/skill platform. Services validate the need; the platform compounds the learning.
 
----
-
-
-## 18. Key assumption updates from external validation
-
-### 18.1 Official Korean HMLV statistics
-There is no official Korean national statistic that directly counts "high-mix / low-volume assembly lines" as a statistical category. The plan should therefore avoid implying that such an official number exists. The defensible approach is to use official manufacturing establishment counts, official smart-factory adoption and maturity data, and official or quasi-official smart-factory investment benchmarks as proxies.
-
-### 18.2 Market-size modeling
-The earlier global 2% calculation remains useful as a directional thought experiment, but it should not be treated as the core operating market model. The company should use buyer-unit denominators such as sites, lines, workcells, or integrators for operational planning and reserve robot-count framing for top-down context only.
-
-### 18.3 Pricing
-The pricing stack is directionally realistic if GamiphyAI sells a paid diagnostic PoC, narrowly scoped deployment services, and a clearly defined recurring software/support layer. It becomes much less credible if investors interpret the deployment fee as a full turnkey automation budget.
 
 ## 19. References
 

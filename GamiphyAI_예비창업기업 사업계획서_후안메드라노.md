@@ -38,7 +38,7 @@ GamiphyAI's thesis is to solve all three through one unified platform and sequen
 - **Platform development (gamiphy.ai):** The GamiphyAI platform is under active development. Completed features include user account creation, dataset upload and visualization (with native support for the LeRobot format), and a functional marketplace where users can list, sell, and purchase datasets — including dataset search functionality.
 - **Community outreach:** Active outreach to the LeRobot creator community in South Korea is in progress, with the goal of recruiting initial dataset contributors aligned to validated SME use cases.
 - **SME engagement:** Direct engagement with small Korean SME manufacturers is underway to identify constrained, high-ROI workflows suitable for rapid PoCs — targeting tasks feasible with small robot arms in packing, kitting, labeling, food preparation and light assembly.
-- **Hardware manufacturer engagement:** Conversations with Korean robot hardware manufacturers are ongoing to pilot tailored (custom) dataset generation and distribution workflows through our platform.
+- **Hardware manufacturer engagement:** Conversations with Korean robot hardware manufacturers are ongoing to pilot tailored (custom) dataset generation and distribution workflows through our platform using their hardware
 - **Industry presence:** Active participation in Korean robotics ecosystem events including Korean Robotics Society annual conferences, AI Expo Korea, and Korea MAT — building network and visibility for creator acquisition and go-to-market partnerships.
 - **Founder preparation:** 9 years living in South Korea with business-level Korean proficiency, enabling direct communication with SME owners, partners, regulators, and creator communities.
 
@@ -74,7 +74,7 @@ Korea is the right first market for four structural reasons:
 The most defensible beachhead denominator is the smart-factory adopter pool:
 
 - **Digitally enabled sites:** 163,273 factory-owning firms × 19.5% smart-factory adoption = **~31,838 sites** [14]
-- **Workflow-fit filter (10–20%):** Applying a filter for HMLV workflows (packing, kitting, labeling, light assembly) yields an initial candidate pool of **3,200–6,400 sites**
+- **Workflow-fit filter (10–20%):** Applying a filter for HMLV workflows (packing, kitting, labeling, light assembly, food preparation) yields an initial candidate pool of **3,200–6,400 sites**
 - **Recurring revenue per deployed line:** KRW 24M–30M per year (software + support)
 - **Korea recurring TAM:** KRW 76.8B–192.0B per year, before one-time PoC and deployment fees
 
@@ -82,13 +82,13 @@ The most defensible beachhead denominator is the smart-factory adopter pool:
 
 | Year | Deployed sites (Korea) | Cumulative recurring revenue potential |
 |---:|---:|---|
-| 1 | 3 | KRW ~83M recurring |
-| 3 | 18 | KRW ~460M recurring |
-| 5 | 70 | KRW ~1.9B recurring |
+| 1 | 10 | KRW ~81M recurring |
+| 2 | 100 | KRW ~810M recurring |
+| 3 | 1000 | KRW ~8100B recurring |
 
-Year 5 represents only ~1.1–2.2% of the Korea beachhead SAM — conservative enough to be credible. The global expansion path (High-income Asia → EU → US) adds roughly 130 additional sites by Year 5, for ~200 total recurring sites worldwide.
+Year 3 represents only ~25 - 30 % of the Korea beachhead SAM — conservative enough to be credible. The global expansion path (High-income Asia → EU → US) adds enough additional sites by Year 4 and 5 for global expansion, providing an extensive pool of sites worldwide.
 
-**Brand Dataset Services — a parallel market opportunity**
+**Brand Dataset Services — a massive parallel market opportunity**
 
 The brand-services opportunity is orthogonal to the automation TAM because it targets different buyers (marketing/product teams vs. operations) and different pain points (future AI-robot compatibility vs. current labor cost). The addressable market is every manufacturer whose products will interact with AI-powered robots.
 
@@ -101,14 +101,24 @@ The brand-services opportunity is orthogonal to the automation TAM because it ta
 | Commercial & institutional (restaurant, medical, laboratory equipment) | ~650 |
 | Automotive & transportation components (Tier 1 suppliers, component specialists) | ~550 |
 | Packaging & materials | ~350 |
-| **Total addressable brands globally** | **~3,000** |
+| **Total initial addressable brands globally** | **~3,100** |
+
+*Conservative Brand Dataset Services TAM model: Pricing Tiers by Company Revenue*
+
+| Company Annual Revenue | Classification | Estimated Annual Dataset Fee | Estimated Brand Count | Segment TAM |
+|---|---|---:|---:|---:|
+| $10B+ | Tier 1 Global Leaders | $800K - $2.0M | 200 | $160M - $400M |
+| $1B - $10B | Tier 2 Mid-Market | $250K - $800K | 650 | $163M - $520M |
+| $100M - $1B | Tier 3 Specialists | $50K - $250K | 1,000 | $50M - $250M |
+| $10M - $100M | Tier 4 Small/Regional | $25K - $75K | 1,200 | $30M - $90M |
+| **TOTAL** | | | **~3,050** | **$403M - $1.26B** |
 
 *Conservative Brand Dataset Services TAM model:*
 
 - Tier 1 global brands (top 10%): USD 500K–2M/year per brand
 - Tier 2 regional/mid-market brands (next 30%): USD 150K–500K/year per brand
 - Tier 3 specialist brands (remaining 60%): USD 50K–150K/year per brand
-- **Base-case TAM at steady state: ~USD 575M annually** (150 Tier 1 × $1M + 900 Tier 2 × $300K + 1,950 Tier 3 × $80K)
+- **Base-case TAM at steady state: ~USD 570M annually** (150 Tier 1 × $1M + 500 Tier 2 × $500K + 800 Tier 3 × $150K + 1000 Tier 4 x $50K)
 
 *Brand Dataset Services SAM/SOM (phased adoption):*
 

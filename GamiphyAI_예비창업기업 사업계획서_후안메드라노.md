@@ -28,23 +28,23 @@ Large language models scaled on internet-scale text corpora — GPT-3 was traine
 The core business problem is not that robots are unavailable. It is that automation in high-mix, low-volume (HMLV) manufacturing usually breaks on engineering cost, integration burden, changeover time, and maintenance complexity — especially for smaller manufacturers and variable workflows. This creates three linked bottlenecks:
 
 1. **SME automation bottleneck.** Smaller manufacturers cannot justify traditional fixed automation for repetitive but variable tasks. They face decision friction (no fast, low-risk way to validate ROI), high employee rotation in low-wage repetitive roles, and changeover costs that destroy payback.
-2. **Robot-data bottleneck.** Robotics teams and integrators lack a fast way to source, validate, version, license, and improve task-specific data and deployable skills. There is no equivalent of an "app store" for robot capabilities.
+2. **Robot-data bottleneck.** Robotics teams and integrators lack a large-scale and fast platform to generate, source, validate, version, license, and improve task-specific data and deployable skills. There is no equivalent of an "app store" for robot capabilities.
 3. **Brand invisibility in training data.** As embodied AI systems scale, products that are well-represented in training datasets will have first-mover advantages in robot compatibility. Products that are absent will face a compatibility tax — integration delays, custom engineering costs, or exclusion from automated workflows.
 
-GamiphyAI's thesis is to solve all three through one unified sequence: start from real customer workflows, use paid PoCs to define KPIs and collect proprietary data, convert validated workflows into repeatable skill and deployment packages, and then turn those assets into a platform that serves automation customers, data creators, integrators, and product brands.
+GamiphyAI's thesis is to solve all three through one unified platform and sequence: start from real customer workflows, use paid PoCs to define KPIs and collect proprietary data, convert validated workflows into repeatable skill and deployment packages, identify brand opportunities and representation gaps and then turn those assets into a platform that serves automation customers, data creators, integrators, and product brands.
 
 **Pre-application progress and track record**
 
 - **Platform development (gamiphy.ai):** The GamiphyAI platform is under active development. Completed features include user account creation, dataset upload and visualization (with native support for the LeRobot format), and a functional marketplace where users can list, sell, and purchase datasets — including dataset search functionality.
 - **Community outreach:** Active outreach to the LeRobot creator community in South Korea is in progress, with the goal of recruiting initial dataset contributors aligned to validated SME use cases.
-- **SME engagement:** Direct engagement with small Korean manufacturers is underway to identify constrained, high-ROI workflows suitable for rapid PoCs — targeting tasks feasible with small robot arms in packing, kitting, labeling, and light assembly.
-- **Hardware manufacturer engagement:** Conversations with hardware manufacturers are ongoing to pilot dataset administration and distribution workflows through the platform.
+- **SME engagement:** Direct engagement with small Korean SME manufacturers is underway to identify constrained, high-ROI workflows suitable for rapid PoCs — targeting tasks feasible with small robot arms in packing, kitting, labeling, food preparation and light assembly.
+- **Hardware manufacturer engagement:** Conversations with Korean robot hardware manufacturers are ongoing to pilot tailored (custom) dataset generation and distribution workflows through our platform.
 - **Industry presence:** Active participation in Korean robotics ecosystem events including Korean Robotics Society annual conferences, AI Expo Korea, and Korea MAT — building network and visibility for creator acquisition and go-to-market partnerships.
 - **Founder preparation:** 9 years living in South Korea with business-level Korean proficiency, enabling direct communication with SME owners, partners, regulators, and creator communities.
 
 ##### 창업아이템의 목표시장 현황 분석
 
-> **Key point:** Korea is the ideal beachhead — world's highest robot density (1,012 per 10K workers), yet 75.5% of smart factories remain at basic level. The global opportunity spans millions of under-automated SME manufacturing sites plus ~3,000 product brands that will need dataset representation as robots interact with their products.
+> **Key point:** Korea is the ideal beachhead — world's highest robot density (1,012 per 10K workers), yet 75.5% of smart factories remain at basic level. Robots are widely accepted in society reducing friction and rejection. The global opportunity spans millions of under-automated SME manufacturing sites plus >3,000 major product brands that will need dataset representation as robots become part of daily life and need to interact with their products.
 
 **Global context — the scale of the HMLV manufacturing opportunity**
 
@@ -54,9 +54,9 @@ Globally, SMEs account for roughly 90% of businesses and more than 50% of employ
 |---|---:|---|
 | European Union | 2,200,000 (2023) [2] | €33.9/hour avg industry labour cost (2024) [11] |
 | United States | 632,885 small mfg businesses [15] | $29.77/hour avg mfg production earnings (Feb 2026) [10] |
-| China | 4,048,000 industrial enterprises (2023) [3] | — |
-| Japan | 176,858 establishments with 4+ persons (2021) [4] | SMEs = 99.7% of all enterprises |
-| South Korea | 504,728 manufacturing establishments (2024 prelim) [13] | World's highest robot density |
+| China | 4,048,000 industrial enterprises (2023) [3] | $2-8/hour avg mfg labor cost |
+| Japan | 176,858 establishments with 4+ persons (2021) [4] | $9.5 – $13/hour,  SMEs = 99.7% of all enterprises |
+| South Korea | 504,728 manufacturing establishments (2024 prelim) [13] | $8 - 16/hour, World's highest robot density |
 
 Robot adoption is real but far from saturated: global average density is only 162 robots per 10,000 manufacturing employees [6], and the global industrial robot stock reached 4.28 million operating units in 2023 [5]. The base-case global recurring TAM for the HMLV workflow offering is approximately **USD 31.5B per year**, with a conservative sensitivity range of USD 14B–81B depending on workflow fit and regional assumptions [1][2][3][4][6][10][11][15][16].
 

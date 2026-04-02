@@ -338,6 +338,55 @@ A coherent regional expansion path is:
 - **EU:** selected manufacturing corridors where labour costs support ROI and SMEs are numerous [2][11]. Strong presence of industrial equipment and automotive suppliers (Bosch, Siemens, Kärcher, Würth, Festo).
 - **US:** channel-led entry once the workflow package is mature enough to survive longer sales cycles and higher compliance expectations [10]. Focus on consumer brands and industrial OEMs.
 
+
+##### Market Differentiation and Commercialization Strategy
+- **Customer alternatives today (and why they fall short for SME high-mix work):**
+  - **Alternative 1: Traditional fixed automation (custom cells, conveyors, PLC/vision, fixtures)**
+    - **Why it wins:** Extremely high reliability, robustness, availability, and predictable cycle-time for stable, high-volume lines.
+    - **Why it fails for SMEs:** High capex and engineering cost, long design/installation cycles, and low flexibility when SKUs/packaging/processes change.
+    - **GamiphyAI edge:** One-day installation for constrained workcells, ≥10x lower upfront integration fee for SMEs, and flexibility for tasks that do not require extreme precision—validated through rapid PoCs and iterated via data/skill updates.
+
+  - **Alternative 2: “Dataset marketplace” platforms (generic robotics/physical-AI datasets)**
+    - **Example:** ExchAInge positions itself as “the marketplace for verified physical AI datasets,” emphasizing hardware verification, AI-powered QA, and monetization for creators.
+    - **Web:** `https://exchainge.net/` (overview), `https://exchainge.net/how-it-works` (workflow)
+    - **Why it wins:** Provides a buying/selling mechanism for datasets and encourages monetization.
+    - **Why it fails for SME automation:** Does not start from specific SME workloads and “definition-of-done” KPIs; lacks onsite constraints, exception handling, and deployment responsibility; data may not map cleanly to repeatable production outcomes.
+    - **GamiphyAI edge:** Dataset marketplace is tied to real SME use cases and PoCs—data is collected/curated to satisfy workload-level KPIs and is continuously refined through real deployments.
+
+  - **Alternative 3: “Marketplace coming soon / waitlist” entrants**
+    - **Example:** RobotDataMarket positions itself as “the marketplace for robotics training data” and currently indicates datasets are “coming soon.”
+    - **Web:** `https://www.robotdatamarket.com/`
+    - **Why it wins:** Clear positioning and early community building.
+    - **Why it fails for SME automation:** Not yet proven in production; and (as a marketplace-only approach) still lacks the SME-to-creator closed loop that ties data to measurable automation outcomes.
+    - **GamiphyAI edge:** We validate the platform through real SME PoCs first, creating a repeatable loop where dataset supply directly unlocks contracted automation outcomes.
+
+  - **Alternative 4: Full-stack data engines / teleoperation service providers**
+    - **Example:** SignIQ Lab markets an end-to-end data engine for sim-to-real transfer, offering a data corpus plus teleoperation services and processing pipelines (including “LeRobot ready” data positioning).
+    - **Web:** `https://signiq-lab.ai/` (overview), `https://platform.signiq-lab.ai/` (platform)
+    - **Why it wins:** High-quality multi-modal data at scale, strong infrastructure, and professional service delivery.
+    - **Why it fails for SME automation:** Geared toward large robotics teams and large-scale data programs; higher price points and longer cycles; not optimized for Korean SMEs requiring fast, low-cost, “finish-the-workload” outcomes.
+    - **GamiphyAI edge:** Korea-first SME focus, constrained tasks, small datasets, and rapid PoC-to-deployment conversion with ongoing monthly support.
+
+  - **Alternative 5: Outsourced data collection networks**
+    - **Example:** Sensei positions itself as “Scale AI for robotics data,” combining low-cost collection hardware and a network of paid human operators to fulfill data-generation requests.
+    - **Web:** `https://senseirobotics.com/`, `https://www.ycombinator.com/companies/sensei`, `https://www.ycombinator.com/launches/Ljf-sensei-robotics-training-data-at-scale`
+    - **Why it wins:** Scales data generation and reduces collection cost/time for robotics companies.
+    - **Why it fails for SME automation:** Primarily solves data supply for robotics teams rather than solving the deployment and operations problem for SME production lines.
+    - **GamiphyAI edge:** We combine SME need discovery + PoC + deployment + ongoing maintenance with a marketplace that recruits creators specifically for validated SME use cases.
+
+- **Differentiation (what we do uniquely):**
+  - **Closed-loop marketplace tied to real outcomes:** We connect SME automation “jobs-to-be-done” with creators who generate targeted datasets and skills, and we validate value through real PoCs and workload-level KPIs.
+  - **Constrained, repeatable deployments:** We standardize the initial workcell pattern (two small arms, minimal sensing, task constraints) to enable fast installs and low integration fees.
+  - **Reliability definition aligned to SMEs:** Success is defined as end-to-end unit completion over full workloads, not just lab-cycle demos.
+  - **Local execution in South Korea:** Faster customer access, shorter feedback loops, and community-building with local robot creators.
+
+- **Commercialization & expansion strategy (entry → scale):**
+  - **Production/launch:** Convert the first 5 constrained use cases into measurable PoCs (Month 1), then expand to ≥10 controlled-variable use cases (Month 3) and standardize playbooks for repeat deployments.
+  - **PR/marketing:** Publish case-study style results (before/after, workload completion, reliability, human-labor reduction) to attract both SME owners and creators; run targeted campaigns in Korea robot-creator communities to recruit dataset contributors aligned to validated use cases.
+  - **Distribution/sales:** Direct outreach to SME owners (decision makers) for PoC intake; partner with local automation integrators or hardware resellers for procurement and on-site installation support where beneficial.
+  - **Revenue strategy:** Low upfront PoC + low integration fee to reduce adoption friction, followed by recurring subscription (data/skills) + maintenance/support to monetize continuous improvement and operational reliability.
+  - **Network acquisition:** Build a creator pipeline that scales with demand: as more SMEs define use cases, creators receive clearer tasks and compensation; as more creators contribute, PoCs become faster/cheaper and reuse increases.
+
 ## 9. Business Model and Pricing
 
 Pricing should be ROI-anchored and region-calibrated for automation services, and **competitive-necessity-anchored** for brand services.
@@ -664,13 +713,33 @@ These are primarily **contractual and operational governance** rather than physi
 
 The current founding profile is strong on robotics and systems, but investors will still ask about role clarity, operating ownership, and field execution capacity.
 
+Robotics Technology Officer: Juan Medrano holds a Ph.D. (Candidate) in Mechanical Engineering from Sungkyunkwan University, focused on machine learning for computer vision and robotic manipulation, and an M.Sc. in Mechatronics Engineering. He has 7+ years of industry experience in robotics perception, including a role as Perception Engineer II at Agility Robotics, where he developed detection, segmentation, and 6DoF pose estimation systems for the Digit humanoid robot — deployed in live GXO warehouse operations. During this work he was directly involved in collecting large-scale, multi-modal datasets for humanoid robots, including visual (RGB, depth), inertial (IMU), kinematics (joint angles), and world-state data (objects, other robots, people), all used for training machine learning models for manipulation and locomotion. His prior research also includes building datasets for autonomous drone navigation for machine learning applications. This first-hand experience with the full data pipeline — collection, annotation, format standardization, and ML integration — directly informs the platform's design.
+
+Hardware Technology Officer:  Jose Bagur is a Mechatronics Engineer from Universidad del Valle de Guatemala (UVG) and current Coordinator of the UVG Aerospace Laboratory. He is the lead of the Quetzal-1 and Quetzal-2 CubeSat programs — Guatemala's first and second national satellites. Quetzal-1 successfully launched aboard SpaceX CRS-20 in 2020, was deployed from the ISS's Kibo module, and operated for 211 days in orbit, validating all onboard systems and winning the CubeSat Delivery Prize from Arizona State University. He led the hardware team (ADCS, EPS, communications) for a team of ~100 students and researchers. Quetzal-2 (currently in development, selected by UNOOSA and EXOlaunch) incorporates on-board AI for image analysis. His deep expertise in embedded systems, hardware design, sensor integration, and real-world system deployment is directly applicable to the hardware-side requirements of the GamiphyAI platform.
+
+- Describe the representative's capabilities related to implementing and commercializing the product/service
+- **Representative (Juan Medrano) commercialization capability:**
+  - **Local market access (Korea):** 9 years living in South Korea with business-level proficiency in Korean and English, enabling direct communication with SME owners, partners, and creator communities.
+  - **Technical credibility in robotics:** M.Sc. and Ph.D. candidate in Mechanical Engineering at Sungkyunkwan University, focused on robotics and machine learning for real-world manipulation/perception.
+  - **Proven industry execution:** ~3 years at Agility Robotics as a Perception Engineer, building ML-driven perception systems used to enable Digit humanoid robot operation in real warehouse deployments.
+  - **Community and ecosystem building:** Active participation and network-building in the Korean robotics ecosystem through community initiatives and recurring presence at major industry events (e.g., Korean Robotics Society annual events, AI Expo, Korea MAT), supporting creator acquisition and go-to-market partnerships.
+
+Team Composition (Team)
+
+| No. | Position | Responsibilities | Capabilities (Career & Education) | Joining Status |
+|-----|----------|-----------------|-----------------------------------|----------------|
+| 1 | Robotics Lead | Robotics PoCs, data/skill pipeline, VLA controller integration, deployment playbooks for SME automation | Juan Medrano — Ph.D. (Candidate) Mechanical Engineering (ML for CV & robotic manipulation), M.Sc. Mechatronics; 7+ years robotics perception incl. Agility Robotics (Digit) and large-scale multi-modal dataset creation | Joined |
+| 2 | Hardware Lead | Robot hardware selection/integration, sensing stack, EOAT/fixtures, embedded/system reliability for PoCs and deployments | Jose Bagur — Mechatronics Engineer (UVG), Coordinator UVG Aerospace Lab; lead of Quetzal-1/2 CubeSat programs; deep embedded/sensor/system deployment expertise | Joined |
+| 3 | Platform Lead | Lead development of GamiphyAI data exchange platform, marketplace mechanics, data validation flows, and product delivery | Senior full-stack / platform engineer (TBD) | Planned (next months) |
+| 4 | Commercial Lead | Lead SME customer acquisition, PoC scoping/contracts, partnerships (integrators/hardware), pricing and recurring revenue growth | Business development / sales lead (TBD) | Planned (next months) |
+
 The first 12-month hiring plan should be:
 
 1. BD / commercial support (focus: SME automation sales)
 2. Field robotics engineer
 3. Senior full-stack or platform engineer
 4. **Brand partnerships lead** (focus: product manufacturer outreach, strategic account management)
-5. Part-time finance and operations support
+5. Finance and operations support
 
 The plan also needs named advisors before formal fundraising:
 - one Korean manufacturing or factory-operations advisor;

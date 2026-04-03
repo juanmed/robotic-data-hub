@@ -65,7 +65,7 @@ Robot adoption is real but far from saturated: global average density is only 16
 Korea is the right first market for four structural reasons:
 
 1. **World-leading robot density:** 1,012 robots per 10,000 manufacturing employees — the highest in the world [6], making it the strongest proving ground for automation products.
-2. **Large SME manufacturing base:** Statistics Korea reported 504,728 manufacturing establishments in preliminary 2024 data [13]. Among 163,273 factory-owning SME and mid-sized firms, 19.5% have adopted smart factories — but **75.5% of those smart factories remain at the basic stage** [14].
+2. **Large, dense SME manufacturing base:** Statistics Korea reported 504,728 manufacturing establishments in preliminary 2024 data [13]. Among 163,273 factory-owning SME and mid-sized firms, 19.5% have adopted smart factories — but **75.5% of those smart factories remain at the basic stage** [14]. Small country, industrial clusters, high SME density.
 3. **Fourth-largest robot market:** Korea installed 31,444 industrial robots in 2023 [5][6], demonstrating strong buyer appetite.
 4. **Government support alignment:** Korea's 스마트공장 보급·확산사업 and related programs by the Ministry of SMEs and Startups support automation adoption, and GamiphyAI's PoC and deployment structure can align with these frameworks.
 
@@ -84,9 +84,9 @@ The most defensible beachhead denominator is the smart-factory adopter pool:
 |---:|---:|---|
 | 1 | 10 | KRW ~81M recurring |
 | 2 | 100 | KRW ~810M recurring |
-| 3 | 1000 | KRW ~8100B recurring |
+| 3 | 1000 | KRW ~8100M recurring |
 
-Year 3 represents only ~25 - 30 % of the Korea beachhead SAM — conservative enough to be credible. The global expansion path (High-income Asia → EU → US) adds enough additional sites by Year 4 and 5 for global expansion, providing an extensive pool of sites worldwide.
+Year 3 represents only ~25 - 30 % of the Korea beachhead SAM. The global expansion path (High-income Asia → EU → US) adds enough additional sites by Year 4 and 5 for global expansion, providing an extensive pool of sites worldwide.
 
 **Brand Dataset Services — a massive parallel market opportunity**
 
@@ -142,10 +142,10 @@ This revenue stream draws from marketing/product budgets rather than operations 
 
 GamiphyAI operates a four-pillar revenue model distinct from traditional automation companies:
 
-1. **Robot Consumers** (SME factories) pay for automation deployments targeting repetitive but variable manufacturing workflows (packing, kitting, labeling, light assembly, small-parts handling), plus recurring subscription and support contracts.
-2. **Robot Creators** (data providers, labs) earn revenue by providing validated task data and deployable skills to the platform.
+1. **Robot Consumers** (SME factories) pay for automation deployments targeting repetitive but variable manufacturing workflows (packing, kitting, labeling, light assembly, small-parts handling, food preparation), plus recurring subscription and support contracts.
+2. **Robot Creators** (data providers, labs) earn revenue by providing validated task data, algorithms and deployable skills to the platform.
 3. **Platform Services** capture transaction fees, licensing revenue, and access fees from integrators, OEMs, and developers who consume validated skills and benchmarks.
-4. **Product Brands/OEMs** (future expansion) pay for dataset representation services to ensure their products remain compatible with AI-powered robots — a brand insurance model addressing the emerging competitive necessity of dataset inclusion.
+4. **Product Brands/OEMs** pay for dataset representation services to ensure their products remain compatible with AI-powered robots — a brand insurance model addressing the emerging competitive necessity of dataset inclusion.
 
 This is not a broad marketplace on Day 1. It is a **services-led wedge strategy** that generates proprietary data through paid automation deployments, then productizes repeatable elements into platform layers. This sequence deliberately avoids the cold-start failure mode of two-sided industrial marketplaces [9].
 
@@ -185,33 +185,9 @@ The technical differentiation stems from addressing robotics' fundamental data s
 
 A test-validated robotics data and skill platform demonstrated through:
 0. At least 30 robot creators with real accounts in our platform
-1. At least 3 challenges in progress in our platform for real, paid PoCs with Korean SME customers, with measurable KPI results
+1. At least 3 self-sponsored SME challenge tasks in our platform targeting constrained, well defined operation for real, paid PoCs with Korean customers and measurable KPI results
 2. A growing library of curated, task-specific datasets contributed by robot creators and validated through real deployments
-4. 15–20 structured SME discovery interviews
-
-
-**Development milestones**
-
-*First 90 days:*
-- 15–20 structured SME discovery interviews
-- 2 signed paid PoC scoping agreements
-- 3–5 seed creator or lab relationships (dataset contributors)
-- 1 Korean safety / compliance checklist (KOSHA alignment)
-- 1 standard KPI and ROI reporting template
-
-*By 12 months:*
-- 6 paid PoCs completed
-- 3 converted deployments with recurring contracts
-- 6 recurring support or subscription contracts
-- 20+ curated datasets or task variants on platform
-- 1 reusable deployment playbook for a named workflow class
-
-*By 24 months:*
-- 15 deployed automation sites
-- 50+ workflow datasets on platform
-- 3 standardized skill packages
-- First brand dataset services pilot (targeting 1–2 anchor customers)
-- Published benchmark showing dataset quality impact on deployment success rates
+4. 15–20 structured SME discovery interviews for future task exploration and dataset generation efforts
 
 **Development method — services-to-platform sequence**
 
@@ -250,7 +226,7 @@ Pre-deployment preparation phase. Platform (gamiphy.ai) is functional with core 
 |---|---|---|---|
 | Robot Consumers | SME factory owners / ops managers | Can't afford or justify traditional automation for variable workflows | PoC fees + deployment + recurring subscription |
 | Robot Creators | Labs, researchers, data providers | Have robotics data but no monetization channel | Platform transaction fees, creator incentives |
-| Platform Participants | Integrators, OEMs, developers | Need validated skills and benchmarks, not raw data | Licensing fees, API access |
+| Platform Participants | Integrators, OEMs, developers | Need validated skills and benchmarks, not only raw data | Licensing fees, API access |
 | Product Brands | VP Product / Marketing at manufacturers | Future robot incompatibility risk | Dataset representation subscriptions (future) |
 
 **Competitive differentiation**
@@ -331,8 +307,8 @@ Converting brand revenue at ~KRW 1,300/USD:
 |-----|------|-----------|--------------------------|-----------|
 | 1 | Robotics Lead (대표) | Robotics PoCs, data/skill pipeline, VLA controller integration, deployment playbooks, SME customer relationships | Juan Medrano — Ph.D. (Candidate) Mechanical Eng. (ML for CV & robotic manipulation), M.Sc. Mechatronics; 7+ yrs robotics perception incl. Agility Robotics (Digit humanoid, warehouse deployment); large-scale multi-modal dataset creation; 9 yrs in Korea, business-level Korean | 완료 |
 | 2 | Hardware Lead | Robot hardware selection/integration, sensing stack, EOAT/fixtures, embedded/system reliability for PoCs and deployments | Jose Bagur — Mechatronics Engineer (UVG), Coordinator UVG Aerospace Lab; lead of Quetzal-1/2 CubeSat programs (Guatemala's 1st & 2nd national satellites; SpaceX CRS-20 launch); deep embedded/sensor/system deployment expertise | 완료 |
-| 3 | Platform Lead | Lead development of GamiphyAI data exchange platform, marketplace mechanics, data validation flows | Senior full-stack / platform engineer (TBD) | 예정('26.Q3) |
-| 4 | Commercial Lead | SME customer acquisition, PoC scoping/contracts, partnerships, pricing and recurring revenue growth | Business development / sales lead (TBD) | 예정('26.Q3) |
+| 3 | Platform Lead | Lead development of GamiphyAI data exchange platform, marketplace mechanics, data validation flows | Senior full-stack / platform engineer (TBD) | 예정('26.Q2) |
+| 4 | Commercial Lead | SME customer acquisition, PoC scoping/contracts, partnerships, pricing and recurring revenue growth | Business development / sales lead (TBD) | 예정('26.Q2) |
 
 **대표자가 보유하고 있는 창업아이템 구현 및 판매 관련 역량 등**
 

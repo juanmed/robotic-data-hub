@@ -7,8 +7,7 @@
 | **기술분야** | Robot data and skills for Physical AI |
 | **팀 명 (예비)** | 3 |
 | **E‑mail / 휴대전화번호** | fer@gamiphy.ai / 010 8505 9134 |
-| **아이템 개요** | Workflow-centric robotics data and skill platform that converts paid SME automation deployments into reusable datasets, skill packages, and deployment playbooks — starting from Korea's under-automated HMLV manufacturing base and scaling globally. |
-
+| **아이템 개요** | GamiphyAI is the marketplace for physical AI: discover how robots can automate your SME operations, get real-world datasets and solutions from robot creators, and assess and improve your brand visilibity in a future powered by physical AI. 
 ---
 
 ### 아이템 소개
@@ -80,11 +79,11 @@ The most defensible beachhead denominator is the smart-factory adopter pool:
 
 **Serviceable Obtainable Market (SOM) — conservative capture plan:**
 
-| Year | Deployed sites (Korea) | Cumulative recurring revenue potential |
+| Year | Deployed sites (Korea) | Cumulative  revenue potential |
 |---:|---:|---|
-| 1 | 10 | KRW ~81M recurring |
-| 2 | 100 | KRW ~810M recurring |
-| 3 | 1000 | KRW ~8100M recurring |
+| 1 | 10 | KRW ~270M  |
+| 2 | 100 | KRW ~2700M  |
+| 3 | 1000 | KRW ~27B  |
 
 Year 3 represents only ~25 - 30 % of the Korea beachhead SAM. The global expansion path (High-income Asia → EU → US) adds enough additional sites by Year 4 and 5 for global expansion, providing an extensive pool of sites worldwide.
 
@@ -107,18 +106,18 @@ The brand-services opportunity is orthogonal to the automation TAM because it ta
 
 | Company Annual Revenue | Classification | Estimated Annual Dataset Fee | Estimated Brand Count | Segment TAM |
 |---|---|---:|---:|---:|
-| $10B+ | Tier 1 Global Leaders | $800K - $2.0M | 200 | $160M - $400M |
-| $1B - $10B | Tier 2 Mid-Market | $250K - $800K | 650 | $163M - $520M |
-| $100M - $1B | Tier 3 Specialists | $50K - $250K | 1,000 | $50M - $250M |
-| $10M - $100M | Tier 4 Small/Regional | $25K - $75K | 1,200 | $30M - $90M |
-| **TOTAL** | | | **~3,050** | **$403M - $1.26B** |
+| $10B+ | Tier 1 Global Leaders | $10M - $20M | 200 | $2B - $4B |
+| $1B - $10B | Tier 2 Mid-Market | $2M - $5M | 650 | $1.3B - $3.25B |
+| $100M - $1B | Tier 3 Specialists | $250K - $1M | 1,000 | $250M - $1B |
+| $10M - $100M | Tier 4 Small/Regional | $25K - $250K | 1,200 | $30M - $300M |
+| **TOTAL** | | | **~3,050** | **$3.58B - $8.55B** |
 
 *Conservative Brand Dataset Services TAM model:*
 
 - Tier 1 global brands (top 10%): USD 500K–2M/year per brand
 - Tier 2 regional/mid-market brands (next 30%): USD 150K–500K/year per brand
 - Tier 3 specialist brands (remaining 60%): USD 50K–150K/year per brand
-- **Base-case TAM at steady state: ~USD 570M annually** (150 Tier 1 × $1M + 500 Tier 2 × $500K + 800 Tier 3 × $150K + 1000 Tier 4 x $50K)
+- **Base-case TAM at steady state: ~$2.8B annually** (150 Tier 1 × $10M + 500 Tier 2 × $2M + 800 Tier 3 × $250K + 1000 Tier 4 x $100K)
 
 *Brand Dataset Services SAM/SOM (phased adoption):*
 
@@ -142,8 +141,8 @@ This revenue stream draws from marketing/product budgets rather than operations 
 
 GamiphyAI operates a four-pillar revenue model distinct from traditional automation companies:
 
-1. **Robot Consumers** (SME factories) pay for automation deployments targeting repetitive but variable manufacturing workflows (packing, kitting, labeling, light assembly, small-parts handling, food preparation), plus recurring subscription and support contracts.
-2. **Robot Creators** (data providers, labs) earn revenue by providing validated task data, algorithms and deployable skills to the platform.
+1. **Automation Consumers** (SME factories) pay for automation deployments targeting repetitive but variable manufacturing workflows (packing, kitting, labeling, light assembly, small-parts handling, food preparation), plus recurring subscription and support contracts.
+2. **Robot Creators** a new type of "influencer" (data providers, labs, specialized companies) earn revenue by providing validated task data, algorithms and deployable skills to the platform.
 3. **Platform Services** capture transaction fees, licensing revenue, and access fees from integrators, OEMs, and developers who consume validated skills and benchmarks.
 4. **Product Brands/OEMs** pay for dataset representation services to ensure their products remain compatible with AI-powered robots — a brand insurance model addressing the emerging competitive necessity of dataset inclusion.
 
@@ -164,8 +163,8 @@ PoCs are designed to be positive gross margin. Deployments target positive or ne
 **Market entry status and progress**
 
 - **Platform (gamiphy.ai):** Functional with user accounts, dataset upload/visualization (LeRobot format native support), marketplace listing/purchase/sale, and dataset search
-- **Strategy:** Korea-first, leveraging the world's most robot-dense market. Services-to-platform transition rather than marketplace-first — learning from industrial platform failures that launched without proven demand or quality standards
-- **Current activities:** SME discovery interviews to identify constrained workflows; LeRobot community outreach for creator recruitment; hardware manufacturer conversations for dataset distribution pilots
+- **Strategy:** Korea-first, leveraging the world's most robot-dense market and a society that adopts new technologies extremely fast. Services-to-platform transition rather than marketplace-first — learning from industrial platform failures that launched without proven demand or quality standards
+- **Current activities:** Platform and Marketplace creation; SME discovery interviews to identify constrained workflows; LeRobot community outreach for creator recruitment; hardware manufacturer conversations for dataset distribution pilots
 
 **Robotics technologies possessed**
 
@@ -184,10 +183,12 @@ The technical differentiation stems from addressing robotics' fundamental data s
 **Final deliverable (within agreement period)**
 
 A test-validated robotics data and skill platform demonstrated through:
-0. At least 30 robot creators with real accounts in our platform
-1. At least 3 self-sponsored SME challenge tasks in our platform targeting constrained, well defined operation for real, paid PoCs with Korean customers and measurable KPI results
-2. A growing library of curated, task-specific datasets contributed by robot creators and validated through real deployments
+1. At least 30 robot creators with real accounts in our platform
+2. At least 3 self-sponsored SME challenge tasks in our platform targeting constrained, well defined operation for real, paid PoCs with Korean customers and measurable KPI results
+3. A growing library of curated, task-specific datasets contributed by robot creators and validated through real deployments
 4. 15–20 structured SME discovery interviews for future task exploration and dataset generation efforts
+5. AI based automation proposal platform: user inputs their task in text+video+image format, platform generates a simulation based robot solution environment
+6. AI based assessment of brand visibility in public robot datasets
 
 **Development method — services-to-platform sequence**
 
@@ -198,6 +199,32 @@ The approach is specifically designed to avoid the two-sided platform cold-start
 3. Validate workflows against real KPIs in production environments
 4. Extract repeatable patterns into standardized skill packages
 5. Build platform infrastructure using proven, production-tested components
+
+**Development milestones**
+
+***First 90 days:***
+
+- 15–20 structured SME discovery interviews
+- 3 signed paid PoC agreements
+- 200 seed creator or lab relationships (dataset contributors)
+- 1 Korean safety / compliance checklist (KOSHA alignment)
+- 1 standard KPI and ROI reporting template
+
+***By 12 months:***
+
+- 12 paid PoCs completed
+- 3 converted deployments with recurring contracts
+- 3 recurring support or subscription contracts
+- 20+ curated tasks and 100+ datasets variants on platform
+- 1 reusable deployment playbook for a named workflow class
+
+***By 24 months:***
+
+- 100 deployed automation sites
+- 50+ workflow datasets on platform
+- 3 standardized skill packages
+- First brand dataset services pilot (targeting 1–2 anchor customers)
+- Published benchmark showing dataset quality impact on deployment success rates
 
 **Current development stage**
 
@@ -247,8 +274,8 @@ Pre-deployment preparation phase. Platform (gamiphy.ai) is functional with core 
 **Commercialization strategy**
 
 - **Production & launch:** Services-first approach. First 3–5 Korea deployments de-risk platform development while generating revenue and proprietary data immediately.
-- **Promotion & marketing:** Published case studies with before/after KPIs (workload completion, reliability, labor reduction). Targeted campaigns in Korean robot-creator communities. Conference thought leadership at Korean Robotics Society, AI Expo Korea, and Korea MAT.
-- **Distribution & sales:** Direct outreach to SME owners (fast decision-makers) for PoC intake. Partner with local automation integrators and hardware resellers for procurement and installation support. Platform API/licensing access for integrators and developers.
+- **Promotion & marketing:** Published case studies with before/after KPIs (workload completion, reliability, labor reduction). Targeted campaigns in Korean robot-creator communities: challenges, hackathons, demos, university/lab promotion. Reach out through job platforms: Karrot Jobs, Albamon, DongnaeAlba, Alba Heaven. Participation in exhibitions: Franchise exhibitions, Automation World Expo, AI Expo, Korea MAT. 
+- **Distribution & sales:** Direct outreach to SME owners (fast decision-makers) for PoC intake. Partner with local automation integrators and hardware sellers/resellers for procurement and installation support. Platform API/licensing access for integrators and developers.
 - **Revenue growth model:**
   - *Immediate:* Automation deployment fees + recurring support contracts
   - *Medium-term:* Platform transaction fees as creator and consumer sides grow
@@ -308,7 +335,7 @@ Converting brand revenue at ~KRW 1,300/USD:
 | 1 | Robotics Lead (대표) | Robotics PoCs, data/skill pipeline, VLA controller integration, deployment playbooks, SME customer relationships | Juan Medrano — Ph.D. (Candidate) Mechanical Eng. (ML for CV & robotic manipulation), M.Sc. Mechatronics; 7+ yrs robotics perception incl. Agility Robotics (Digit humanoid, warehouse deployment); large-scale multi-modal dataset creation; 9 yrs in Korea, business-level Korean | 완료 |
 | 2 | Hardware Lead | Robot hardware selection/integration, sensing stack, EOAT/fixtures, embedded/system reliability for PoCs and deployments | Jose Bagur — Mechatronics Engineer (UVG), Coordinator UVG Aerospace Lab; lead of Quetzal-1/2 CubeSat programs (Guatemala's 1st & 2nd national satellites; SpaceX CRS-20 launch); deep embedded/sensor/system deployment expertise | 완료 |
 | 3 | Platform Lead | Lead development of GamiphyAI data exchange platform, marketplace mechanics, data validation flows | Senior full-stack / platform engineer (TBD) | 예정('26.Q2) |
-| 4 | Commercial Lead | SME customer acquisition, PoC scoping/contracts, partnerships, pricing and recurring revenue growth | Business development / sales lead (TBD) | 예정('26.Q2) |
+| 4 | Commercial Lead | SME customer acquisition, PoC scoping/contracts, partnerships, pricing and recurring revenue growth | Business development / sales lead (TBD) | 예정('26.Q3) |
 
 **대표자가 보유하고 있는 창업아이템 구현 및 판매 관련 역량 등**
 
@@ -328,9 +355,9 @@ Juan Medrano holds a Ph.D. (Candidate) in Mechanical Engineering from Sungkyunkw
 
 > **Key point:** Three specific, actionable requests: (1) Lab introductions for dataset creator recruitment, (2) Equipment access for PoC acceleration, (3) Alumni network for early adopter partnerships.
 
-1. **Access to KAIST robotics communities for creator recruitment:** Introductions to KAIST labs, students, clubs, and robotics groups to recruit 3–5 initial robot creators who can contribute LeRobot-format datasets aligned to validated SME use cases within the first 90 days. This directly accelerates the platform's supply side.
+1. **Access to KAIST robotics communities for creator recruitment:** Introductions to KAIST labs, students, clubs, and robotics groups to recruit robot creators who can contribute LeRobot-format (or other) datasets aligned to validated SME use cases within the first 90 days. This directly accelerates the platform's supply side.
 
-2. **Equipment and prototyping support for PoC acceleration:** Access to robot arms, GPUs, machining tools, and 3D printers to rapidly build and test PoC workcells — reducing time-to-first-deployment and hardware procurement bottlenecks in the early stage.
+2. **Equipment and prototyping support for PoC acceleration:** Access to robot arms, GPUs, machining tools, 3D printers and other workshop tools to rapidly build and test PoC workcells — reducing time-to-first-deployment and hardware procurement bottlenecks in the early stage.
 
 3. **Alumni network access for partnerships and early adoption:** Connections to KAIST alumni building robotics companies (hardware and software) for technical partnerships, validation, and early adopter programs. Specifically seeking introductions to alumni at Korean robot OEMs, integrators, and SME-focused technology companies.
 
@@ -357,19 +384,35 @@ Juan Medrano holds a Ph.D. (Candidate) in Mechanical Engineering from Sungkyunkw
 ## References
 
 [1] World Bank. "Small and Medium Enterprises (SMEs)."
+
 [2] Eurostat. "Businesses in the manufacturing sector" (2023).
+
 [3] National Bureau of Statistics of China. "Fifth National Economic Census Communiqué" (2023).
+
 [4] Statistics Bureau of Japan. *Statistical Handbook of Japan 2023*, manufacturing table.
+
 [5] International Federation of Robotics. "Record of 4 Million Robots Working in Factories Worldwide."
+
 [6] International Federation of Robotics. "Global Robot Density in Factories Doubled in Seven Years."
+
 [7] Brown, T. et al. "Language Models are Few-Shot Learners." arXiv, 2020.
+
 [8] Open X-Embodiment Collaboration. "Open X-Embodiment: Robotic Learning Datasets and RT-X Models." arXiv, 2023.
+
 [9] Constantinides, P. et al. "The dynamics of entry for digital platforms in two-sided markets." *Electronic Markets*.
+
 [10] U.S. Bureau of Labor Statistics. Employment Situation Table B-8, manufacturing hourly earnings, February 2026.
+
 [11] Eurostat. "Hourly labour costs ranged from €11.2 to €55.2 in 2024."
+
 [12] Statistics Korea. "Preliminary Results of the 2023 Census on Establishments."
+
 [13] KOSIS. "Indicator Comparison by Region / Census on Establishments."
+
 [14] Ministry of SMEs and Startups, Republic of Korea. Smart-factory adoption statistics and support notices.
+
 [15] U.S. Small Business Administration. Small Business Profile.
+
 [16] ILO. *World Employment and Social Outlook: Trends 2024*.
+
 [17] International Federation of Robotics. *World Robotics 2024* press release.

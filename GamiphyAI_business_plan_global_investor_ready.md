@@ -75,15 +75,16 @@ For the initial workflow wedge, the global model below uses:
 
 Using the assumptions above, the base-case global recurring TAM for the initial HMLV workflow offering is about **USD 31.5B per year**, with a conservative sensitivity range of roughly **USD 14B to USD 81B per year** depending on workflow fit, site-size assumptions, and regional ARPA. These are modeled estimates grounded in official manufacturing, labour, and robotics data rather than a published market-size statistic [1][2][3][4][6][10][11][15][16].
 
-| Region | Manufacturing sites used or derived | Base workflow-fit SME sites | Base recurring ARPA | Base TAM (USD B) |
+| Region | Manufacturing sites used or derived | Base workflow-fit SME sites | Base recurring ARPA (USD) | Base TAM (USD B) |
 |---|---:|---:|---:|---:|
-| North America | 451,726 | 53,642 | 30,000 | 1.61 |
-| European Union | 2,200,000 | 261,250 | 30,000 | 7.84 |
-| China | 4,048,000 | 480,700 | 15,000 | 7.21 |
-| High-income Asia | 692,190 | 82,198 | 25,000 | 2.05 |
-| Rest of Asia | 9,709,800 | 1,153,039 | 6,000 | 6.92 |
+| North America | 451,726 | 53,642 | 30k - 72k| 1.61 - 3.86|
+| European Union | 2,200,000 | 261,250 | 30k - 78k | 7.84 - 20|
+| China | 4,048,000 | 480,700 | 7.2k - 18k | 3.46 - 8.6|
+| High-income Asia | 692,190 | 82,198 | 24k - 60k | 1.9 - 4.9 |
+| Rest of Asia | 9,709,800 | 1,153,039 | 6k - 24k | 6.92 - 27|
 | Latin America | 2,420,000 | 287,375 | 10,000 | 2.87 |
 | Africa / Middle East | 3,609,600 | 428,640 | 7,000 | 3.00 |
+| **Total global recurring TAM for the initial HMLV workflow offering** | - | - | - |**27 - 70.23** |
 
 These figures should be presented as annual recurring opportunity for the initial workflow wedge, before one-time deployment revenue.
 
@@ -233,6 +234,7 @@ The regional pricing logic should follow labour economics.
 |---|---:|---:|---:|
 | US | USD 8k–25k | USD 20k–60k | USD 2.5k–6k / month |
 | EU | EUR 8k–25k | EUR 20k–60k | EUR 2.5k–6.5k / month |
+| China | USD 10k–20k | USD 15k–45k | USD 0.6k-1.5k / month |
 | High-income Asia | USD 6k–20k | USD 15k–45k | USD 2k–5k / month |
 | Cost-sensitive Asia | USD 2k–10k | USD 8k–25k | USD 0.5k–2k / month |
 | Korea | KRW 8M–15M | KRW 12M–25M | KRW 1.0M–2.0M / month plus support |

@@ -136,11 +136,7 @@ For the initial Korea workflow wedge:
 - recurring software plus support per deployed line: **KRW 24M–30M per year**;
 - resulting recurring revenue opportunity: **KRW 76.8B–192.0B per year**, before one-time PoC and deployment fees.
 
-That yields a believable Korea-first market while keeping the global expansion story much larger.
-
 ### 5.5 SOM
-
-A credible seed-stage capture plan should remain small.
 
 For Korea:
 - Year 1: 3 deployed sites

@@ -139,13 +139,13 @@ For the initial Korea workflow wedge:
 ### 5.5 SOM
 
 For Korea:
-- Year 1: 3 deployed sites
-- Year 3: 18 deployed sites
-- Year 5: 70 deployed sites
+- Year 1: 10 deployed sites
+- Year 2: 100 deployed sites
+- Year 3: 1000 deployed sites
 
 For the broader business:
 - Year 3: initial partner-led pilots outside Korea
-- Year 5: roughly 200 recurring sites total, with about 70 in Korea and the rest abroad
+- Year 5: roughly 10k+ recurring sites total, with about 50% in Korea and the rest abroad
 
 That remains a very small share of global SAM and therefore reads as credible rather than promotional.
 
@@ -230,7 +230,7 @@ GamiphyAI should describe the product in four layers.
 
 ### 7.1 Delivery layer: automation solution for real SME workflows
 
-Initial use cases include packing, kitting, labeling, small-parts handling, and light assembly in variable environments. The value proposition is lower engineering effort, faster deployment, lower changeover cost, and measurable operational KPIs.
+Initial use cases include packing, kitting, labeling, small-parts handling, food preparation and light assembly in variable environments. The value proposition is lower engineering effort, faster deployment, lower changeover cost, and measurable operational KPIs.
 
 ### 7.2 Data and skill layer
 
@@ -379,7 +379,7 @@ A coherent regional expansion path is:
   - **Local execution in South Korea:** Faster customer access, shorter feedback loops, and community-building with local robot creators.
 
 - **Commercialization & expansion strategy (entry → scale):**
-  - **Production/launch:** Convert the first 5 constrained use cases into measurable PoCs (Month 1), then expand to ≥10 controlled-variable use cases (Month 3) and standardize playbooks for repeat deployments.
+  - **Production/launch:** Convert the first 3 constrained use cases into measurable PoCs (Month 1), then expand to ≥10 controlled-variable use cases (Month 3) and standardize playbooks for repeat deployments.
   - **PR/marketing:** Publish case-study style results (before/after, workload completion, reliability, human-labor reduction) to attract both SME owners and creators; run targeted campaigns in Korea robot-creator communities to recruit dataset contributors aligned to validated use cases.
   - **Distribution/sales:** Direct outreach to SME owners (decision makers) for PoC intake; partner with local automation integrators or hardware resellers for procurement and on-site installation support where beneficial.
   - **Revenue strategy:** Low upfront PoC + low integration fee to reduce adoption friction, followed by recurring subscription (data/skills) + maintenance/support to monetize continuous improvement and operational reliability.
@@ -493,14 +493,14 @@ The following should be presented as an illustrative operating model, not a hist
 
 **24-month revenue per converted customer: KRW 84.2M**
 
-### 10.2 Brand Dataset Services customer economics
+### 10.2 Base 24-month customer value in Korea (Brand data services)
 
-**Tier 2 brand customer (illustrative 36-month value):**
+**Tier 2 brand customer (illustrative 24-month value):**
 - Initial engagement and strategy: USD 25K (one-time)
-- Annual subscription: USD 300K × 3 years = USD 900K
+- Annual subscription: USD 300K × 2 years = USD 600K
 - Variable projects: USD 75K (avg over 3 years)
 
-**36-month revenue per brand customer: USD 1.0M**
+**36-month revenue per brand customer: USD 700k**
 
 **Key economics advantages:**
 - **Lower CAC:** Decision-makers are fewer and more centralized (product/marketing vs. distributed factory managers)
@@ -521,7 +521,7 @@ The investor point is simple: the company should not subsidize PoCs and deployme
 
 ### 10.4 Margin structure (Brand Dataset Services)
 
-- Strategy & planning: 60%–70% (consulting-like margins)
+- Strategy & planning: 60%–70% (consultation-like margins)
 - Dataset commissioning: 35%–45% (creator network costs, validation overhead)
 - Subscription (maintenance & distribution): 75%–85% (mostly software and licensing)
 - Variable projects: 40%–50% (depends on complexity and embodiment requirements)
@@ -532,7 +532,7 @@ The investor point is simple: the company should not subsidize PoCs and deployme
 
 An illustrative Korea-first CAC assumption of KRW 4M–6M per signed paying PoC customer yields an attractive LTV:CAC profile if the above revenue and gross margin assumptions hold. This should be described as a management model until real sales data exists.
 
-For brand services, CAC is estimated at USD 30K–60K per customer (conference presence, executive meetings, pilot scoping), yielding an even more attractive LTV:CAC given the 36-month values above.
+For brand services, CAC is estimated at USD 30K–60K per customer (conference presence, executive meetings, pilot scoping), yielding an even more attractive LTV:CAC given the 24-month values above.
 
 ## 11. Five-Year Revenue Outlook
 

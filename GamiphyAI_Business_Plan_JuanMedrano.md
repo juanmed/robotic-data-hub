@@ -368,13 +368,31 @@ Juan Medrano holds a Ph.D. (Candidate) in Mechanical Engineering from Sungkyunkw
 
 6‑1. 제품 및 서비스 이미지/영상 삽입
 
-- **GamiphyAI Platform — Marketplace view:** [Screenshot of gamiphy.ai marketplace interface showing dataset listing, search, and purchase functionality]
-- **GamiphyAI Platform — Dataset visualization:** [Screenshot showing LeRobot-format dataset upload and multi-modal data visualization (RGB, depth, joint angles)]
-- **GamiphyAI Platform — User dashboard:** [Screenshot showing user account, uploaded datasets, and transaction history]
-- **System architecture diagram:** [Diagram showing the services-to-platform data flow: SME PoC → data collection → skill extraction → platform distribution → creator contributions → improved deployments]
-- **Target workcell concept:** [Photo or CAD rendering of constrained dual-arm workcell for SME packing/kitting task]
+- **GamiphyAI Platform — Homee view:** 
 
-*Note: Screenshots and diagrams to be captured from the live platform at gamiphy.ai and included in the final submission.*
+![Alt text](assets/home.png)
+
+- **GamiphyAI Platform — Marketplace view:** 
+
+![Alt text](assets/marketplace.png)
+
+
+- **GamiphyAI Platform — User dashboard:** [Screenshot showing user account, uploaded datasets, and transaction history]
+
+![Alt text](assets/dashboard.png)
+
+- **GamiphyAI Platform — Dataset Purchase:** [Screenshot showing LeRobot-format dataset upload and multi-modal data visualization (RGB, depth, joint angles)]
+
+![Alt text](assets/buy.png)
+
+- **GamiphyAI Platform — Dataset visualization:** [Screenshot showing LeRobot-format dataset upload and multi-modal data visualization (RGB, depth, joint angles)]
+
+![Alt text](assets/visualizer.png)
+
+
+- **Dataset files and publish view:** [Diagram showing the services-to-platform data flow: SME PoC → data collection → skill extraction → platform distribution → creator contributions → improved deployments]
+
+![Alt text](assets/dataset_view.png)
 
 ---
 

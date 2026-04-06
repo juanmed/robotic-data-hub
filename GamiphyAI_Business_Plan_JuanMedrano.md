@@ -1,13 +1,13 @@
-# [예비창업기업] 사업 계획서
+# GamiphyAI 사업 계획서 (영어)
 
 ## 사업 개요
 | 항목 | 내용 |
 |------|------|
 | **성명** | GamiphyAI |
 | **기술분야** | Robot data and skills for Physical AI |
-| **팀 명 (예비)** | 3 |
+| **팀 명 (예비)** | 2 |
 | **E‑mail / 휴대전화번호** | fer@gamiphy.ai / 010 8505 9134 |
-| **아이템 개요** | Workflow-centric robotics data and skill platform that converts paid SME automation deployments into reusable datasets, skill packages, and deployment playbooks — starting from Korea's under-automated HMLV manufacturing base and scaling globally. |
+| **아이템 개요** | GamiphyAI is the marketplace for physical AI. We deliver robot automation solutions for SME manufacturing processes, connect businesses with real-world datasets and solutions from robot creators, and provides allow brands to  evaluate and enhance brand visibility in the AI-powered robotics future. |
 
 ---
 
@@ -368,7 +368,7 @@ Juan Medrano holds a Ph.D. (Candidate) in Mechanical Engineering from Sungkyunkw
 
 6‑1. 제품 및 서비스 이미지/영상 삽입
 
-- **GamiphyAI Platform — Homee view:** 
+- **GamiphyAI Platform — Home view:** 
 
 ![Alt text](assets/home.png)
 

@@ -1,4 +1,4 @@
-# [예비창업기업] 사업 계획서
+# GamiphyAI 사업 계획서 (한국어)
 
 ## 사업 개요
 | 항목 | 내용 |
@@ -169,7 +169,7 @@ HMLV 워크플로우 솔루션의 글로벌 반복 매출 TAM(전체 주소 가�
 
 | 순번 | 직위 | 담당 업무 | 주요 역량 |
 |-----|------|-----------|--------------------------|
-| 1 | 로보틱스 리드 (대표) | PoC 총괄, 데이터 파이프라인, 고객 관계 | **Juan Medrano** — 성균관대 기계공학 박사 수료, Agility Robotics 인지 엔지니어(Digit 로봇 웨어하우스 배포), 한국 거주 9년(한국어 능통) |
+| 1 | 로보틱스 리드 (대표) | PoC 총괄, 데이터 파이프라인, 고객 관계 | **Juan Medrano** — 성균관대 기계공학 박사 수료, 2022 - 2025 Agility Robotics 비전 엔지니어(Digit 로봇 웨어하우스 배포), 한국 거주 9년(한국어 능통) |
 | 2 | 하드웨어 리드 | 하드웨어 통합, 센싱 스택, 시스템 신뢰성 | **Jose Bagur** — 메카트로닉스 엔지니어, 과테말라 국가 위성 Quetzal-1/2 프로젝트 리드, 임베디드 전문가 |
 | 3 | 플랫폼 리드 | 데이터 교환 플랫폼 및 마켓플레이스 개발 | 시니어 풀스택 / 플랫폼 엔지니어 (채용 예정) |
 | 4 | 커머셜 리드 | 고객 확보, 파트너십 및 영업 전략 | 비즈니스 개발 / 영업 리드 (채용 예정) |
@@ -189,10 +189,34 @@ HMLV 워크플로우 솔루션의 글로벌 반복 매출 TAM(전체 주소 가�
 
 #### 6. 제품/서비스 참고자료 (선택)
 
-- **GamiphyAI 플랫폼 — 마켓플레이스 뷰:** 데이터셋 리스팅, 검색 및 거래 화면.
-- **GamiphyAI 플랫폼 — 데이터 시각화:** LeRobot 형식의 RGB, 깊이, 관절 각도 데이터 시각화 인터페이스.
-- **시스템 아키텍처 다이어그램:** 서비스 중심의 데이터 수집부터 플랫폼 배포까지의 흐름도.
-- **타겟 워크셀 컨셉:** 중소기업 패킹/키팅 작업을 위한 듀얼 암(Dual-arm) 로봇 워크셀 설계안.
+6‑1. 제품 및 서비스 이미지/영상 삽입
+
+- **GamiphyAI Platform — Home view:** 
+
+![Alt text](assets/home.png)
+
+- **GamiphyAI Platform — Marketplace view:** 
+
+![Alt text](assets/marketplace.png)
+
+
+- **GamiphyAI Platform — User dashboard:** [Screenshot showing user account, uploaded datasets, and transaction history]
+
+![Alt text](assets/dashboard.png)
+
+- **GamiphyAI Platform — Dataset Purchase:** [Screenshot showing LeRobot-format dataset upload and multi-modal data visualization (RGB, depth, joint angles)]
+
+![Alt text](assets/buy.png)
+
+- **GamiphyAI Platform — Dataset visualization:** [Screenshot showing LeRobot-format dataset upload and multi-modal data visualization (RGB, depth, joint angles)]
+
+![Alt text](assets/visualizer.png)
+
+
+- **Dataset files and publish view:** [Diagram showing the services-to-platform data flow: SME PoC → data collection → skill extraction → platform distribution → creator contributions → improved deployments]
+
+![Alt text](assets/dataset_view.png)
+
 
 ---
 

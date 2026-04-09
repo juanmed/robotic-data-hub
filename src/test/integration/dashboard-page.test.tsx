@@ -7,13 +7,22 @@ const datasetServiceMock = vi.hoisted(() => ({
   listDatasets: vi.fn(),
 }));
 
+const challengeServiceMock = vi.hoisted(() => ({
+  listMine: vi.fn(),
+}));
+
 vi.mock("@/services/datasetService", () => ({
   listDatasets: datasetServiceMock.listDatasets,
+}));
+
+vi.mock("@/services/challengeService", () => ({
+  challengeService: challengeServiceMock,
 }));
 
 describe("DashboardPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    challengeServiceMock.listMine.mockResolvedValue([]);
   });
 
   afterEach(() => {
@@ -135,7 +144,7 @@ describe("DashboardPage", () => {
 
     await waitFor(() => {
       expect(screen.getByText(/total data/i)).toBeInTheDocument();
-      expect(screen.getByText(/downloads/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/challenges/i).length).toBeGreaterThan(0);
     });
   });
 });

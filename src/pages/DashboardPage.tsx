@@ -1,12 +1,21 @@
 import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import PageContainer from "@/layouts/PageContainer";
 import SectionHeader from "@/components/SectionHeader";
 import GlassCard from "@/components/GlassCard";
 import DatasetListCard from "@/components/DatasetListCard";
+import ChallengeListCard from "@/components/ChallengeListCard";
 import { listDatasets } from "@/services/datasetService";
+import { challengeService } from "@/services/challengeService";
 import type { DatasetListItem } from "@/services/datasetService";
-import { Layers, HardDrive, Database, Activity } from "lucide-react";
-import { Link } from "react-router-dom";
+import type { Challenge } from "@/types";
+import { Layers, HardDrive, Database, Activity, Target, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
 
 const formatBytes = (bytes: number) => {
   if (bytes === 0) return "0 B";
@@ -17,14 +26,21 @@ const formatBytes = (bytes: number) => {
 };
 
 const DashboardPage = () => {
+  const navigate = useNavigate();
   const [datasets, setDatasets] = useState<DatasetListItem[]>([]);
+  const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [loading, setLoading] = useState(true);
+  const [closeConfirmId, setCloseConfirmId] = useState<string | null>(null);
 
   useEffect(() => {
-    listDatasets()
-      .then(setDatasets)
-      .catch((err) => console.error("Dashboard load error:", err))
-      .finally(() => setLoading(false));
+    Promise.all([
+      listDatasets(),
+      challengeService.listMine(),
+    ]).then(([ds, ch]) => {
+      setDatasets(ds);
+      setChallenges(ch);
+    }).catch((err) => console.error("Dashboard load error:", err))
+    .finally(() => setLoading(false));
   }, []);
 
   const totalSize = datasets.reduce((a, d) => a + d.total_size_bytes, 0);
@@ -33,8 +49,49 @@ const DashboardPage = () => {
     { icon: Database, label: "Datasets", value: datasets.length },
     { icon: Layers, label: "Total Files", value: datasets.reduce((a, d) => a + d.file_count, 0) },
     { icon: HardDrive, label: "Total Data", value: formatBytes(totalSize) },
-    { icon: Activity, label: "Downloads", value: 0 },
+    { icon: Target, label: "Challenges", value: challenges.length },
   ];
+
+  const handlePublish = async (id: string) => {
+    try {
+      await challengeService.publish(id);
+      setChallenges((prev) => prev.map((c) => c.id === id ? { ...c, status: "active" as const } : c));
+      toast.success("Challenge published!");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to publish");
+    }
+  };
+
+  const handleToggleStatus = async (id: string, status: "active" | "inactive") => {
+    try {
+      await challengeService.setStatus(id, status);
+      setChallenges((prev) => prev.map((c) => c.id === id ? { ...c, status } : c));
+      toast.success(`Challenge ${status === "active" ? "activated" : "deactivated"}`);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update");
+    }
+  };
+
+  const handleClose = async (id: string) => {
+    try {
+      await challengeService.setStatus(id, "closed");
+      setChallenges((prev) => prev.map((c) => c.id === id ? { ...c, status: "closed" as const } : c));
+      toast.success("Challenge closed");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to close");
+    }
+    setCloseConfirmId(null);
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await challengeService.deleteDraft(id);
+      setChallenges((prev) => prev.filter((c) => c.id !== id));
+      toast.success("Draft deleted");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete");
+    }
+  };
 
   return (
     <PageContainer>
@@ -83,8 +140,63 @@ const DashboardPage = () => {
               ))}
             </div>
           )}
+
+          {/* Challenges */}
+          <div className="mt-12">
+            <div className="flex items-center justify-between mb-6">
+              <SectionHeader title="Challenges" className="mb-0" />
+              <Button
+                variant="neon"
+                size="sm"
+                className="gap-1.5"
+                onClick={() => navigate("/dashboard/challenges/new")}
+                data-testid="create-challenge-btn"
+              >
+                <Plus className="h-3.5 w-3.5" /> Create Challenge
+              </Button>
+            </div>
+            {challenges.length === 0 ? (
+              <GlassCard hover={false} className="text-center py-12">
+                <Target className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
+                <p className="text-sm text-muted-foreground">
+                  No challenges yet. Create one to request datasets from the community.
+                </p>
+              </GlassCard>
+            ) : (
+              <div className="space-y-3">
+                {challenges.map((ch) => (
+                  <ChallengeListCard
+                    key={ch.id}
+                    challenge={ch}
+                    onPublish={handlePublish}
+                    onToggleStatus={handleToggleStatus}
+                    onClose={(id) => setCloseConfirmId(id)}
+                    onDelete={handleDelete}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </>
       )}
+
+      {/* Close confirmation dialog */}
+      <AlertDialog open={!!closeConfirmId} onOpenChange={() => setCloseConfirmId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Close this challenge?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action is permanent. The challenge will no longer accept submissions and cannot be reopened.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => closeConfirmId && handleClose(closeConfirmId)}>
+              Close Challenge
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </PageContainer>
   );
 };

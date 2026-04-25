@@ -131,6 +131,40 @@ describe("DashboardPage", () => {
     });
   });
 
+  it("still renders datasets when challengeService.listMine rejects", async () => {
+    const mockDatasets = [
+      {
+        id: "ds_001",
+        user_id: "usr_001",
+        display_name: "My Robot Dataset",
+        source_repo_id: null,
+        status: "ready" as const,
+        metadata: null,
+        created_at: new Date().toISOString(),
+        confirmed_at: new Date().toISOString(),
+        file_count: 3,
+        total_size_bytes: 1024,
+        file_paths: [],
+      },
+    ];
+    datasetServiceMock.listDatasets.mockResolvedValue(mockDatasets);
+    challengeServiceMock.listMine.mockRejectedValue(
+      new Error('relation "challenges" does not exist')
+    );
+
+    render(
+      <MemoryRouter initialEntries={["/dashboard"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <Routes>
+          <Route path="/dashboard" element={<DashboardPage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("My Robot Dataset")).toBeInTheDocument();
+    });
+  });
+
   it("displays statistics labels", async () => {
     datasetServiceMock.listDatasets.mockResolvedValue([]);
 

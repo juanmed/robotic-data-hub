@@ -33,14 +33,16 @@ const DashboardPage = () => {
   const [closeConfirmId, setCloseConfirmId] = useState<string | null>(null);
 
   useEffect(() => {
-    Promise.all([
+    Promise.allSettled([
       listDatasets(),
       challengeService.listMine(),
-    ]).then(([ds, ch]) => {
-      setDatasets(ds);
-      setChallenges(ch);
-    }).catch((err) => console.error("Dashboard load error:", err))
-    .finally(() => setLoading(false));
+    ]).then(([dsResult, chResult]) => {
+      if (dsResult.status === "fulfilled") setDatasets(dsResult.value);
+      else console.error("Dashboard datasets error:", dsResult.reason);
+
+      if (chResult.status === "fulfilled") setChallenges(chResult.value);
+      else console.warn("Dashboard challenges error (table may not exist yet):", chResult.reason);
+    }).finally(() => setLoading(false));
   }, []);
 
   const totalSize = datasets.reduce((a, d) => a + d.total_size_bytes, 0);

@@ -50,27 +50,63 @@ describe("challengeService", () => {
   });
 
   describe("listMine", () => {
-    it("returns user's challenges of all statuses", async () => {
-      supabaseMock.supabase.from.mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          order: vi.fn().mockResolvedValue({
-            data: [mockChallenge, mockDraftChallenge],
-            error: null,
-          }),
+    it("filters by the authenticated user's id", async () => {
+      supabaseMock.supabase.auth.getUser.mockResolvedValue({
+        data: { user: { id: "usr_001" } },
+      });
+      const eqMock = vi.fn().mockReturnValue({
+        order: vi.fn().mockResolvedValue({
+          data: [mockChallenge, mockDraftChallenge],
+          error: null,
         }),
+      });
+      supabaseMock.supabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({ eq: eqMock }),
       });
 
       const result = await challengeService.listMine();
-      expect(Array.isArray(result)).toBe(true);
+      expect(eqMock).toHaveBeenCalledWith("user_id", "usr_001");
       expect(result).toHaveLength(2);
     });
 
-    it("returns empty array when no challenges", async () => {
+    it("does not return challenges owned by other users", async () => {
+      supabaseMock.supabase.auth.getUser.mockResolvedValue({
+        data: { user: { id: "usr_other" } },
+      });
+      const otherUserChallenge = { ...mockChallenge, user_id: "usr_001" };
+      const eqMock = vi.fn().mockReturnValue({
+        order: vi.fn().mockResolvedValue({
+          data: [],
+          error: null,
+        }),
+      });
+      supabaseMock.supabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({ eq: eqMock }),
+      });
+
+      const result = await challengeService.listMine();
+      expect(eqMock).toHaveBeenCalledWith("user_id", "usr_other");
+      expect(result).toHaveLength(0);
+      expect(result).not.toContainEqual(otherUserChallenge);
+    });
+
+    it("returns empty array when unauthenticated", async () => {
+      supabaseMock.supabase.auth.getUser.mockResolvedValue({
+        data: { user: null },
+      });
+
+      const result = await challengeService.listMine();
+      expect(result).toEqual([]);
+    });
+
+    it("returns empty array when user has no challenges", async () => {
+      supabaseMock.supabase.auth.getUser.mockResolvedValue({
+        data: { user: { id: "usr_001" } },
+      });
       supabaseMock.supabase.from.mockReturnValue({
         select: vi.fn().mockReturnValue({
-          order: vi.fn().mockResolvedValue({
-            data: [],
-            error: null,
+          eq: vi.fn().mockReturnValue({
+            order: vi.fn().mockResolvedValue({ data: [], error: null }),
           }),
         }),
       });

@@ -41,6 +41,158 @@ export type Database = {
         }
         Relationships: []
       }
+      challenge_media: {
+        Row: {
+          challenge_id: string
+          content_type: string
+          created_at: string
+          file_name: string
+          id: string
+          size_bytes: number | null
+          sort_order: number
+          storage_path: string
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          content_type: string
+          created_at?: string
+          file_name: string
+          id?: string
+          size_bytes?: number | null
+          sort_order?: number
+          storage_path: string
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          content_type?: string
+          created_at?: string
+          file_name?: string
+          id?: string
+          size_bytes?: number | null
+          sort_order?: number
+          storage_path?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenge_media_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      challenge_submissions: {
+        Row: {
+          challenge_id: string
+          created_at: string
+          dataset_id: string
+          id: string
+          message: string
+          status: string
+          submitter_id: string
+          updated_at: string
+        }
+        Insert: {
+          challenge_id: string
+          created_at?: string
+          dataset_id: string
+          id?: string
+          message?: string
+          status?: string
+          submitter_id: string
+          updated_at?: string
+        }
+        Update: {
+          challenge_id?: string
+          created_at?: string
+          dataset_id?: string
+          id?: string
+          message?: string
+          status?: string
+          submitter_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenge_submissions_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "challenge_submissions_dataset_id_fkey"
+            columns: ["dataset_id"]
+            isOneToOne: false
+            referencedRelation: "datasets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      challenges: {
+        Row: {
+          closed_at: string | null
+          compensation_amount: number
+          compensation_per: string
+          conditions: string
+          constraints: string
+          created_at: string
+          currency: string
+          deadline: string | null
+          description: string
+          id: string
+          published_at: string | null
+          status: string
+          submission_count: number
+          tags: string[]
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          closed_at?: string | null
+          compensation_amount?: number
+          compensation_per?: string
+          conditions?: string
+          constraints?: string
+          created_at?: string
+          currency?: string
+          deadline?: string | null
+          description?: string
+          id?: string
+          published_at?: string | null
+          status?: string
+          submission_count?: number
+          tags?: string[]
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          closed_at?: string | null
+          compensation_amount?: number
+          compensation_per?: string
+          conditions?: string
+          constraints?: string
+          created_at?: string
+          currency?: string
+          deadline?: string | null
+          description?: string
+          id?: string
+          published_at?: string | null
+          status?: string
+          submission_count?: number
+          tags?: string[]
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       dataset_files: {
         Row: {
           checksum: string | null

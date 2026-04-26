@@ -73,7 +73,7 @@ Deno.serve(async (req) => {
     return jsonError("Missing or invalid 'dataset_id'", 400);
   }
 
-  // --- 3. Verify dataset ownership ---
+  // --- 3. Verify dataset access ---
   const adminClient = createClient(supabaseUrl, serviceRoleKey);
 
   const { data: dataset, error: dsError } = await adminClient
@@ -89,8 +89,51 @@ Deno.serve(async (req) => {
   if (!dataset) {
     return jsonError("Dataset not found", 404);
   }
-  if (dataset.user_id !== user.id) {
-    return jsonError("Access denied", 403);
+
+  const isDatasetOwner = dataset.user_id === user.id;
+  if (!isDatasetOwner) {
+    const { data: submitterSubmission, error: submitterError } = await adminClient
+      .from("challenge_submissions")
+      .select("id")
+      .eq("dataset_id", body.dataset_id)
+      .eq("submitter_id", user.id)
+      .limit(1)
+      .maybeSingle();
+    if (submitterError) {
+      console.error("Submission access (submitter) error:", submitterError);
+      return jsonError("Internal error", 500);
+    }
+
+    const { data: acceptedRows, error: acceptedRowsError } = await adminClient
+      .from("challenge_submissions")
+      .select("challenge_id")
+      .eq("dataset_id", body.dataset_id)
+      .eq("status", "accepted");
+    if (acceptedRowsError) {
+      console.error("Submission access (accepted rows) error:", acceptedRowsError);
+      return jsonError("Internal error", 500);
+    }
+
+    let isAcceptedChallengeOwner = false;
+    const acceptedChallengeIds = [...new Set((acceptedRows ?? []).map((r) => r.challenge_id))];
+    if (acceptedChallengeIds.length > 0) {
+      const { data: ownerChallenge, error: ownerError } = await adminClient
+        .from("challenges")
+        .select("id")
+        .eq("user_id", user.id)
+        .in("id", acceptedChallengeIds)
+        .limit(1)
+        .maybeSingle();
+      if (ownerError) {
+        console.error("Submission access (challenge owner) error:", ownerError);
+        return jsonError("Internal error", 500);
+      }
+      isAcceptedChallengeOwner = !!ownerChallenge;
+    }
+
+    if (!submitterSubmission && !isAcceptedChallengeOwner) {
+      return jsonError("Access denied", 403);
+    }
   }
 
   // --- 4. Fetch file records ---

@@ -104,7 +104,7 @@ const ChallengeEditorPage = () => {
       } else {
         const created = await challengeService.create(formData());
         setChallengeId(created.id);
-        navigate(`/dashboard/challenges/${created.id}`, { replace: true });
+        navigate(`/dashboard/challenges/${created.id}/edit`, { replace: true });
         toast.success("Challenge created as draft");
       }
     } catch (err: any) {

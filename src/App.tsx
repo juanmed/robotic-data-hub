@@ -47,7 +47,8 @@ const App = () => (
             <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
             <Route path="/dashboard/datasets/:id" element={<ProtectedRoute><DatasetDetailPage /></ProtectedRoute>} />
             <Route path="/dashboard/challenges/new" element={<ProtectedRoute><ChallengeEditorPage /></ProtectedRoute>} />
-            <Route path="/dashboard/challenges/:id" element={<ProtectedRoute><ChallengeEditorPage /></ProtectedRoute>} />
+            <Route path="/dashboard/challenges/:id/edit" element={<ProtectedRoute><ChallengeEditorPage /></ProtectedRoute>} />
+            <Route path="/dashboard/challenges/:id" element={<ProtectedRoute><ChallengeDetailPage /></ProtectedRoute>} />
             <Route path="/keys" element={<ProtectedRoute><KeysPage /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />

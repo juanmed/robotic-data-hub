@@ -90,17 +90,33 @@ describe("challengeSubmissionService", () => {
 
   describe("listMine", () => {
     it("returns user's own submissions", async () => {
+      supabaseMock.supabase.auth.getUser.mockResolvedValue({
+        data: { user: { id: "usr_002" } },
+      });
       supabaseMock.supabase.from.mockReturnValue({
         select: vi.fn().mockReturnValue({
-          order: vi.fn().mockResolvedValue({
-            data: [mockSubmission],
-            error: null,
+          eq: vi.fn().mockReturnValue({
+            order: vi.fn().mockResolvedValue({
+              data: [mockSubmission],
+              error: null,
+            }),
           }),
         }),
       });
 
       const result = await challengeSubmissionService.listMine();
       expect(result).toHaveLength(1);
+    });
+
+    it("returns empty array when not authenticated", async () => {
+      supabaseMock.supabase.auth.getUser.mockResolvedValue({
+        data: { user: null },
+      });
+
+      const result = await challengeSubmissionService.listMine();
+
+      expect(result).toEqual([]);
+      expect(supabaseMock.supabase.from).not.toHaveBeenCalled();
     });
   });
 
@@ -127,6 +143,57 @@ describe("challengeSubmissionService", () => {
       await expect(
         challengeSubmissionService.updateStatus("sub_001", "rejected")
       ).resolves.toBeUndefined();
+    });
+  });
+
+  describe("withdraw", () => {
+    it("deletes submission by id", async () => {
+      supabaseMock.supabase.from.mockReturnValue({
+        delete: vi.fn().mockReturnValue({
+          eq: vi.fn().mockResolvedValue({ error: null }),
+        }),
+      });
+
+      await expect(
+        challengeSubmissionService.withdraw("sub_001")
+      ).resolves.toBeUndefined();
+    });
+  });
+
+  describe("listMineEnriched", () => {
+    it("returns submissions enriched with challenge and dataset metadata", async () => {
+      vi.spyOn(challengeSubmissionService, "listMine").mockResolvedValue([mockSubmission as any]);
+
+      supabaseMock.supabase.from
+        .mockImplementationOnce(() => ({
+          select: vi.fn().mockReturnValue({
+            in: vi.fn().mockResolvedValue({
+              data: [{
+                id: "ch_001",
+                title: "Challenge title",
+                compensation_amount: 1000,
+                compensation_per: "dataset",
+                currency: "USD",
+                status: "active",
+              }],
+              error: null,
+            }),
+          }),
+        }))
+        .mockImplementationOnce(() => ({
+          select: vi.fn().mockReturnValue({
+            in: vi.fn().mockResolvedValue({
+              data: [{ id: "ds_001", display_name: "Dataset 1" }],
+              error: null,
+            }),
+          }),
+        }));
+
+      const result = await challengeSubmissionService.listMineEnriched();
+
+      expect(result).toHaveLength(1);
+      expect(result[0].dataset_display_name).toBe("Dataset 1");
+      expect(result[0].challenge?.title).toBe("Challenge title");
     });
   });
 });

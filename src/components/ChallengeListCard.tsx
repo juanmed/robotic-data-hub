@@ -108,7 +108,7 @@ const ChallengeListCard = ({
         )}
         {challenge.status !== "closed" && (
           <>
-            <Link to={`/dashboard/challenges/${challenge.id}`}>
+            <Link to={`/dashboard/challenges/${challenge.id}/edit`}>
               <Button variant="ghost" size="sm" className="h-8 gap-1.5 text-xs" data-testid="edit-btn">
                 <Pencil className="h-3.5 w-3.5" /> Edit
               </Button>

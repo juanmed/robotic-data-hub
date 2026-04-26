@@ -19,12 +19,21 @@ const challengeServiceMock = vi.hoisted(() => ({
   deleteDraft: vi.fn(),
 }));
 
+const challengeSubmissionServiceMock = vi.hoisted(() => ({
+  listMineEnriched: vi.fn(),
+  withdraw: vi.fn(),
+}));
+
 vi.mock("@/services/datasetService", () => ({
   listDatasets: datasetServiceMock.listDatasets,
 }));
 
 vi.mock("@/services/challengeService", () => ({
   challengeService: challengeServiceMock,
+}));
+
+vi.mock("@/services/challengeSubmissionService", () => ({
+  challengeSubmissionService: challengeSubmissionServiceMock,
 }));
 
 vi.mock("@/hooks/useAuth", () => ({
@@ -63,6 +72,7 @@ describe("DashboardPage - Challenges Section", () => {
     vi.clearAllMocks();
     datasetServiceMock.listDatasets.mockResolvedValue([]);
     challengeServiceMock.listMine.mockResolvedValue([]);
+    challengeSubmissionServiceMock.listMineEnriched.mockResolvedValue([]);
   });
 
   it("shows challenge count in stats", async () => {

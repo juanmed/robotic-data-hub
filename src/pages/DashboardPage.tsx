@@ -7,9 +7,11 @@ import DatasetListCard from "@/components/DatasetListCard";
 import ChallengeListCard from "@/components/ChallengeListCard";
 import { listDatasets } from "@/services/datasetService";
 import { challengeService } from "@/services/challengeService";
+import { challengeSubmissionService } from "@/services/challengeSubmissionService";
 import type { DatasetListItem } from "@/services/datasetService";
-import type { Challenge } from "@/types";
-import { Layers, HardDrive, Database, Activity, Target, Plus } from "lucide-react";
+import type { Challenge, ParticipantSubmissionItem } from "@/types";
+import { formatPrice } from "@/lib/marketplace";
+import { Layers, HardDrive, Database, Target, Plus, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -29,6 +31,7 @@ const DashboardPage = () => {
   const navigate = useNavigate();
   const [datasets, setDatasets] = useState<DatasetListItem[]>([]);
   const [challenges, setChallenges] = useState<Challenge[]>([]);
+  const [submissions, setSubmissions] = useState<ParticipantSubmissionItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [closeConfirmId, setCloseConfirmId] = useState<string | null>(null);
 
@@ -36,12 +39,16 @@ const DashboardPage = () => {
     Promise.allSettled([
       listDatasets(),
       challengeService.listMine(),
-    ]).then(([dsResult, chResult]) => {
+      challengeSubmissionService.listMineEnriched(),
+    ]).then(([dsResult, chResult, subResult]) => {
       if (dsResult.status === "fulfilled") setDatasets(dsResult.value);
       else console.error("Dashboard datasets error:", dsResult.reason);
 
       if (chResult.status === "fulfilled") setChallenges(chResult.value);
       else console.warn("Dashboard challenges error (table may not exist yet):", chResult.reason);
+
+      if (subResult.status === "fulfilled") setSubmissions(subResult.value);
+      else console.warn("Dashboard challenge submissions error:", subResult.reason);
     }).finally(() => setLoading(false));
   }, []);
 
@@ -94,6 +101,39 @@ const DashboardPage = () => {
       toast.error(err.message || "Failed to delete");
     }
   };
+
+  const handleWithdraw = async (id: string) => {
+    try {
+      await challengeSubmissionService.withdraw(id);
+      setSubmissions((prev) => prev.filter((s) => s.id !== id));
+      toast.success("Submission withdrawn");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to withdraw submission");
+    }
+  };
+
+  const groupedSubmissions = submissions.reduce((acc, item) => {
+    const key = item.challenge?.id || item.challenge_id;
+    if (!acc[key]) {
+      acc[key] = {
+        challengeId: item.challenge_id,
+        challengeTitle: item.challenge?.title || "Unknown challenge",
+        challengeCompensationAmount: item.challenge?.compensation_amount ?? 0,
+        challengeCompensationPer: item.challenge?.compensation_per ?? "dataset",
+        challengeCurrency: item.challenge?.currency ?? "USD",
+        entries: [] as ParticipantSubmissionItem[],
+      };
+    }
+    acc[key].entries.push(item);
+    return acc;
+  }, {} as Record<string, {
+    challengeId: string;
+    challengeTitle: string;
+    challengeCompensationAmount: number;
+    challengeCompensationPer: "dataset" | "challenge";
+    challengeCurrency: string;
+    entries: ParticipantSubmissionItem[];
+  }>);
 
   return (
     <PageContainer>
@@ -175,6 +215,82 @@ const DashboardPage = () => {
                     onClose={(id) => setCloseConfirmId(id)}
                     onDelete={handleDelete}
                   />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* My Submissions */}
+          <div className="mt-12">
+            <SectionHeader title="My Submissions" className="mb-6" />
+            {Object.keys(groupedSubmissions).length === 0 ? (
+              <GlassCard hover={false} className="text-center py-12">
+                <Send className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
+                <p className="text-sm text-muted-foreground">
+                  You have not submitted any datasets to challenges yet.
+                </p>
+              </GlassCard>
+            ) : (
+              <div className="space-y-4">
+                {Object.values(groupedSubmissions).map((group) => (
+                  <GlassCard key={group.challengeId} hover={false}>
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                      <Link
+                        to={`/marketplace/challenges/${group.challengeId}`}
+                        className="text-sm font-semibold text-foreground hover:text-secondary transition-colors"
+                      >
+                        {group.challengeTitle}
+                      </Link>
+                      <span className="text-[10px] text-muted-foreground">
+                        {group.entries.length} submission{group.entries.length !== 1 ? "s" : ""}
+                      </span>
+                    </div>
+                    <div className="space-y-2">
+                      {group.entries.map((sub) => (
+                        <div
+                          key={sub.id}
+                          className="rounded-xl border border-border/30 bg-background/30 p-3 flex items-center justify-between gap-3"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <p className="text-xs font-medium text-foreground truncate">
+                              {sub.dataset_display_name || sub.dataset_id}
+                            </p>
+                            <p className="text-[10px] text-muted-foreground mt-1">
+                              Submitted {new Date(sub.created_at).toLocaleDateString()}
+                            </p>
+                            <p className="text-[10px] mt-1">
+                              Status:{" "}
+                              <span className={
+                                sub.status === "accepted"
+                                  ? "text-green-400"
+                                  : sub.status === "rejected"
+                                  ? "text-red-400"
+                                  : "text-yellow-400"
+                              }>
+                                {sub.status}
+                              </span>
+                            </p>
+                            {sub.status === "accepted" && (
+                              <p className="text-[10px] text-green-400 mt-1">
+                                Earned {formatPrice(group.challengeCompensationAmount, group.challengeCurrency)}{" "}
+                                {group.challengeCompensationPer === "challenge" ? "(lump sum)" : "per accepted dataset"}
+                              </p>
+                            )}
+                          </div>
+                          {sub.status === "pending" && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 text-xs text-destructive hover:text-destructive"
+                              onClick={() => handleWithdraw(sub.id)}
+                            >
+                              Withdraw
+                            </Button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </GlassCard>
                 ))}
               </div>
             )}

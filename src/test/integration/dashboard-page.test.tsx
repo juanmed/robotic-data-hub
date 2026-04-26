@@ -11,6 +11,11 @@ const challengeServiceMock = vi.hoisted(() => ({
   listMine: vi.fn(),
 }));
 
+const challengeSubmissionServiceMock = vi.hoisted(() => ({
+  listMineEnriched: vi.fn(),
+  withdraw: vi.fn(),
+}));
+
 vi.mock("@/services/datasetService", () => ({
   listDatasets: datasetServiceMock.listDatasets,
 }));
@@ -19,10 +24,15 @@ vi.mock("@/services/challengeService", () => ({
   challengeService: challengeServiceMock,
 }));
 
+vi.mock("@/services/challengeSubmissionService", () => ({
+  challengeSubmissionService: challengeSubmissionServiceMock,
+}));
+
 describe("DashboardPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     challengeServiceMock.listMine.mockResolvedValue([]);
+    challengeSubmissionServiceMock.listMineEnriched.mockResolvedValue([]);
   });
 
   afterEach(() => {

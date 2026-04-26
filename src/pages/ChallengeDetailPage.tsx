@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useLocation } from "react-router-dom";
 import { formatPrice } from "@/lib/marketplace";
 import { challengeService } from "@/services/challengeService";
 import { challengeMediaService } from "@/services/challengeMediaService";
 import { challengeSubmissionService } from "@/services/challengeSubmissionService";
+import { getDatasetFileUrls, type SignedFileUrl } from "@/services/datasetService";
+import { openVisualizer } from "@/lib/visualizer";
 import { useAuth } from "@/hooks/useAuth";
 import SubmitDatasetModal from "@/components/SubmitDatasetModal";
 import ChallengeStatusBadge from "@/components/ChallengeStatusBadge";
@@ -14,29 +16,44 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import type { Challenge, ChallengeMedia, ChallengeSubmission } from "@/types";
+import {
+  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
+} from "@/components/ui/dialog";
+import type {
+  Challenge,
+  ChallengeMedia,
+  ChallengeSubmission,
+  ChallengeSubmissionEnriched,
+} from "@/types";
 import { toast } from "sonner";
 import {
   Target, Trophy, Clock, User, Tag, Send, ToggleLeft, ToggleRight,
   XCircle, ArrowLeft, Film, Image as ImageIcon, CheckCircle2, XIcon,
-  MessageSquare, Calendar, AlertTriangle,
+  MessageSquare, Calendar, AlertTriangle, Pencil, Eye, Download,
 } from "lucide-react";
 
 const ChallengeDetailPage = () => {
   const { id } = useParams<{ id: string }>();
+  const location = useLocation();
   const { isAuthenticated, user } = useAuth();
 
   const [challenge, setChallenge] = useState<Challenge | null>(null);
   const [media, setMedia] = useState<ChallengeMedia[]>([]);
   const [mediaUrls, setMediaUrls] = useState<Map<string, string>>(new Map());
-  const [submissions, setSubmissions] = useState<ChallengeSubmission[]>([]);
+  const [ownerSubmissions, setOwnerSubmissions] = useState<ChallengeSubmissionEnriched[]>([]);
+  const [mySubmissions, setMySubmissions] = useState<ChallengeSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitOpen, setSubmitOpen] = useState(false);
   const [activeMedia, setActiveMedia] = useState<string | null>(null);
+  const [filesOpen, setFilesOpen] = useState(false);
+  const [filesLoading, setFilesLoading] = useState(false);
+  const [selectedSubmissionName, setSelectedSubmissionName] = useState<string>("");
+  const [submissionFiles, setSubmissionFiles] = useState<SignedFileUrl[]>([]);
 
-  const isOwner = user && challenge && user.id === challenge.user_id;
+  const isOwner = !!(user && challenge && user.id === challenge.user_id);
   const isActive = challenge?.status === "active";
   const isClosed = challenge?.status === "closed" || challenge?.status === "inactive";
+  const backTo = location.pathname.startsWith("/dashboard") ? "/dashboard" : "/marketplace?tab=challenges";
 
   useEffect(() => {
     if (!id) return;
@@ -57,12 +74,43 @@ const ChallengeDetailPage = () => {
   }, [id]);
 
   useEffect(() => {
-    if (!id || !isOwner) return;
-    challengeSubmissionService.listForChallenge(id).then(setSubmissions);
-  }, [id, isOwner]);
+    if (!id) return;
+
+    if (isAuthenticated) {
+      challengeSubmissionService
+        .listMine()
+        .then((rows) => setMySubmissions(rows.filter((row) => row.challenge_id === id)))
+        .catch(() => setMySubmissions([]));
+    } else {
+      setMySubmissions([]);
+    }
+
+    if (!isOwner) {
+      setOwnerSubmissions([]);
+      return;
+    }
+    challengeSubmissionService
+      .listForChallengeEnriched(id)
+      .then(setOwnerSubmissions)
+      .catch(() => setOwnerSubmissions([]));
+  }, [id, isOwner, isAuthenticated]);
 
   const refreshSubmissions = () => {
-    if (id) challengeSubmissionService.listForChallenge(id).then(setSubmissions);
+    if (!id) return;
+
+    if (isAuthenticated) {
+      challengeSubmissionService
+        .listMine()
+        .then((rows) => setMySubmissions(rows.filter((row) => row.challenge_id === id)))
+        .catch(() => setMySubmissions([]));
+    }
+
+    if (isOwner) {
+      challengeSubmissionService
+        .listForChallengeEnriched(id)
+        .then(setOwnerSubmissions)
+        .catch(() => setOwnerSubmissions([]));
+    }
   };
 
   const handleToggleStatus = async (status: "active" | "inactive") => {
@@ -97,6 +145,29 @@ const ChallengeDetailPage = () => {
     }
   };
 
+  const handleVisualizeSubmission = async (datasetId: string) => {
+    try {
+      await openVisualizer(datasetId);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to open visualizer");
+    }
+  };
+
+  const handleOpenAcceptedFiles = async (datasetId: string, datasetName: string | null) => {
+    setFilesOpen(true);
+    setFilesLoading(true);
+    setSelectedSubmissionName(datasetName || datasetId);
+    setSubmissionFiles([]);
+    try {
+      const urls = await getDatasetFileUrls(datasetId);
+      setSubmissionFiles(urls.filter((u) => !!u.signed_url));
+    } catch (err: any) {
+      toast.error(err.message || "Failed to load downloadable files");
+    } finally {
+      setFilesLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen pt-16 bg-background">
@@ -114,8 +185,8 @@ const ChallengeDetailPage = () => {
         <div className="text-center">
           <Target className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
           <p className="text-muted-foreground">Challenge not found.</p>
-          <Link to="/marketplace?tab=challenges" className="text-primary text-sm hover:underline mt-2 inline-block">
-            Back to Marketplace
+          <Link to={backTo} className="text-primary text-sm hover:underline mt-2 inline-block">
+            Back
           </Link>
         </div>
       </div>
@@ -133,8 +204,8 @@ const ChallengeDetailPage = () => {
     <div className="min-h-screen pt-16 bg-background">
       <div className="container mx-auto px-6 pt-8 pb-20">
         {/* Back link */}
-        <Link to="/marketplace?tab=challenges" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6">
-          <ArrowLeft className="h-4 w-4" /> Back to Challenges
+        <Link to={backTo} className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6">
+          <ArrowLeft className="h-4 w-4" /> {location.pathname.startsWith("/dashboard") ? "Back to Dashboard" : "Back to Challenges"}
         </Link>
 
         {/* Status banner */}
@@ -262,16 +333,24 @@ const ChallengeDetailPage = () => {
             )}
 
             {/* Owner: Submissions */}
-            {isOwner && submissions.length > 0 && (
+            {isOwner && ownerSubmissions.length > 0 && (
               <GlassCard hover={false}>
                 <h2 className="text-sm font-semibold text-foreground mb-4">
-                  Submissions ({submissions.length})
+                  Submissions ({ownerSubmissions.length})
                 </h2>
                 <div className="space-y-3">
-                  {submissions.map((sub) => (
-                    <div key={sub.id} className="flex items-center justify-between rounded-xl border border-border/30 bg-background/30 p-3">
+                  {ownerSubmissions.map((sub) => (
+                    <div key={sub.id} className="rounded-xl border border-border/30 bg-background/30 p-3">
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs font-mono text-foreground truncate">{sub.dataset_id}</p>
+                        <p className="text-xs font-medium text-foreground truncate">
+                          {sub.dataset_display_name || sub.dataset_id}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground mt-1">
+                          Dataset ID: <span className="font-mono">{sub.dataset_id}</span>
+                        </p>
+                        <p className="text-[10px] text-muted-foreground mt-1">
+                          Submitter: {sub.submitter_name || sub.submitter_id}
+                        </p>
                         {sub.message && (
                           <p className="text-[11px] text-muted-foreground mt-1 line-clamp-2">{sub.message}</p>
                         )}
@@ -284,9 +363,34 @@ const ChallengeDetailPage = () => {
                             {sub.status}
                           </span>
                         </p>
+                        {sub.status === "accepted" && (
+                          <p className="text-[10px] text-green-400 mt-1">
+                            Accepted payout: {formatPrice(challenge.compensation_amount, challenge.currency)}{" "}
+                            {challenge.compensation_per === "challenge" ? "(lump sum)" : "per dataset"}
+                          </p>
+                        )}
                       </div>
-                      {sub.status === "pending" && (
-                        <div className="flex items-center gap-1.5 ml-3 shrink-0">
+                      <div className="flex items-center gap-1.5 mt-3">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 gap-1 text-[10px]"
+                          onClick={() => handleVisualizeSubmission(sub.dataset_id)}
+                        >
+                          <Eye className="h-3 w-3" /> Visualize
+                        </Button>
+                        {sub.status === "accepted" && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 gap-1 text-[10px]"
+                            onClick={() => handleOpenAcceptedFiles(sub.dataset_id, sub.dataset_display_name)}
+                          >
+                            <Download className="h-3 w-3" /> Access Files
+                          </Button>
+                        )}
+                        {sub.status === "pending" && (
+                          <>
                           <Button
                             variant="ghost"
                             size="sm"
@@ -303,8 +407,9 @@ const ChallengeDetailPage = () => {
                           >
                             <XIcon className="h-3 w-3" /> Reject
                           </Button>
-                        </div>
-                      )}
+                          </>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -355,7 +460,7 @@ const ChallengeDetailPage = () => {
             </GlassCard>
 
             {/* Submit button */}
-            {isAuthenticated && !isOwner && isActive && (
+            {isAuthenticated && isActive && (
               <Button
                 variant="neon"
                 className="w-full gap-2"
@@ -378,6 +483,15 @@ const ChallengeDetailPage = () => {
               <GlassCard hover={false}>
                 <p className="text-xs font-semibold text-foreground mb-3">Manage Challenge</p>
                 <div className="space-y-2">
+                  <Link to={`/dashboard/challenges/${challenge.id}/edit`} className="block">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full justify-start gap-2 text-xs"
+                    >
+                      <Pencil className="h-3.5 w-3.5" /> Edit Challenge
+                    </Button>
+                  </Link>
                   {challenge.status === "active" && (
                     <Button
                       variant="ghost"
@@ -433,9 +547,39 @@ const ChallengeDetailPage = () => {
         open={submitOpen}
         onClose={() => setSubmitOpen(false)}
         challengeId={challenge.id}
-        existingSubmissions={submissions}
+        existingSubmissions={mySubmissions}
         onSubmitted={refreshSubmissions}
       />
+
+      <Dialog open={filesOpen} onOpenChange={setFilesOpen}>
+        <DialogContent className="sm:max-w-lg border-border/50 bg-card/95 backdrop-blur-xl">
+          <DialogHeader>
+            <DialogTitle className="text-foreground">Accepted Submission Files</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
+              {selectedSubmissionName}
+            </DialogDescription>
+          </DialogHeader>
+          {filesLoading ? (
+            <div className="h-24 rounded-xl bg-muted/20 animate-pulse" />
+          ) : submissionFiles.length === 0 ? (
+            <p className="text-xs text-muted-foreground">No downloadable files available.</p>
+          ) : (
+            <div className="space-y-2 max-h-80 overflow-y-auto">
+              {submissionFiles.map((file) => (
+                <div
+                  key={file.relative_path}
+                  className="flex items-center justify-between gap-3 rounded-xl border border-border/30 bg-background/30 p-2.5"
+                >
+                  <span className="text-[11px] font-mono text-foreground truncate">{file.relative_path}</span>
+                  <a href={file.signed_url ?? "#"} target="_blank" rel="noopener noreferrer">
+                    <Button variant="ghost" size="sm" className="h-7 text-[10px]">Download</Button>
+                  </a>
+                </div>
+              ))}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

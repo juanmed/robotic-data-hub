@@ -124,3 +124,64 @@ export interface DatasetFile {
   upload_status: "pending" | "uploaded";
   created_at: string;
 }
+
+export interface Challenge {
+  id: string;
+  user_id: string;
+  title: string;
+  description: string;
+  status: "draft" | "active" | "inactive" | "closed";
+  compensation_amount: number;
+  compensation_per: "dataset" | "challenge";
+  currency: string;
+  deadline: string | null;
+  constraints: string;
+  conditions: string;
+  tags: string[];
+  submission_count: number;
+  published_at: string | null;
+  closed_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ChallengeMedia {
+  id: string;
+  challenge_id: string;
+  user_id: string;
+  storage_path: string;
+  file_name: string;
+  content_type: string;
+  size_bytes: number | null;
+  sort_order: number;
+  created_at: string;
+}
+
+export interface ChallengeSubmission {
+  id: string;
+  challenge_id: string;
+  dataset_id: string;
+  submitter_id: string;
+  message: string;
+  status: "pending" | "accepted" | "rejected";
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ChallengeSubmissionEnriched extends ChallengeSubmission {
+  dataset_display_name: string | null;
+  submitter_name: string | null;
+}
+
+export interface ParticipantSubmissionItem extends ChallengeSubmission {
+  challenge: Pick<
+    Challenge,
+    "id" | "title" | "compensation_amount" | "compensation_per" | "currency" | "status"
+  > | null;
+  dataset_display_name: string | null;
+}
+
+export interface EnrichedChallenge extends Challenge {
+  creator_name: string;
+  preview_url: string | null;
+}

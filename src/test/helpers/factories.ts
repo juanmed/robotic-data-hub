@@ -10,6 +10,8 @@ import type {
   APIKey,
   Listing,
   Order,
+  Challenge,
+  EnrichedChallenge,
 } from '@/types';
 
 let sessionCounter = 1;
@@ -192,5 +194,35 @@ export const createMockCharge = (overrides?: any) => ({
   status: 'succeeded',
   description: 'Navigation Dataset',
   created: Math.floor(Date.now() / 1000),
+  ...overrides,
+});
+
+let challengeCounter = 1;
+
+export const createMockChallenge = (overrides?: Partial<Challenge>): Challenge => ({
+  id: `chl_test_${challengeCounter++}`,
+  user_id: 'usr_test_001',
+  title: `Test Challenge ${challengeCounter}`,
+  description: 'A test challenge description',
+  status: 'active',
+  compensation_amount: 5000,
+  compensation_per: 'dataset',
+  currency: 'USD',
+  deadline: null,
+  constraints: '',
+  conditions: '',
+  tags: ['test'],
+  submission_count: 0,
+  published_at: new Date().toISOString(),
+  closed_at: null,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+  ...overrides,
+});
+
+export const createMockEnrichedChallenge = (overrides?: Partial<EnrichedChallenge>): EnrichedChallenge => ({
+  ...createMockChallenge(overrides),
+  creator_name: overrides?.creator_name ?? 'Test Creator',
+  preview_url: overrides?.preview_url ?? null,
   ...overrides,
 });

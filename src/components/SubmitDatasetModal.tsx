@@ -40,6 +40,9 @@ const SubmitDatasetModal = ({
         .filter((d: any) => d.status === "ready" && !alreadySubmittedIds.has(d.id));
       setDatasets(eligible.map((d: any) => ({ id: d.id, display_name: d.display_name })));
       setLoading(false);
+    }).catch((err) => {
+      console.error(err);
+      setLoading(false);
     });
   }, [open, existingSubmissions]);
 

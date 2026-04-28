@@ -31,3 +31,6 @@ coverage
 *.njsproj
 *.sln
 *.sw?
+
+# Deno lock file - excluded per Lovable deployment requirements
+supabase/functions/deno.lock

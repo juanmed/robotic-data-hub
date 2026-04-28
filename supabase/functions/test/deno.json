@@ -1,0 +1,7 @@
+{
+  "imports": {
+    "https://esm.sh/@supabase/supabase-js@2.49.4": "../test/deps/supabase_mock.ts",
+    "https://esm.sh/@supabase/supabase-js@2": "../test/deps/supabase_mock.ts",
+    "https://esm.sh/stripe@13.11.0": "../test/deps/stripe_mock.ts"
+  }
+}

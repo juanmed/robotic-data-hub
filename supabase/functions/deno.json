@@ -1,0 +1,5 @@
+{
+  "tasks": {
+    "test": "DENO_JOBS=1 deno test --allow-env --no-lock --no-remote --config test/deno.json test/"
+  }
+}

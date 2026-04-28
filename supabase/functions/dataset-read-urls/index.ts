@@ -13,6 +13,7 @@
  */
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { createEdgeLogger, serializeError } from "../_shared/logging.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -20,166 +21,208 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-function jsonError(message: string, status: number) {
-  return new Response(JSON.stringify({ error: message }), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
-
 Deno.serve(async (req) => {
+  const log = createEdgeLogger("dataset-read-urls", req, corsHeaders);
+
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return log.complete(new Response(null, { headers: { ...corsHeaders, "x-request-id": log.requestId } }));
   }
+
+  log.info("request_start");
 
   if (req.method !== "POST") {
-    return jsonError("Method not allowed", 405);
+    log.warn("method_not_allowed");
+    return log.complete(log.jsonError("Method not allowed", 405));
   }
 
-  // --- 1. Validate JWT from Authorization header ---
-  const authHeader = req.headers.get("Authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return jsonError("Missing authorization", 401);
-  }
-  const jwt = authHeader.replace("Bearer ", "").trim();
-
-  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-  const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-
-  // Create a client with the user's JWT to verify identity
-  const userClient = createClient(supabaseUrl, anonKey, {
-    global: { headers: { Authorization: `Bearer ${jwt}` } },
-  });
-
-  const {
-    data: { user },
-    error: userError,
-  } = await userClient.auth.getUser();
-
-  if (userError || !user) {
-    return jsonError("Invalid or expired token", 401);
-  }
-
-  // --- 2. Parse body ---
-  let body: { dataset_id?: string; paths?: string[] };
   try {
-    body = await req.json();
-  } catch {
-    return jsonError("Malformed JSON body", 400);
-  }
+    // --- 1. Validate JWT from Authorization header ---
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      log.warn("missing_authorization");
+      return log.complete(log.jsonError("Missing authorization", 401));
+    }
+    const jwt = authHeader.replace("Bearer ", "").trim();
 
-  if (!body.dataset_id || typeof body.dataset_id !== "string") {
-    return jsonError("Missing or invalid 'dataset_id'", 400);
-  }
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 
-  // --- 3. Verify dataset access ---
-  const adminClient = createClient(supabaseUrl, serviceRoleKey);
+    const userClient = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: `Bearer ${jwt}` } },
+    });
 
-  const { data: dataset, error: dsError } = await adminClient
-    .from("datasets")
-    .select("id, user_id")
-    .eq("id", body.dataset_id)
-    .maybeSingle();
+    const {
+      data: { user },
+      error: userError,
+    } = await userClient.auth.getUser();
 
-  if (dsError) {
-    console.error("Dataset lookup error:", dsError);
-    return jsonError("Internal error", 500);
-  }
-  if (!dataset) {
-    return jsonError("Dataset not found", 404);
-  }
+    if (userError || !user) {
+      log.warn("auth_user_failed", { user_error: userError?.message ?? null });
+      return log.complete(log.jsonError("Invalid or expired token", 401));
+    }
 
-  const isDatasetOwner = dataset.user_id === user.id;
-  if (!isDatasetOwner) {
-    const { data: submitterSubmission, error: submitterError } = await adminClient
-      .from("challenge_submissions")
-      .select("id")
-      .eq("dataset_id", body.dataset_id)
-      .eq("submitter_id", user.id)
-      .limit(1)
+    // --- 2. Parse body ---
+    let body: { dataset_id?: string; paths?: string[] };
+    try {
+      body = await req.json();
+    } catch {
+      log.warn("malformed_json_body", { user_id: user.id });
+      return log.complete(log.jsonError("Malformed JSON body", 400));
+    }
+
+    if (!body.dataset_id || typeof body.dataset_id !== "string") {
+      log.warn("invalid_dataset_id", { user_id: user.id });
+      return log.complete(log.jsonError("Missing or invalid 'dataset_id'", 400));
+    }
+
+    // --- 3. Verify dataset access ---
+    const adminClient = createClient(supabaseUrl, serviceRoleKey);
+
+    const { data: dataset, error: dsError } = await adminClient
+      .from("datasets")
+      .select("id, user_id")
+      .eq("id", body.dataset_id)
       .maybeSingle();
-    if (submitterError) {
-      console.error("Submission access (submitter) error:", submitterError);
-      return jsonError("Internal error", 500);
+
+    if (dsError) {
+      log.error("dataset_lookup_error", {
+        user_id: user.id,
+        dataset_id: body.dataset_id,
+        db_error: dsError.message,
+      });
+      return log.complete(log.jsonError("Internal error", 500));
+    }
+    if (!dataset) {
+      log.warn("dataset_not_found", { user_id: user.id, dataset_id: body.dataset_id });
+      return log.complete(log.jsonError("Dataset not found", 404));
     }
 
-    const { data: acceptedRows, error: acceptedRowsError } = await adminClient
-      .from("challenge_submissions")
-      .select("challenge_id")
-      .eq("dataset_id", body.dataset_id)
-      .eq("status", "accepted");
-    if (acceptedRowsError) {
-      console.error("Submission access (accepted rows) error:", acceptedRowsError);
-      return jsonError("Internal error", 500);
-    }
-
-    let isAcceptedChallengeOwner = false;
-    const acceptedChallengeIds = [...new Set((acceptedRows ?? []).map((r) => r.challenge_id))];
-    if (acceptedChallengeIds.length > 0) {
-      const { data: ownerChallenge, error: ownerError } = await adminClient
-        .from("challenges")
+    const isDatasetOwner = dataset.user_id === user.id;
+    if (!isDatasetOwner) {
+      const { data: submitterSubmission, error: submitterError } = await adminClient
+        .from("challenge_submissions")
         .select("id")
-        .eq("user_id", user.id)
-        .in("id", acceptedChallengeIds)
+        .eq("dataset_id", body.dataset_id)
+        .eq("submitter_id", user.id)
         .limit(1)
         .maybeSingle();
-      if (ownerError) {
-        console.error("Submission access (challenge owner) error:", ownerError);
-        return jsonError("Internal error", 500);
+      if (submitterError) {
+        log.error("submitter_access_lookup_error", {
+          user_id: user.id,
+          dataset_id: body.dataset_id,
+          db_error: submitterError.message,
+        });
+        return log.complete(log.jsonError("Internal error", 500));
       }
-      isAcceptedChallengeOwner = !!ownerChallenge;
+
+      const { data: acceptedRows, error: acceptedRowsError } = await adminClient
+        .from("challenge_submissions")
+        .select("challenge_id")
+        .eq("dataset_id", body.dataset_id)
+        .eq("status", "accepted");
+      if (acceptedRowsError) {
+        log.error("accepted_submission_lookup_error", {
+          user_id: user.id,
+          dataset_id: body.dataset_id,
+          db_error: acceptedRowsError.message,
+        });
+        return log.complete(log.jsonError("Internal error", 500));
+      }
+
+      let isAcceptedChallengeOwner = false;
+      const acceptedChallengeIds = [...new Set((acceptedRows ?? []).map((r) => r.challenge_id))];
+      if (acceptedChallengeIds.length > 0) {
+        const { data: ownerChallenge, error: ownerError } = await adminClient
+          .from("challenges")
+          .select("id")
+          .eq("user_id", user.id)
+          .in("id", acceptedChallengeIds)
+          .limit(1)
+          .maybeSingle();
+        if (ownerError) {
+          log.error("challenge_owner_lookup_error", {
+            user_id: user.id,
+            dataset_id: body.dataset_id,
+            db_error: ownerError.message,
+          });
+          return log.complete(log.jsonError("Internal error", 500));
+        }
+        isAcceptedChallengeOwner = !!ownerChallenge;
+      }
+
+      if (!submitterSubmission && !isAcceptedChallengeOwner) {
+        log.warn("dataset_access_denied", {
+          user_id: user.id,
+          dataset_id: body.dataset_id,
+          dataset_owner_id: dataset.user_id,
+          has_submitter_submission: !!submitterSubmission,
+          is_accepted_challenge_owner: isAcceptedChallengeOwner,
+        });
+        return log.complete(log.jsonError("Access denied", 403));
+      }
     }
 
-    if (!submitterSubmission && !isAcceptedChallengeOwner) {
-      return jsonError("Access denied", 403);
+    // --- 4. Fetch file records ---
+    let query = adminClient
+      .from("dataset_files")
+      .select("relative_path, storage_path, content_type")
+      .eq("dataset_id", body.dataset_id)
+      .eq("upload_status", "uploaded");
+
+    if (Array.isArray(body.paths) && body.paths.length > 0) {
+      query = query.in("relative_path", body.paths);
     }
-  }
 
-  // --- 4. Fetch file records ---
-  let query = adminClient
-    .from("dataset_files")
-    .select("relative_path, storage_path, content_type")
-    .eq("dataset_id", body.dataset_id)
-    .eq("upload_status", "uploaded");
+    const { data: files, error: filesError } = await query;
 
-  if (Array.isArray(body.paths) && body.paths.length > 0) {
-    query = query.in("relative_path", body.paths);
-  }
+    if (filesError) {
+      log.error("files_lookup_error", {
+        user_id: user.id,
+        dataset_id: body.dataset_id,
+        db_error: filesError.message,
+      });
+      return log.complete(log.jsonError("Internal error fetching files", 500));
+    }
 
-  const { data: files, error: filesError } = await query;
+    if (!files || files.length === 0) {
+      log.info("no_files_found", {
+        user_id: user.id,
+        dataset_id: body.dataset_id,
+      });
+      return log.complete(log.jsonOk({ urls: [] }));
+    }
 
-  if (filesError) {
-    console.error("Files lookup error:", filesError);
-    return jsonError("Internal error fetching files", 500);
-  }
+    // --- 5. Generate signed read URLs (valid 1 hour) ---
+    const storagePaths = files.map((f) => f.storage_path);
+    const { data: signedData, error: signedError } = await adminClient.storage
+      .from("datasets")
+      .createSignedUrls(storagePaths, 3600);
 
-  if (!files || files.length === 0) {
-    return new Response(JSON.stringify({ urls: [] }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    if (signedError) {
+      log.error("signed_url_error", {
+        user_id: user.id,
+        dataset_id: body.dataset_id,
+        storage_error: signedError.message,
+      });
+      return log.complete(log.jsonError("Failed to generate signed URLs", 500));
+    }
+
+    const urls = files.map((f, i) => ({
+      relative_path: f.relative_path,
+      signed_url: signedData?.[i]?.signedUrl ?? null,
+      content_type: f.content_type,
+    }));
+
+    log.info("signed_urls_generated", {
+      user_id: user.id,
+      dataset_id: body.dataset_id,
+      returned_url_count: urls.length,
+      requested_path_count: Array.isArray(body.paths) ? body.paths.length : null,
     });
+    return log.complete(log.jsonOk({ urls }));
+  } catch (error) {
+    log.error("request_failed", { ...serializeError(error) });
+    return log.complete(log.jsonError("Internal server error", 500));
   }
-
-  // --- 5. Generate signed read URLs (valid 1 hour) ---
-  const storagePaths = files.map((f) => f.storage_path);
-  const { data: signedData, error: signedError } = await adminClient.storage
-    .from("datasets")
-    .createSignedUrls(storagePaths, 3600);
-
-  if (signedError) {
-    console.error("Signed URL error:", signedError);
-    return jsonError("Failed to generate signed URLs", 500);
-  }
-
-  const urls = files.map((f, i) => ({
-    relative_path: f.relative_path,
-    signed_url: signedData?.[i]?.signedUrl ?? null,
-    content_type: f.content_type,
-  }));
-
-  return new Response(JSON.stringify({ urls }), {
-    status: 200,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
 });

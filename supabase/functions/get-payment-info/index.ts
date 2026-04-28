@@ -16,6 +16,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { Stripe } from "https://esm.sh/stripe@13.11.0";
+import { createEdgeLogger, serializeError } from "../_shared/logging.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -23,26 +24,25 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-function jsonError(message: string, status: number) {
-  return new Response(JSON.stringify({ error: message }), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
-
 Deno.serve(async (req) => {
+  const log = createEdgeLogger("get-payment-info", req, corsHeaders);
+
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return log.complete(new Response("ok", { headers: { ...corsHeaders, "x-request-id": log.requestId } }));
   }
 
+  log.info("request_start");
+
   if (req.method !== "GET") {
-    return jsonError("Method not allowed", 405);
+    log.warn("method_not_allowed");
+    return log.complete(log.jsonError("Method not allowed", 405));
   }
 
   try {
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
-      return jsonError("Missing or invalid auth header", 401);
+      log.warn("missing_or_invalid_auth_header");
+      return log.complete(log.jsonError("Missing or invalid auth header", 401));
     }
 
     const jwt = authHeader.slice(7);
@@ -56,7 +56,8 @@ Deno.serve(async (req) => {
     const { data: { user }, error: userError } = await userClient.auth.getUser();
 
     if (userError || !user?.id) {
-      return jsonError("Unauthorized", 401);
+      log.warn("auth_user_failed", { user_error: userError?.message ?? null });
+      return log.complete(log.jsonError("Unauthorized", 401));
     }
 
     // Admin client for DB and Stripe
@@ -71,20 +72,23 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     if (customerError) {
-      return jsonError("Database error", 500);
+      log.error("stripe_customer_lookup_error", {
+        user_id: user.id,
+        db_error: customerError.message,
+      });
+      return log.complete(log.jsonError("Database error", 500));
     }
 
     if (!stripeCustomer) {
-      return new Response(
-        JSON.stringify({ hasPaymentMethod: false }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      log.info("no_stripe_customer", { user_id: user.id });
+      return log.complete(log.jsonOk({ hasPaymentMethod: false }));
     }
 
     // Initialize Stripe
     const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeSecretKey) {
-      return jsonError("Stripe not configured", 500);
+      log.error("missing_stripe_secret", { user_id: user.id });
+      return log.complete(log.jsonError("Stripe not configured", 500));
     }
     const stripe = new Stripe(stripeSecretKey);
 
@@ -94,18 +98,20 @@ Deno.serve(async (req) => {
     });
 
     if (!("invoice_settings" in customer) || !customer.invoice_settings?.default_payment_method) {
-      return new Response(
-        JSON.stringify({ hasPaymentMethod: false }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      log.info("no_default_payment_method", {
+        user_id: user.id,
+        stripe_customer_id: stripeCustomer.stripe_customer_id,
+      });
+      return log.complete(log.jsonOk({ hasPaymentMethod: false }));
     }
 
     const paymentMethod = customer.invoice_settings.default_payment_method;
     if (typeof paymentMethod === "string" || !("card" in paymentMethod)) {
-      return new Response(
-        JSON.stringify({ hasPaymentMethod: false }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      log.info("non_card_default_payment_method", {
+        user_id: user.id,
+        stripe_customer_id: stripeCustomer.stripe_customer_id,
+      });
+      return log.complete(log.jsonOk({ hasPaymentMethod: false }));
     }
 
     // Get recent charges
@@ -115,10 +121,16 @@ Deno.serve(async (req) => {
     });
 
     // Insert audit log
-    await adminClient.from("payment_audit_log").insert({
+    const { error: auditError } = await adminClient.from("payment_audit_log").insert({
       user_id: user.id,
       event_type: "view_payment_info",
     });
+    if (auditError) {
+      log.warn("payment_audit_insert_failed", {
+        user_id: user.id,
+        db_error: auditError.message,
+      });
+    }
 
     // Return sanitized data
     const response = {
@@ -144,12 +156,14 @@ Deno.serve(async (req) => {
       })),
     };
 
-    return new Response(JSON.stringify(response), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    log.info("payment_info_fetched", {
+      user_id: user.id,
+      stripe_customer_id: stripeCustomer.stripe_customer_id,
+      charge_count: response.charges.length,
     });
+    return log.complete(log.jsonOk(response));
   } catch (error) {
-    console.error("Error:", error);
-    return jsonError("Internal server error", 500);
+    log.error("request_failed", { ...serializeError(error) });
+    return log.complete(log.jsonError("Internal server error", 500));
   }
 });

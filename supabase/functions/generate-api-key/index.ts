@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createEdgeLogger, serializeError } from "../_shared/logging.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -6,17 +7,24 @@ const corsHeaders = {
 };
 
 Deno.serve(async (req) => {
+  const log = createEdgeLogger("generate-api-key", req, corsHeaders);
+
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return log.complete(new Response("ok", { headers: { ...corsHeaders, "x-request-id": log.requestId } }));
+  }
+
+  log.info("request_start");
+
+  if (req.method !== "POST") {
+    log.warn("method_not_allowed");
+    return log.complete(log.jsonError("Method not allowed", 405));
   }
 
   try {
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Missing auth" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      log.warn("missing_authorization_header");
+      return log.complete(log.jsonError("Missing auth", 401));
     }
 
     const supabase = createClient(
@@ -27,18 +35,16 @@ Deno.serve(async (req) => {
 
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      log.warn("unauthorized_user", {
+        user_error: userError?.message ?? null,
       });
+      return log.complete(log.jsonError("Unauthorized", 401));
     }
 
     const { name } = await req.json();
     if (!name || typeof name !== "string") {
-      return new Response(JSON.stringify({ error: "Name is required" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      log.warn("invalid_name_payload", { user_id: user.id });
+      return log.complete(log.jsonError("Name is required", 400));
     }
 
     // Generate a random key
@@ -63,19 +69,20 @@ Deno.serve(async (req) => {
       .single();
 
     if (error) {
-      return new Response(JSON.stringify({ error: error.message }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      log.error("api_key_insert_failed", {
+        user_id: user.id,
+        db_error: error.message,
       });
+      return log.complete(log.jsonError(error.message, 500));
     }
 
-    return new Response(JSON.stringify({ ...data, raw_key: rawKey }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    log.info("api_key_created", {
+      user_id: user.id,
+      api_key_id: data.id,
     });
+    return log.complete(log.jsonOk({ ...data, raw_key: rawKey }));
   } catch (e) {
-    return new Response(JSON.stringify({ error: String(e) }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    log.error("request_failed", { ...serializeError(e) });
+    return log.complete(log.jsonError("Internal server error", 500));
   }
 });

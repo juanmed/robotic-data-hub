@@ -16,6 +16,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { Stripe } from "https://esm.sh/stripe@13.11.0";
+import { createEdgeLogger, serializeError } from "../_shared/logging.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -23,26 +24,25 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-function jsonError(message: string, status: number) {
-  return new Response(JSON.stringify({ error: message }), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
-
 Deno.serve(async (req) => {
+  const log = createEdgeLogger("create-setup-intent", req, corsHeaders);
+
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return log.complete(new Response("ok", { headers: { ...corsHeaders, "x-request-id": log.requestId } }));
   }
 
+  log.info("request_start");
+
   if (req.method !== "POST") {
-    return jsonError("Method not allowed", 405);
+    log.warn("method_not_allowed");
+    return log.complete(log.jsonError("Method not allowed", 405));
   }
 
   try {
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
-      return jsonError("Missing or invalid auth header", 401);
+      log.warn("missing_or_invalid_auth_header");
+      return log.complete(log.jsonError("Missing or invalid auth header", 401));
     }
 
     const jwt = authHeader.slice(7);
@@ -56,7 +56,8 @@ Deno.serve(async (req) => {
     const { data: { user }, error: userError } = await userClient.auth.getUser();
 
     if (userError || !user?.id) {
-      return jsonError("Unauthorized", 401);
+      log.warn("auth_user_failed", { user_error: userError?.message ?? null });
+      return log.complete(log.jsonError("Unauthorized", 401));
     }
 
     // Admin client for DB and Stripe
@@ -66,7 +67,8 @@ Deno.serve(async (req) => {
     // Initialize Stripe
     const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeSecretKey) {
-      return jsonError("Stripe not configured", 500);
+      log.error("missing_stripe_secret");
+      return log.complete(log.jsonError("Stripe not configured", 500));
     }
     const stripe = new Stripe(stripeSecretKey);
 
@@ -80,6 +82,10 @@ Deno.serve(async (req) => {
 
     if (existing) {
       stripeCustomerId = existing.stripe_customer_id;
+      log.info("reusing_existing_stripe_customer", {
+        user_id: user.id,
+        stripe_customer_id: stripeCustomerId,
+      });
     } else {
       // Create new Stripe customer
       const customer = await stripe.customers.create({
@@ -87,6 +93,10 @@ Deno.serve(async (req) => {
         metadata: { user_id: user.id },
       });
       stripeCustomerId = customer.id;
+      log.info("created_new_stripe_customer", {
+        user_id: user.id,
+        stripe_customer_id: stripeCustomerId,
+      });
 
       // Store in DB
       const { error: insertError } = await adminClient.from("stripe_customers").insert({
@@ -95,8 +105,12 @@ Deno.serve(async (req) => {
       });
 
       if (insertError) {
-        console.error("Failed to insert stripe_customer:", insertError);
-        return jsonError("Failed to create payment setup", 500);
+        log.error("stripe_customer_insert_error", {
+          user_id: user.id,
+          db_error: insertError.message,
+          stripe_customer_id: stripeCustomerId,
+        });
+        return log.complete(log.jsonError("Failed to create payment setup", 500));
       }
     }
 
@@ -106,18 +120,16 @@ Deno.serve(async (req) => {
       payment_method_types: ["card"],
     });
 
-    return new Response(
-      JSON.stringify({
-        client_secret: setupIntent.client_secret,
-        customerId: stripeCustomerId,
-      }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+    log.info("setup_intent_created", {
+      user_id: user.id,
+      stripe_customer_id: stripeCustomerId,
+    });
+    return log.complete(log.jsonOk({
+      client_secret: setupIntent.client_secret,
+      customerId: stripeCustomerId,
+    }));
   } catch (error) {
-    console.error("Error:", error);
-    return jsonError("Internal server error", 500);
+    log.error("request_failed", { ...serializeError(error) });
+    return log.complete(log.jsonError("Internal server error", 500));
   }
 });

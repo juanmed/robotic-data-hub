@@ -16,6 +16,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { Stripe } from "https://esm.sh/stripe@13.11.0";
+import { createEdgeLogger, serializeError } from "../_shared/logging.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -23,26 +24,25 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-function jsonError(message: string, status: number) {
-  return new Response(JSON.stringify({ error: message }), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
-
 Deno.serve(async (req) => {
+  const log = createEdgeLogger("update-payment-method", req, corsHeaders);
+
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return log.complete(new Response("ok", { headers: { ...corsHeaders, "x-request-id": log.requestId } }));
   }
 
+  log.info("request_start");
+
   if (req.method !== "POST") {
-    return jsonError("Method not allowed", 405);
+    log.warn("method_not_allowed");
+    return log.complete(log.jsonError("Method not allowed", 405));
   }
 
   try {
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
-      return jsonError("Missing or invalid auth header", 401);
+      log.warn("missing_or_invalid_auth_header");
+      return log.complete(log.jsonError("Missing or invalid auth header", 401));
     }
 
     const jwt = authHeader.slice(7);
@@ -56,7 +56,8 @@ Deno.serve(async (req) => {
     const { data: { user }, error: userError } = await userClient.auth.getUser();
 
     if (userError || !user?.id) {
-      return jsonError("Unauthorized", 401);
+      log.warn("auth_user_failed", { user_error: userError?.message ?? null });
+      return log.complete(log.jsonError("Unauthorized", 401));
     }
 
     // Parse body
@@ -64,11 +65,13 @@ Deno.serve(async (req) => {
     try {
       body = await req.json();
     } catch {
-      return jsonError("Malformed JSON body", 400);
+      log.warn("malformed_json_body", { user_id: user.id });
+      return log.complete(log.jsonError("Malformed JSON body", 400));
     }
 
     if (!body.setup_intent_id || !body.payment_method_id) {
-      return jsonError("Missing setup_intent_id or payment_method_id", 400);
+      log.warn("missing_required_fields", { user_id: user.id });
+      return log.complete(log.jsonError("Missing setup_intent_id or payment_method_id", 400));
     }
 
     // Admin client for DB and Stripe
@@ -83,13 +86,18 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     if (customerError || !stripeCustomer) {
-      return jsonError("Payment setup not found", 404);
+      log.warn("stripe_customer_not_found", {
+        user_id: user.id,
+        db_error: customerError?.message ?? null,
+      });
+      return log.complete(log.jsonError("Payment setup not found", 404));
     }
 
     // Initialize Stripe
     const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeSecretKey) {
-      return jsonError("Stripe not configured", 500);
+      log.error("missing_stripe_secret", { user_id: user.id });
+      return log.complete(log.jsonError("Stripe not configured", 500));
     }
     const stripe = new Stripe(stripeSecretKey);
 
@@ -98,11 +106,22 @@ Deno.serve(async (req) => {
 
     // Validate SetupIntent belongs to this customer and succeeded
     if (setupIntent.status !== "succeeded") {
-      return jsonError("SetupIntent not confirmed", 400);
+      log.warn("setup_intent_not_confirmed", {
+        user_id: user.id,
+        setup_intent_id: body.setup_intent_id,
+        setup_intent_status: setupIntent.status,
+      });
+      return log.complete(log.jsonError("SetupIntent not confirmed", 400));
     }
 
     if (setupIntent.customer !== stripeCustomer.stripe_customer_id) {
-      return jsonError("SetupIntent does not belong to this customer", 403);
+      log.warn("setup_intent_customer_mismatch", {
+        user_id: user.id,
+        setup_intent_id: body.setup_intent_id,
+        expected_customer: stripeCustomer.stripe_customer_id,
+        actual_customer: setupIntent.customer,
+      });
+      return log.complete(log.jsonError("SetupIntent does not belong to this customer", 403));
     }
 
     // Attach payment method (idempotent operation)
@@ -118,17 +137,26 @@ Deno.serve(async (req) => {
     });
 
     // Insert audit log
-    await adminClient.from("payment_audit_log").insert({
+    const { error: auditError } = await adminClient.from("payment_audit_log").insert({
       user_id: user.id,
       event_type: "update_payment_method",
     });
+    if (auditError) {
+      log.warn("payment_audit_insert_failed", {
+        user_id: user.id,
+        db_error: auditError.message,
+      });
+    }
 
-    return new Response(JSON.stringify({ success: true }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    log.info("payment_method_updated", {
+      user_id: user.id,
+      setup_intent_id: body.setup_intent_id,
+      payment_method_id: body.payment_method_id,
+      stripe_customer_id: stripeCustomer.stripe_customer_id,
     });
+    return log.complete(log.jsonOk({ success: true }));
   } catch (error) {
-    console.error("Error:", error);
-    return jsonError("Internal server error", 500);
+    log.error("request_failed", { ...serializeError(error) });
+    return log.complete(log.jsonError("Internal server error", 500));
   }
 });

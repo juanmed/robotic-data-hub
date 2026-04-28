@@ -13,6 +13,7 @@
  */
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { resolveDatasetAccess } from "../_shared/dataset_access.ts";
 import { createEdgeLogger, serializeError } from "../_shared/logging.ts";
 
 const corsHeaders = {
@@ -98,66 +99,31 @@ export async function handler(req: Request): Promise<Response> {
       return log.complete(log.jsonError("Dataset not found", 404));
     }
 
-    const isDatasetOwner = dataset.user_id === user.id;
-    if (!isDatasetOwner) {
-      const { data: submitterSubmission, error: submitterError } = await adminClient
-        .from("challenge_submissions")
-        .select("id")
-        .eq("dataset_id", body.dataset_id)
-        .eq("submitter_id", user.id)
-        .limit(1)
-        .maybeSingle();
-      if (submitterError) {
-        log.error("submitter_access_lookup_error", {
-          user_id: user.id,
-          dataset_id: body.dataset_id,
-          db_error: submitterError.message,
-        });
-        return log.complete(log.jsonError("Internal error", 500));
-      }
+    const { data: access, error: accessError } = await resolveDatasetAccess({
+      supabaseUrl,
+      serviceRoleKey,
+      datasetId: body.dataset_id,
+      userId: user.id,
+      datasetOwnerId: dataset.user_id,
+    });
 
-      const { data: acceptedRows, error: acceptedRowsError } = await adminClient
-        .from("challenge_submissions")
-        .select("challenge_id")
-        .eq("dataset_id", body.dataset_id)
-        .eq("status", "accepted");
-      if (acceptedRowsError) {
-        log.error("accepted_submission_lookup_error", {
-          user_id: user.id,
-          dataset_id: body.dataset_id,
-          db_error: acceptedRowsError.message,
-        });
-        return log.complete(log.jsonError("Internal error", 500));
-      }
+    if (accessError) {
+      log.error("dataset_access_lookup_error", {
+        user_id: user.id,
+        dataset_id: body.dataset_id,
+        db_error: accessError.message,
+      });
+      return log.complete(log.jsonError("Internal error", 500));
+    }
 
-      let isAcceptedChallengeOwner = false;
-      const acceptedChallengeIds = [...new Set((acceptedRows ?? []).map((r: any) => r.challenge_id))];
-      if (acceptedChallengeIds.length > 0) {
-        const { data: ownerChallenge, error: ownerError } = await adminClient
-          .from("challenges")
-          .select("id")
-          .eq("user_id", user.id)
-          .in("id", acceptedChallengeIds)
-          .limit(1)
-          .maybeSingle();
-        if (ownerError) {
-          log.error("challenge_owner_lookup_error", {
-            user_id: user.id,
-            dataset_id: body.dataset_id,
-            db_error: ownerError.message,
-          });
-          return log.complete(log.jsonError("Internal error", 500));
-        }
-        isAcceptedChallengeOwner = !!ownerChallenge;
-      }
-
-      if (!submitterSubmission && !isAcceptedChallengeOwner) {
+    if (!access?.isDatasetOwner) {
+      if (!access?.isSubmitter && !access?.isAcceptedChallengeOwner) {
         log.warn("dataset_access_denied", {
           user_id: user.id,
           dataset_id: body.dataset_id,
           dataset_owner_id: dataset.user_id,
-          has_submitter_submission: !!submitterSubmission,
-          is_accepted_challenge_owner: isAcceptedChallengeOwner,
+          has_submitter_submission: !!access?.isSubmitter,
+          is_accepted_challenge_owner: !!access?.isAcceptedChallengeOwner,
         });
         return log.complete(log.jsonError("Access denied", 403));
       }

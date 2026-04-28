@@ -28,7 +28,7 @@ const ChallengeMediaUpload = ({ challengeId, userId, onMediaChange }: ChallengeM
           setSignedUrls((prev) => new Map(prev).set(item.id, url));
         });
       });
-    });
+    }).catch(console.error);
   }, [challengeId]);
 
   const handleFiles = useCallback(async (files: FileList | null) => {

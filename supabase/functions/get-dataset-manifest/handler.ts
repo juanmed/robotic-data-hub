@@ -12,6 +12,7 @@
  */
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { resolveDatasetAccess } from "../_shared/dataset_access.ts";
 import { createEdgeLogger, serializeError } from "../_shared/logging.ts";
 
 const corsHeaders = {
@@ -63,54 +64,28 @@ async function handleManifest(
     return log.jsonError("Dataset not found", 404);
   }
 
-  const isDatasetOwner = dataset.user_id === user.id;
-  if (!isDatasetOwner) {
-    const { data: submitterSubmission, error: submitterError } = await adminClient
-      .from("challenge_submissions")
-      .select("id")
-      .eq("dataset_id", datasetId)
-      .eq("submitter_id", user.id)
-      .limit(1)
-      .maybeSingle();
-    if (submitterError) {
-      log.error("submitter_access_lookup_error", { db_error: submitterError.message });
-      return log.jsonError("Internal error", 500);
-    }
+  const { data: access, error: accessError } = await resolveDatasetAccess({
+    supabaseUrl,
+    serviceRoleKey,
+    datasetId,
+    userId: user.id,
+    datasetOwnerId: dataset.user_id,
+  });
 
-    let isChallengeOwner = false;
-    const { data: ownerChallengeRows, error: ownerChallengeError } = await adminClient
-      .from("challenge_submissions")
-      .select("challenge_id")
-      .eq("dataset_id", datasetId);
-    if (ownerChallengeError) {
-      log.error("challenge_rows_lookup_error", { db_error: ownerChallengeError.message });
-      return log.jsonError("Internal error", 500);
-    }
+  if (accessError) {
+    log.error("dataset_access_lookup_error", { db_error: accessError.message });
+    return log.jsonError("Internal error", 500);
+  }
 
-    const challengeIds = [...new Set((ownerChallengeRows ?? []).map((r: any) => r.challenge_id))];
-    if (challengeIds.length > 0) {
-      const { data: ownerChallenge, error: ownerError } = await adminClient
-        .from("challenges")
-        .select("id")
-        .eq("user_id", user.id)
-        .in("id", challengeIds)
-        .limit(1)
-        .maybeSingle();
-      if (ownerError) {
-        log.error("challenge_owner_lookup_error", { db_error: ownerError.message });
-        return log.jsonError("Internal error", 500);
-      }
-      isChallengeOwner = !!ownerChallenge;
-    }
-
-    if (!submitterSubmission && !isChallengeOwner) {
+  if (!access?.isDatasetOwner) {
+    if (!access?.isSubmitter && !access?.isChallengeOwner) {
       log.warn("access_denied", {
         user_id: user.id,
         dataset_id: datasetId,
         dataset_owner_id: dataset.user_id,
-        has_submitter_submission: !!submitterSubmission,
-        challenge_ids_count: challengeIds.length,
-        is_challenge_owner: isChallengeOwner,
+        has_submitter_submission: !!access?.isSubmitter,
+        challenge_ids_count: access?.submissionCount ?? 0,
+        is_challenge_owner: !!access?.isChallengeOwner,
       });
       return log.jsonError("Access denied", 403, {
         reason: "not_dataset_owner_submitter_or_challenge_owner",
@@ -120,8 +95,8 @@ async function handleManifest(
     log.info("access_granted_via_submission_path", {
       user_id: user.id,
       dataset_id: datasetId,
-      has_submitter_submission: !!submitterSubmission,
-      is_challenge_owner: isChallengeOwner,
+      has_submitter_submission: !!access?.isSubmitter,
+      is_challenge_owner: !!access?.isChallengeOwner,
     });
   } else {
     log.info("access_granted_dataset_owner", {

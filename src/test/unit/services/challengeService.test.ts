@@ -322,4 +322,225 @@ describe("challengeService", () => {
       );
     });
   });
+
+  describe("listEnriched", () => {
+    const mockActiveChallenge = {
+      id: "ch_001", user_id: "usr_001", title: "Kitchen manipulation",
+      description: "Need kitchen data", status: "active",
+      compensation_amount: 5000, compensation_per: "dataset", currency: "USD",
+      deadline: null, constraints: "", conditions: "", tags: [],
+      submission_count: 0, published_at: new Date().toISOString(),
+      closed_at: null, created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+    };
+
+    it("returns [] when no active challenges exist", async () => {
+      supabaseMock.supabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            order: vi.fn().mockResolvedValue({ data: [], error: null }),
+          }),
+        }),
+      });
+
+      const result = await challengeService.listEnriched();
+      expect(result).toEqual([]);
+    });
+
+    it("merges creator names from profiles", async () => {
+      supabaseMock.supabase.from.mockImplementation((table: string) => {
+        if (table === "challenges") {
+          return {
+            select: vi.fn().mockReturnValue({
+              eq: vi.fn().mockReturnValue({
+                order: vi.fn().mockResolvedValue({ data: [mockActiveChallenge], error: null }),
+              }),
+            }),
+          };
+        }
+        if (table === "profiles") {
+          return {
+            select: vi.fn().mockReturnValue({
+              in: vi.fn().mockResolvedValue({ data: [{ id: "usr_001", name: "Jane" }], error: null }),
+            }),
+          };
+        }
+        if (table === "challenge_media") {
+          return {
+            select: vi.fn().mockReturnValue({
+              in: vi.fn().mockReturnValue({
+                order: vi.fn().mockResolvedValue({ data: [], error: null }),
+              }),
+            }),
+          };
+        }
+        return { select: vi.fn() };
+      });
+      supabaseMock.supabase.storage.from.mockReturnValue({
+        createSignedUrl: vi.fn().mockResolvedValue({ data: null }),
+      });
+
+      const result = await challengeService.listEnriched();
+      expect(result[0].creator_name).toBe("Jane");
+    });
+
+    it("falls back to 'Unknown' when profile is missing", async () => {
+      supabaseMock.supabase.from.mockImplementation((table: string) => {
+        if (table === "challenges") {
+          return {
+            select: vi.fn().mockReturnValue({
+              eq: vi.fn().mockReturnValue({
+                order: vi.fn().mockResolvedValue({ data: [mockActiveChallenge], error: null }),
+              }),
+            }),
+          };
+        }
+        if (table === "profiles") {
+          return {
+            select: vi.fn().mockReturnValue({
+              in: vi.fn().mockResolvedValue({ data: [], error: null }),
+            }),
+          };
+        }
+        if (table === "challenge_media") {
+          return {
+            select: vi.fn().mockReturnValue({
+              in: vi.fn().mockReturnValue({
+                order: vi.fn().mockResolvedValue({ data: [], error: null }),
+              }),
+            }),
+          };
+        }
+        return { select: vi.fn() };
+      });
+
+      const result = await challengeService.listEnriched();
+      expect(result[0].creator_name).toBe("Unknown");
+    });
+
+    it("sets preview_url to signed URL when media exists", async () => {
+      const mockMedia = [{ challenge_id: "ch_001", storage_path: "ch_001/video.mp4" }];
+
+      supabaseMock.supabase.from.mockImplementation((table: string) => {
+        if (table === "challenges") {
+          return {
+            select: vi.fn().mockReturnValue({
+              eq: vi.fn().mockReturnValue({
+                order: vi.fn().mockResolvedValue({ data: [mockActiveChallenge], error: null }),
+              }),
+            }),
+          };
+        }
+        if (table === "profiles") {
+          return {
+            select: vi.fn().mockReturnValue({
+              in: vi.fn().mockResolvedValue({ data: [], error: null }),
+            }),
+          };
+        }
+        if (table === "challenge_media") {
+          return {
+            select: vi.fn().mockReturnValue({
+              in: vi.fn().mockReturnValue({
+                order: vi.fn().mockResolvedValue({ data: mockMedia, error: null }),
+              }),
+            }),
+          };
+        }
+        return { select: vi.fn() };
+      });
+      supabaseMock.supabase.storage.from.mockReturnValue({
+        createSignedUrl: vi.fn().mockResolvedValue({
+          data: { signedUrl: "https://signed.url/video.mp4" },
+        }),
+      });
+
+      const result = await challengeService.listEnriched();
+      expect(result[0].preview_url).toBe("https://signed.url/video.mp4");
+    });
+
+    it("sets preview_url to null when no media exists", async () => {
+      supabaseMock.supabase.from.mockImplementation((table: string) => {
+        if (table === "challenges") {
+          return {
+            select: vi.fn().mockReturnValue({
+              eq: vi.fn().mockReturnValue({
+                order: vi.fn().mockResolvedValue({ data: [mockActiveChallenge], error: null }),
+              }),
+            }),
+          };
+        }
+        if (table === "profiles") {
+          return {
+            select: vi.fn().mockReturnValue({
+              in: vi.fn().mockResolvedValue({ data: [], error: null }),
+            }),
+          };
+        }
+        if (table === "challenge_media") {
+          return {
+            select: vi.fn().mockReturnValue({
+              in: vi.fn().mockReturnValue({
+                order: vi.fn().mockResolvedValue({ data: [], error: null }),
+              }),
+            }),
+          };
+        }
+        return { select: vi.fn() };
+      });
+
+      const result = await challengeService.listEnriched();
+      expect(result[0].preview_url).toBeNull();
+    });
+
+    it("sets preview_url to null when createSignedUrl returns no URL", async () => {
+      const mockMedia = [{ challenge_id: "ch_001", storage_path: "ch_001/video.mp4" }];
+
+      supabaseMock.supabase.from.mockImplementation((table: string) => {
+        if (table === "challenges") {
+          return {
+            select: vi.fn().mockReturnValue({
+              eq: vi.fn().mockReturnValue({
+                order: vi.fn().mockResolvedValue({ data: [mockActiveChallenge], error: null }),
+              }),
+            }),
+          };
+        }
+        if (table === "profiles") {
+          return {
+            select: vi.fn().mockReturnValue({
+              in: vi.fn().mockResolvedValue({ data: [], error: null }),
+            }),
+          };
+        }
+        if (table === "challenge_media") {
+          return {
+            select: vi.fn().mockReturnValue({
+              in: vi.fn().mockReturnValue({
+                order: vi.fn().mockResolvedValue({ data: mockMedia, error: null }),
+              }),
+            }),
+          };
+        }
+        return { select: vi.fn() };
+      });
+      supabaseMock.supabase.storage.from.mockReturnValue({
+        createSignedUrl: vi.fn().mockResolvedValue({ data: null }),
+      });
+
+      const result = await challengeService.listEnriched();
+      expect(result[0].preview_url).toBeNull();
+    });
+
+    it("throws when challenges query fails", async () => {
+      supabaseMock.supabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            order: vi.fn().mockResolvedValue({ data: null, error: { message: "DB error" } }),
+          }),
+        }),
+      });
+
+      await expect(challengeService.listEnriched()).rejects.toBeTruthy();
+    });
+  });
 });

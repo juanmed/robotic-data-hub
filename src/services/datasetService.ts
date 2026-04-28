@@ -86,11 +86,53 @@ export async function getDatasetFileUrls(
   datasetId: string,
   paths?: string[]
 ): Promise<SignedFileUrl[]> {
-  const { data, error } = await supabase.functions.invoke("dataset-read-urls", {
-    body: { dataset_id: datasetId, paths },
-  });
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
 
-  if (error) throw new Error(error.message || "Failed to get file URLs");
+  if (sessionError) {
+    throw new Error("Failed to resolve authentication session");
+  }
+
+  if (!session?.access_token) {
+    throw new Error("Please sign in to access dataset files");
+  }
+
+  const invokeReadUrls = async (accessToken: string) => {
+    return supabase.functions.invoke("dataset-read-urls", {
+      body: { dataset_id: datasetId, paths },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  };
+
+  let { data, error } = await invokeReadUrls(session.access_token);
+
+  const getStatus = (err: unknown): number | undefined => {
+    return (err as { context?: { status?: number }; status?: number })?.context?.status
+      ?? (err as { status?: number })?.status;
+  };
+
+  const status = getStatus(error);
+  if (error && (status === 401 || status === 403)) {
+    const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
+    if (!refreshError && refreshed.session?.access_token) {
+      const retried = await invokeReadUrls(refreshed.session.access_token);
+      data = retried.data;
+      error = retried.error;
+    }
+  }
+
+  if (error) {
+    const finalStatus = getStatus(error);
+    if (finalStatus === 403) {
+      throw new Error("You do not have permission to access these dataset files");
+    }
+    throw new Error((error as { message?: string }).message || "Failed to get file URLs");
+  }
+
   return data?.urls ?? [];
 }
 

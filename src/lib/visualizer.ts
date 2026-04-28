@@ -23,12 +23,51 @@ function encodeManifest(manifest: unknown): string {
  * base64-encodes it using URL-safe Base64, and opens the visualizer in a new tab.
  */
 export async function openVisualizer(datasetId: string): Promise<void> {
-  const { data, error } = await supabase.functions.invoke("get-dataset-manifest", {
-    body: { dataset_id: datasetId },
-  });
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
+
+  if (sessionError) {
+    throw new Error("Failed to resolve authentication session");
+  }
+
+  if (!session?.access_token) {
+    throw new Error("Please sign in to visualize this dataset");
+  }
+
+  const invokeManifest = async (accessToken: string) => {
+    return supabase.functions.invoke("get-dataset-manifest", {
+      body: { dataset_id: datasetId },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  };
+
+  let { data, error } = await invokeManifest(session.access_token);
+
+  const getStatus = (err: unknown): number | undefined => {
+    return (err as { context?: { status?: number }; status?: number })?.context?.status
+      ?? (err as { status?: number })?.status;
+  };
+
+  const status = getStatus(error);
+  if (error && (status === 401 || status === 403)) {
+    const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
+    if (!refreshError && refreshed.session?.access_token) {
+      const retried = await invokeManifest(refreshed.session.access_token);
+      data = retried.data;
+      error = retried.error;
+    }
+  }
 
   if (error) {
-    throw new Error(error.message || "Failed to fetch dataset manifest");
+    const finalStatus = getStatus(error);
+    if (finalStatus === 403) {
+      throw new Error("You do not have permission to visualize this dataset");
+    }
+    throw new Error((error as { message?: string }).message || "Failed to fetch dataset manifest");
   }
 
   const manifestBase64 = encodeManifest(data);

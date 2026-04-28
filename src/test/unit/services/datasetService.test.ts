@@ -3,6 +3,10 @@ import { listDatasets, getDataset, getDatasetFiles, getDatasetFileUrls } from "@
 
 const mockSupabase = vi.hoisted(() => ({
   from: vi.fn(),
+  auth: {
+    getSession: vi.fn(),
+    refreshSession: vi.fn(),
+  },
   functions: {
     invoke: vi.fn(),
   },
@@ -24,6 +28,14 @@ function createSelectQuery(data: any[], singleData: any = data[0] ?? null) {
 describe("datasetService", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockSupabase.auth.getSession.mockResolvedValue({
+      data: { session: { access_token: "token_123" } },
+      error: null,
+    });
+    mockSupabase.auth.refreshSession.mockResolvedValue({
+      data: { session: { access_token: "token_456" } },
+      error: null,
+    });
   });
 
   afterEach(() => {
@@ -178,6 +190,13 @@ describe("datasetService", () => {
         signed_url: "https://example.com/meta.json",
       }),
     ]);
+    expect(mockSupabase.functions.invoke).toHaveBeenCalledWith(
+      "dataset-read-urls",
+      expect.objectContaining({
+        body: { dataset_id: "ds_1", paths: ["meta/info.json"] },
+        headers: { Authorization: "Bearer token_123" },
+      }),
+    );
 
     mockSupabase.functions.invoke.mockResolvedValue({
       data: null,
@@ -185,5 +204,43 @@ describe("datasetService", () => {
     });
 
     await expect(getDatasetFileUrls("ds_1")).rejects.toThrow("Edge function failed");
+  });
+
+  it("retries once with refreshed token on 403 and succeeds", async () => {
+    mockSupabase.functions.invoke
+      .mockResolvedValueOnce({
+        data: null,
+        error: { context: { status: 403 } },
+      })
+      .mockResolvedValueOnce({
+        data: { urls: [] },
+        error: null,
+      });
+
+    await expect(getDatasetFileUrls("ds_1")).resolves.toEqual([]);
+    expect(mockSupabase.auth.refreshSession).toHaveBeenCalledTimes(1);
+    expect(mockSupabase.functions.invoke).toHaveBeenCalledTimes(2);
+    expect(mockSupabase.functions.invoke).toHaveBeenLastCalledWith(
+      "dataset-read-urls",
+      expect.objectContaining({
+        headers: { Authorization: "Bearer token_456" },
+      }),
+    );
+  });
+
+  it("returns a friendly message for persistent 403", async () => {
+    mockSupabase.functions.invoke
+      .mockResolvedValueOnce({
+        data: null,
+        error: { context: { status: 403 } },
+      })
+      .mockResolvedValueOnce({
+        data: null,
+        error: { context: { status: 403 } },
+      });
+
+    await expect(getDatasetFileUrls("ds_1")).rejects.toThrow(
+      "You do not have permission to access these dataset files"
+    );
   });
 });

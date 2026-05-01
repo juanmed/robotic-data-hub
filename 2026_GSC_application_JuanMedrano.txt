@@ -1,0 +1,358 @@
+Applicant Information (Please ensure that only the CEO completes this form )
+CEO Name (Applicant)
+*
+Juan Fernando Medrano Yax
+What's your gender?
+Male
+When is your birth date
+*
+Date format: 03/04/1991
+What's your nationality?
+*
+
+    Guatemala
+
+What type of VISA do you have in Korea ?
+*
+D-2
+Contact Number 1
+*
+
+Write down country code + contact number
+
+(82) 10 8505 9134
+Contact Number 2
+Email
+*
+juanmedrano.ec09@gmail.com
+About Company
+Company name
+*
+GamiphyAI
+Is your business registered?
+*
+Not registered yet
+Date of Establishment of Korean Entity
+*
+
+If you're a pre-startup as Korean Company, select your application date 
+Date format: mm/dd/yyyy
+Industry
+*
+MOBILITY & ROBOTICS
+Business Item
+*
+GamiphyAI is the marketplace for physical AI. We deliver robot automation solutions for SME manufacturing processes, connect businesses with real-world automation needs with solutions from robot creators, and  allow brands to evaluate and enhance brand visibility in the AI-powered robotics future. 
+Company Webstie
+Startup Item 
+1.Please describe your startup’s product or service .
+*
+GamiphyAI.com is the marketplace for physical AI. We deliver robot automation solutions for SME manufacturing processes, connect businesses with real-world automation needs with solutions from robot creators, and  allow brands to evaluate and enhance brand visibility in the AI-powered robotics future. We created two core innovations: First, a new type of social network persona: the robot creator, who through their robots create branded robotic datasets and skills, generate own revenue, and ultimately contribute to provide solutions to SME process automation. Second, the Robot Optimization Engine -REO-, akin to SEO (Search Optimization Engine) and GEO (Generative Optimization Engine), allow brands to be represented and visible to their target client and markets in the Physical AI era.
+2.Can you describe your business model ?
+*
+GamiphyAI is a **Korea-first robotics automation company** that monetizes paid SME deployments to build a defensible robotics data and skill platform, with a unique fourth revenue pillar targeting product brands. We are not building an open marketplace on day one; we run a services-to-platform sequence that avoids the cold-start problem typical of two-sided industrial markets.
+
+**Four-pillar revenue model:**
+
+1. **Robot Consumers (SMEs)** pay for paid PoCs, deployments, and recurring support/subscription on high-mix, low-volume (HMLV) workflows — packing, kitting, labeling, light assembly, small-parts handling, food prep.
+2. **Robot Creators** (labs, data teams) earn by supplying validated task data, skills, and algorithms tied to real customer KPIs.
+3. **Platform** captures transaction and licensing fees on validated skills, datasets, and benchmarks.
+4. **Product Brands / OEMs** pay for **Brand Dataset Services** — ensuring their appliances, tools, components, and equipment are represented in robot training datasets so their products remain compatible with AI-powered robots ("brand insurance" against dataset-driven obsolescence).
+
+**Korea pricing architecture (automation wedge):**
+
+| Item | Price |
+|---|---|
+| Paid PoC (2–4 weeks, KPI baseline, go/no-go) | KRW 8M–15M |
+| Deployment / activation (line or workcell) | KRW 12M–25M |
+| Recurring software / data / skill subscription | KRW 1.0M–2.0M / month |
+| Remote support SLA (on-site billed separately) | KRW 0.6M–1.2M / month |
+
+**Illustrative 24-month customer value (Korea, automation):** PoC KRW 10M + Deployment KRW 18M + 24 × KRW 2.3M recurring (KRW 55.2M) + hardware coordination KRW 1M = **KRW 84.2M per converted customer**.
+
+**Brand Dataset Services pricing architecture (subscription + variable model).** Brand services are priced against competitive necessity rather than operational ROI payback. The buyers are VP Product, CMO, and Chief Innovation Officer — not factory operations — and they compare our price against the cost of custom integration engineering per robot platform (USD 50K–200K per integration), lost market access due to incompatibility, delayed time-to-market, and competitive disadvantage versus better-represented brands. From that reference, even USD 500K/year is a rounding error against traditional market-access spend.
+
+| Tier | Price | Scope |
+|---|---|---|
+| **Tier 1 — Product Line Coverage** | USD 50K–150K / year | Single product category (e.g. "refrigerators" or "power drills"); 2–3 robot embodiments; 5–10 interaction task types; quarterly compatibility reports; standard dataset distribution |
+| **Tier 2 — Category Leadership** | USD 150K–500K / year | Full product category (e.g. "kitchen appliances" or "power tools"); 5–8 embodiments; 15–25 task types; monthly compatibility reports; priority distribution; competitive intelligence dashboard; 2 custom dataset commissioning projects / year |
+| **Tier 3 — Strategic Partnership** | USD 500K–2M+ / year | Multi-category portfolio; 10+ embodiments; 30+ task types; weekly compatibility monitoring; exclusive early-access dataset placement; full competitive positioning analysis; unlimited custom commissioning; joint R&D; co-marketing and certification |
+
+
+**Illustrative 24-month brand customer value (Tier 2):** USD 25K onboarding (one-time) + USD 300K × 2 years subscription + USD 75K variable projects = **~USD 700K per brand customer over 24–36 months**. CAC is estimated at USD 30K–60K per customer (executive meetings, conference presence, pilot scoping), producing an attractive LTV:CAC.
+
+**Target gross margins:**
+- Automation services — PoC 35–45%, Deployment 30–40%, Subscription 70–80%, Support 40–60%.
+- Brand Dataset Services — Strategy & planning 60–70%, Dataset commissioning 35–45%, Subscription (maintenance & distribution) 75–85%, Variable projects 40–50%. **Blended brand-services margin target: 65–75%** — materially higher than automation because brand services avoid field operations and hardware costs.
+3.Analysis of Target Market and Entry Strategy
+*
+Korea has the world's **highest robot density (1,012 robots per 10,000 manufacturing employees vs. 162 global average, IFR 2024)** and the 4th-largest industrial robot market (31,444 units installed in 2023). At the same time, it still has a large SME long tail: Statistics Korea reports **504,728 manufacturing establishments** (2024 preliminary), and the Ministry of SMEs and Startups reports that among **163,273 factory-owning SME and mid-sized firms**, only **19.5% have adopted smart factories**, and **75.5% of those are still at the basic stage**. This means Korea is advanced enough to buy automation but under-digitized enough at the SME layer to reward a workflow-centric, lower-engineering offer.
+
+ TAM / SAM / SOM (Korea)
+
+- **Candidate pool (TAM-anchor):** 163,273 factory-owning SME/mid-size firms × 19.5% smart-factory adoption = **~31,838 digitally enabled sites**.
+- **Workflow-fit filter** (HMLV tasks suited to our wedge): 10–20% → **3,200–6,400 candidate sites**.
+- **Recurring revenue opportunity per site:** KRW 24M–30M / year (subscription + support).
+- **Korea recurring TAM (automation wedge only):** **KRW 76.8B – 192.0B / year**, before one-time PoC/deployment fees.
+
+**SOM** For Korea:
+- Year 1: 10 deployed sites
+- Year 2: 100 deployed sites
+- Year 3: 1000 deployed sites
+
+ Korea revenue base case (automation services, KRW millions)
+
+| Year | PoCs | Deployments | Recurring sites (EoY) | PoC rev | Deploy rev | Recurring rev | **Total** |
+| Y1 | 6 | 3 | 3 | 60 | 54 | 41 | **155** |
+| Y2 | 15 | 8 | 8 | 150 | 144 | 166 | **460** |
+| Y3 | 30 | 18 | 20 | 300 | 324 | 460 | **1,084** |
+| Y4 | 45 | 32 | 40 | 450 | 576 | 1,000 | **2,026** |
+| Y5 | 70 | 55 | 70 | 700 | 990 | 1,932 | **3,622** |
+
+ Entry strategy
+
+1. **Demand-first, paid-only PoCs.** No free pilots. Every engagement starts with a KRW 8–15M paid discovery that produces a KPI baseline, safety review and go/no-go economic memo.
+2. **Community Second**: We rely on a strong, active and attractive base of robot creators that are excited about robotics and PhysicalAI. We will approach them through hackatons, competitions and challenges with attractive prices, and collaboration with other ecosystem participants (robot manufacturers, resellers and clubs).
+2. **Constrained workcell standardization.** Two-arm, minimal-sensing baseline cells for packing/kitting/labeling/light-assembly tasks, enabling ~1-day installation and ≥10× lower upfront integration fees versus traditional fixed automation.
+3. **Reference-led cascade.** Each completed deployment becomes a documented case study for the next set of SMEs in the same workflow class, converting the first 10 sites (Y1) into the 100-site flywheel (Y2).
+4. **Channel partnerships.** Local automation integrators and hardware resellers for procurement and on-site support where beneficial, preserving our margin in software/data/skills.
+5. **Brand services in parallel.** Executive-level outreach to 2–3 anchor brands per category (appliances, power tools, consumer electronics) during the Program term to land 1–2 paid brand dataset pilots by month 12.
+6. **Regulatory readiness.** KOSHA-aligned safety checklist, documented site risk assessments, certified hardware where applicable, and explicit written acceptance criteria on every PoC.
+4.Upgrade Plan for Startup Items
+*
+
+- Define the final deliverables of the products/services to be upgraded during the term of the Agreement
+
+ - Upgrade method of the products/services, upgrade phase at the time of application for support program, etc. 
+
+- Technology protection plans to prevent technology leaks after upgrading of the products/services, etc.
+Currently (April 2026) GamiphyAI is at a **pre-revenue, pre-incorporation-in-Korea, technical-readiness** phase. We have:
+- A defined product stack across four layers (delivery / data & skill / platform / brand services) documented in the business plan.
+- Founders with directly relevant production experience (see Section 5) — including large-scale multi-modal robot dataset creation at Agility Robotics (Digit humanoid) and embedded/hardware system delivery on the Quetzal CubeSat programs.
+- Identified candidate SME workflows and initial discovery-interview pipeline.
+- Initiated community creation and participation with other actors including Lerobot resellers. 
+
+We do **not yet have** paid PoCs in Korea (these are an explicit Program-term deliverable), a Korean legal entity (to be incorporated prior to Agreement signing as required by the Program), or brand-services pilot contracts.
+
+Final deliverables to be upgraded during the Agreement term
+
+By February 2027 the following will be upgraded from "design/draft" to "production-validated" status:
+
+0. **Community of at least 100 robot creators**: Through hackatons, challenges and other outreach activities, we plan to attract at least 100 creators actively contributing datasets to real tasks in our platform
+1. **Constrained workcell reference design** — BOM, fixture library, safety envelope, commissioning runbook, KOSHA-aligned safety documentation, ready for 1-day installs.
+2. **3 standardized skill packages and open source robot platform** covering at least two of: packing, kitting, labeling, small-parts handling, light assembly. Each package includes deterministic control layer, classical vision, optional learned modules, exception handling, and operator handoff UI.
+3. **Deployment playbook v1.0** for at least one named workflow class, covering fixtures, exception handling, changeover, and KPI acceptance.
+4. **Data & skill pipeline** — collection harness (RGB/depth/force/proprioception/actions/failures), annotation and validation tooling, versioning, evaluation templates, and a private catalog of 20+ curated datasets / task variants.
+5. **Evaluation benchmark harness** for production-readiness gating (target completion rate 95–98% on constrained workflows).
+6. **Brand Dataset Services product v0.9** — dataset planning methodology, commissioning specs, quarterly compatibility report template, first published brand compatibility report as sales reference.
+7. **Korean entity, compliance stack, and customer contract suite** — legal entity, product liability / E&O / cyber insurance, customer data-rights policy, dataset licensing framework.
+
+Technology protection plan
+
+Because our moat is task-outcome data, evaluation credibility, and deployment playbooks with publicly-available algorithms — protection is primarily operational, contractual, and legal.
+
+- **IP ownership:** all commissioned datasets, skill packages, deployment playbooks, and benchmark results are owned by GamiphyAI under customer agreements; customers receive usage rights, not IP transfer.
+- **Rights-managed distribution:** datasets and skills are distributed under a rights-managed licensing layer in an open marketplace, with attribution, usage logging, and audit trails.
+- **Trade-secret hygiene:** signed NDAs with all employees, contractors, advisors, and data creators; code repositories on private SSO-protected infrastructure with least-privilege access; secrets management; audit logs; separation between customer environments.
+- **Core-IP filings:** file at least one Korean patent application during the term covering the constrained workcell skill-package method and/or the brand dataset representation protocol; register trademarks for GamiphyAI in Korea.
+- **Data security:** secure data transmission and storage, access controls on proprietary datasets, no PII (factory environments), exportable audit trails for all dataset distribution events.
+- **Customer data-rights policy:** explicit written policy stating what raw data is retained by GamiphyAI, what anonymized derivatives may be reused, and what remains customer-confidential — signed by every PoC customer before data collection begins.
+5. Implementation Plan for Support program
+*
+
+program implementation plan and timeline during the term of the Agreement (May 2026 – Feb. 2027)
+We have summarized our plans as below.
+
+| Month | Phase | Key activities | Deliverables / KPIs |
+| **M1 (May 2026)** | Mobilization | Korean entity incorporation finalized; open bank account; sign Program Agreement; office and insurance in place; kick-off hiring for BD and field robotics engineer | Legal entity active; Program Agreement signed; 2 hires in pipeline |
+| **M2 ( ~ Jun 2026)** | Discovery sprint | 15–20 structured SME discovery interviews; 5–8 brand partnership exploratory meetings (appliances, power tools, electronics); 1 hackathon/competition organized and finalized; finalize KOSHA-aligned safety checklist and KPI/ROI reporting template | ≥15 SME interviews; ≥5 brand meetings; safety checklist v1; KPI template v1 |
+| **M3 (Jul 2026)** | First paid PoCs | Sign 2 paid PoC scoping agreements; begin PoC execution on constrained workcell; First approach to robot hardware manufacturers | 2 signed PoCs (KRW 16–30M booked); 1 brand pilot proposal |
+| **M4 (Aug 2026)** | PoC delivery | Complete first 2 PoCs with documented KPI baselines and go/no-go memos; sign 2 more PoCs; finalize constrained workcell reference design v1; second hackaton organized and finalized | 2 PoCs completed; 2 new PoCs signed; workcell v1 |
+| **M5 (Sep 2026)** | First conversion | Convert first PoC to paid deployment; first recurring subscription contract signed; deploy v1 data/skill pipeline | 1 deployment (KRW 12–25M); 1 recurring contract; pipeline v1 |
+| **M6 (Oct 2026)** | Scale PoCs + brand pilot | 2 additional PoCs running; sign first brand dataset services pilot contract; publish first reusable deployment playbook for one named workflow class | 4 PoCs in progress; 1 brand contract signed; playbook v1 |
+| **M7 (Nov 2026)** | Second conversion | Convert second PoC to deployment; 2nd recurring subscription; publish 1 Korean case study (before/after metrics, workload completion, labor reduction) | 2 deployments cumulative; 2 recurring; 1 case study published |
+| **M8 (Dec 2026)** | Brand case study | Deliver first brand compatibility report as sales reference; sign 2nd brand pilot (different category); finalize 2nd standardized skill package | Brand report v1; 2nd brand contract; 2 skill packages |
+| **M9 (Jan 2027)** | Third conversion + cascade | Convert 3rd PoC to deployment; 6 recurring support/subscription contracts live; begin partner-integrator discussions; file 1 Korean patent application | 3 deployments total; 6 recurring; 1 patent filed |
+| **M10 (Feb 2027)** | Program close | Publish 20+ curated datasets / task variants in private catalog; complete 6 paid PoCs cumulative; 2 signed brand pilot contracts; close-out report with audited KPIs and next-12-month plan | **6 PoCs / 3 deployments / 6 recurring / 20+ datasets / 2 brand pilots** |
+
+**Cumulative Program-term outputs (aligned with Section 16 milestones):**
+- 6 paid PoCs completed (automation)
+- 3 converted paid deployments (automation)
+- 6 recurring support/subscription contracts (automation)
+- 20+ curated datasets / task variants
+- 1 reusable deployment playbook
+- 2 signed brand dataset services pilot contracts
+- 1 published brand compatibility report
+- 1 Korean patent filing
+- Korean entity, insurance, and full compliance stack in place
+
+**Booked revenue target during the term (conservative):** KRW 155M (Year-1 Korea automation line of the base case), plus pilot-pricing brand services revenue on the order of USD 150–300K from 2 brand pilots.
+6.Status and Capabilities of Representative
+*
+
+ Capabilities of the representative in implementing and selling startup items, etc.
+**Juan Medrano** — CEO / Representative Director designate of the Korean entity.
+
+- **Local market access:** 9 years living in South Korea with business-level Korean and English, enabling direct communication with SME owners, integrators, and creator communities without translation intermediaries — a significant cost and velocity advantage over foreign founders who must rely on intermediaries.
+- **Technical credibility:** M.Sc. Mechatronics and Ph.D. (Candidate) in Mechanical Engineering at Sungkyunkwan University, one of Korea's top engineering institutions, focused specifically on ML for real-world robotic manipulation and perception — the exact technical domain of the startup items.
+- **Proven production execution:** ~3 years as Perception Engineer at Agility Robotics, where he built perception ML systems that deployed the Digit humanoid robot in live GXO warehouse operations. This is concrete evidence of an ability to ship robotics software into paying production environments with real uptime and reliability demands — not a lab prototype.
+- **Data pipeline ownership:** directly responsible for collecting and standardizing large-scale multi-modal datasets for humanoid robot training at Agility, which is the same workflow underpinning our data & skill and Brand Dataset Services pillars.
+- **Ecosystem building:** active in the Korean robotics community, with recurring presence at Korean Robotics Society events, AI Expo, and Korea MAT — providing immediate, active channels for both customer and creator acquisition during the Program term.
+7. Team Composition and Capabilities
+*
+
+ - Capabilities related to the entity’s startup items, current personnel status, and future recruiting plan, etc.
+
+ - Status and capabilities of business partners, etc.
+-Robotics Lead (CTO-Robotics)  **Juan Medrano** : Ph.D. (Candidate) Mechanical Engineering, Sungkyunkwan University (ML for CV & robotic manipulation); M.Sc. Mechatronics; 7+ years robotics perception; former **Perception Engineer II at Agility Robotics** (Digit humanoid) with production deployment in live GXO warehouse operations; large-scale multi-modal dataset creation (RGB, depth, IMU, kinematics, world-state). Fully time commitment .  
+-Hardware Lead (CTO-Hardware)  **Jose Bagur**  Mechatronics Engineer, UVG; Coordinator of UVG Aerospace Laboratory; lead of Quetzal-1 (launched via SpaceX CRS-20, deployed from ISS Kibo, 211 days operational, CubeSat Delivery Prize from ASU) and Quetzal-2 (selected by UNOOSA and EXOlaunch, onboard AI for image analysis); led ADCS/EPS/comms team of ~100. Remote, full time commitment.
+
+Capabilities directly relevant to the startup items
+
+- **Production robotics perception:** Juan directly built detection, segmentation, and 6-DoF pose estimation systems that ran on a humanoid robot in real warehouse operations — exactly the kind of "works under variability" capability SMEs need.
+- **End-to-end data pipeline experience:** collection, annotation, format standardization, and ML integration for multi-modal robot datasets — the core of our data & skill layer and our Brand Dataset Services offering.
+- **Embedded hardware and system deployment:** Jose has delivered mission-critical hardware that survived launch and on-orbit operation, which translates directly to building robust workcell hardware, sensing stacks, and EOAT for SME environments.
+- **Korean market access:** Juan has 9 years residency in Korea and business-level Korean and English, enabling direct SME outreach, partner negotiations, and creator-community engagement.
+- **Community and ecosystem presence:** active in the Korean robotics ecosystem through recurring presence at Korean Robotics Society events, AI Expo, and Korea MAT — channels we will use directly during the Program term.
+
+Future recruiting plan
+
+Hiring sequence aligned with the 10-month timeline and use-of-funds allocation:
+
+| Priority | Role | Why | Target month |
+| 1 | **BD / Commercial Lead (Korea)** | Owns PoC intake, SME pipeline, and conversion to deployment/recurring; Korean-fluent, SME manufacturing network | M1–M2 |
+| 2 | **Field Robotics Engineer** | Owns on-site commissioning, fixture build, safety, and exception handling for constrained workcell installs | M2–M3 |
+| 3 | **Senior Full-Stack / Platform Engineer** | Builds data & skill pipeline, versioning, evaluation dashboards, and the private platform catalog | M3–M4 |
+| 4 | **Brand Partnerships Lead** | Executive-level outreach to VP Product / CMO / Chief Innovation Officer at anchor brands; different skillset than automation sales | M4–M6 |
+| 5 | **Finance & Operations Support** | Program reporting, accounting, compliance, insurance, procurement | M6 |
+
+Business partners and advisors
+
+We will secure the following named advisors during the Program term (before any formal fundraising):
+
+- One Korean manufacturing / factory-operations advisor (SME network and reference calls).
+- One robotics SI or industrial safety advisor (KOSHA navigation, safety sign-off).
+- One marketplace or B2B SaaS scaling advisor (recurring revenue and pricing).
+- One brand marketing or product strategy advisor from a major consumer/industrial brand (brand-services go-to-market).
+
+Partner relationships to be established during the term:
+- **Local automation integrators and hardware resellers** for procurement and on-site installation.
+- **Korean robot OEMs and cobot vendors** for hardware compatibility and channel reach.
+- **Korean Robotics Society and robot-creator communities** for creator recruitment.
+- **Global Startup Center / KOSME mentorship network** provided through the Program itself.
+8.Revenue and Investment Attraction Status, etc.
+*
+
+- Revenue and status of funding
+
+- Need to procure additional capital other than government-supported program costs, and detailed procurement plan, etc.
+GamiphyAI is currently **pre-revenue and pre-investment**. There are no booked customer revenues, no closed equity rounds, and no prior government grants in place at the time of this application. Founders are self-funding discovery activities. A Korean legal entity will be incorporated prior to signing the Program Agreement as required.
+
+Positive margins on PoCs and converted deployments
+Even at the pre-revenue stage, the unit economics are designed so that **PoCs and deployments are gross-margin positive on day one**, rather than being loss-led demos subsidized by hopes of future software revenue. This is a deliberate discipline:
+
+| Item | Price (KRW) | Target gross margin | Gross profit per unit (KRW) |
+| Paid PoC (2–4 weeks) | 10M (mid) | 35–45% | **3.5M–4.5M** |
+| Deployment / activation | 18M (mid) | 30–40% | **5.4M–7.2M** |
+| Recurring subscription | 2.3M / month (incl. support) | 70–80% (sub) / 40–60% (support) | **~1.4M–1.8M / month** |
+| Hardware coordination | — | small markup | ~1M over 24 months |
+
+**Per customer (base 24-month Korea model):**
+- Revenue: **KRW 84.2M** (PoC 10 + Deploy 18 + 24 × 2.3 recurring + 1 hardware)
+- Illustrative blended gross profit at target margins: roughly **KRW 42–55M per customer over 24 months**, after direct delivery costs.
+- **CAC assumption:** KRW 4–6M per signed paying PoC customer → **LTV:CAC well above 7:1** giving the investment committee a credible recurring-revenue engine.
+
+During the Program term we target **6 paid PoCs, 3 converted deployments, and 6 recurring contracts**, directly producing the first tranche of real, margin-positive revenue.
+
+Brand Dataset Services margin profile
+Brand services are structurally higher-margin than automation services because they avoid field operations and hardware:
+
+- Strategy & planning: 60–70%
+- Dataset commissioning: 35–45%
+- Subscription (maintenance & distribution): 75–85%
+- Variable projects: 40–50%
+- **Blended target: 65–75%**
+
+A single Tier 2 brand customer produces illustrative 24-month revenue of **USD 625K** (USD 25K onboarding + 2 × USD 300K annual subscription). Two pilot brand contracts signed during the Program term at pilot pricing (USD 100K average) produce **~USD 200K** of directly attributable brand services revenue.
+
+Need for additional capital and procurement plan
+
+The Program grant covers a meaningful portion of product, IP, labor, marketing, and travel expenses, but it does not by itself fund a full 18-month runway. We will procure additional capital through the following sequence, in priority order:
+
+1. **Customer revenue (non-dilutive, primary).** The unit economics above mean 6 PoCs (KRW 60M) + 3 deployments (KRW 54M) + first recurring contracts (KRW 41M Y1 book) = ~KRW 155M of automation revenue booked during the Program term**, plus ~USD 200K of brand pilot revenue. This is the core source of working capital and the strongest signal to investors.
+2. **Korean government / public programs (non-dilutive, secondary).** Apply to complementary programs for technology development and commercialization beyond the scope of the Global Startup Commercialization Support Program. Target 1–2 additional program awards during the term.
+3. **Angel and pre-seed equity (dilutive, staged).** During months 6–10 of the Program term, using validated PoC and brand-pilot data as commercial proof, open a **KRW 1.2B–1.5B pre-seed / seed round** for 18 months of runway. Allocation follows the published use-of-funds: 35% product/robotics engineering, 30% sales/BD/partnerships, 15% hardware/PoC operations, 10% platform/data infrastructure, 5% legal/safety/compliance, 5% G&A/contingency.
+4. **Strategic partners (dilutive or revenue-share, opportunistic).** Korean robot OEMs, integrators, and first-anchor brands are potential co-investment or strategic-partner sources whose participation would reinforce commercial distribution.
+
+The objective of the additional raise is to extend runway beyond the Program term and fund Korea scale-up from 10 sites (Year 1 SOM) to 100 sites (Year 2 SOM) while proving brand-services PMF.
+9.Entry and Expansion Plan for Korean Market
+*
+
+- Analysis of competitors in the Korean market, status of establishment of a Korean entity, entry into and settlement in the Korean market, plan on securing Korean partners/customers, and plan on expansion into other Asian markets
+Competitive landscape in the Korean market
+
+**Direct Korean competitor — Marosol (en.myrobotsolution.com), operated by Bigwave Robotics.**
+
+Marosol positions itself as a "Total Robot Solution Provider" and operates primarily as a **robot e-commerce marketplace**. It catalogs eight categories — industrial, collaborative, logistics, cleaning, guide, delivery, humanoid, serving robots — plus peripherals, grippers, and ROS-compatible robots, connecting third-party robot vendors with Korean customers. Its stated services are product sales, integration services, and expert consultation, with the value proposition "robotics automation made easy" via a centralized marketplace.
+
+**How GamiphyAI differs from Marosol:**
+
+| Dimension | Marosol | GamiphyAI |
+| **Core business** | Robot e-commerce / reseller marketplace | Workflow-specific paid PoC → deployment → recurring software/data/skill subscription |
+| **Unit of value sold** | Physical robot SKUs | Completion of a named SME workflow against KPIs |
+| **Revenue quality** | Hardware resale (thin, one-time margins) | Recurring subscription + high-margin data/skills + brand services |
+| **Data asset** | None | Proprietary task-outcome datasets and skill packages per workflow |
+| **Defensibility** | Distribution breadth | Deployment playbooks, benchmarks, rights-managed skills, brand network effects |
+| **Brand services** | None | Brand Dataset Services — a pillar Marosol does not address |
+| **Liability posture** | Intermediary, limited direct seller liability | Direct PoC and deployment responsibility with explicit acceptance criteria |
+
+In short, Marosol is a **horizontal robot distribution channel** and GamiphyAI is a **vertical workflow automation and data platform**. The two are not substitutes — in fact, Marosol or a similar reseller could become a procurement/distribution partner for the hardware side of our deployments, while we own the workflow, data, skills, recurring subscription, and brand services.
+
+**Other competitors referenced in the GamiphyAI business plan** (not Korean-headquartered, but overlapping in target space):
+
+- **Traditional fixed automation integrators** (custom cells, conveyors, PLC/vision): high reliability on stable high-volume lines, but high capex, long cycles, and poor fit for SME high-mix work. GamiphyAI edge: 1-day installs, ≥10× lower upfront integration fees, flexibility for non-precision tasks.
+- **ExchAInge** (`exchainge.net`): generic "marketplace for verified physical AI datasets" focused on dataset monetization. Does not start from specific SME workloads or KPIs, lacks deployment responsibility. GamiphyAI edge: dataset marketplace is tied to real SME PoCs, continuously refined through deployments.
+- **RobotDataMarket** (`robotdatamarket.com`): positions as "marketplace for robotics training data" but datasets are "coming soon." Marketplace-only, no closed loop with real automation outcomes. GamiphyAI edge: validation through real SME PoCs creating a repeatable supply-unlocks-demand loop.
+- **SignIQ Lab** (`signiq-lab.ai`): full-stack data engine / teleoperation service for sim-to-real transfer. Geared to large robotics teams, higher price points, longer cycles. Not optimized for Korean SMEs. GamiphyAI edge: Korea-first SME focus, small datasets, rapid PoC-to-deployment with ongoing monthly support.
+- **Sensei** (`senseirobotics.com`): "Scale AI for robotics data," low-cost collection hardware plus human operator network. Primarily solves data supply for robotics teams, not deployment/operations for SME production lines. GamiphyAI edge: combined SME need discovery + PoC + deployment + maintenance + creator marketplace tied to validated use cases.
+
+**Net competitive position:** no Korean-headquartered competitor today combines (a) SME workflow PoCs, (b) a data-and-skill platform, and (c) brand dataset services. GamiphyAI's closest structural competitor in Korea (Marosol) operates in a different layer of the stack entirely.
+
+Securing Korean partners and customers
+
+- **SME customers:** direct Korean-language outreach by Juan and the BD Lead into manufacturing clusters (Gyeonggi, Chungcheong, Gyeongsang), leveraging Korean Robotics Society and industry-expo channels. Target workflows are packing, kitting, labeling, light assembly, and small-parts handling.
+- **Integrator/reseller partners:** warm introductions through Sungkyunkwan and robotics community networks; revenue-share on hardware procurement and on-site installation.
+- **Brand customers:** executive outreach to Korean category leaders (LG, Samsung for appliances/electronics; Korean power-tool and industrial-equipment makers) for brand dataset services pilots. The Program's own Global Startup Center network will be used to facilitate introductions.
+- **Creator network:** Korean robot-creator community recruitment through Korean Robotics Society events, targeted campaigns, and paid-task announcements for dataset contributions.
+
+Expansion into other Asian markets
+
+After Korea beachhead validation, the expansion sequence is:
+
+1. **High-income Asia (Japan, Singapore, Taiwan)** — high robotics maturity, dense channels, strong presence of global appliance and electronics brands (Panasonic, Sony, Hitachi, Sharp, Toshiba). Entry via partners and through brand-services relationships established during Korea anchor phase. First partner-led pilots in Year 3.
+2. **Cost-sensitive Asia (Southeast Asia, India)** — lower-priced, partner-led or RaaS-compatible model, only once the workflow package is mature enough to travel. Year 4–5.
+3. **EU manufacturing corridors** — via channel partners, Year 3–4, leveraging higher labor cost base (EUR 33.9/hour industry average, Eurostat 2024) to justify premium pricing bands.
+4. **North America** — channel-led, Year 4+, once safety compliance and longer sales cycles can be supported.
+
+By Year 5, the model targets ~200 recurring automation sites total with ~50% in Korea and the rest abroad — still a very small share of global SAM, which is the basis for the conservative but credible SOM story.
+IR Pitch Deck
+GamiphyAI-business-overview_small.pdf
+Copy of CEO's passport
+*
+Copy_of_Passport_Juan_Medrano.jpeg
+Company registration status in Korea
+Company registration number in korea
+
+company registration number in korea (사업자 등록번호) 10 digits xxx-xx-xxxxx
+Certificate of business registration in Korea
+
+If you're a pre-startup as Korean company, you don't have to fill out.
+
+There is an extra point for those who registered as a corporation (법인).
+
+There is no extra point for those who registered as a sole proprietor (개인사업자).
+Drop files here or browse
+Certificate of incorporation from a country other than South Korea
+Drop files here or browse
+By submitting this application, you consent to the collection, use, and sharing of your personal information as outlined in this agreement. You also confirm that all information provided is accurate and complete to the best of your knowledge.
+Clear form

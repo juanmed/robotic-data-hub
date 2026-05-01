@@ -371,6 +371,18 @@ A coherent regional expansion path is:
     - **Why it wins:** Scales data generation and reduces collection cost/time for robotics companies.
     - **Why it fails for SME automation:** Primarily solves data supply for robotics teams rather than solving the deployment and operations problem for SME production lines.
     - **GamiphyAI edge:** We combine SME need discovery + PoC + deployment + ongoing maintenance with a marketplace that recruits creators specifically for validated SME use cases.
+  
+  - **Alternative 6: Real world, robot data collection**
+    - **Example:** Gauss Robotics provides agentic AI based automation workcell and workflow design. The user generates workcells by prompting a chatbot. In turn this creates a workcell with realistic objects, robot and motion that recreates the workflow described. "We use Agentic AI to automate robotics engineering workflows. From the initial idea to delivering the solution. A fully digitized robot cell with seamless AI-based integration of hardware and software."
+    - **Web:** https://www.gauss-robotics.de/en/our-tech/
+    - **Why it wins:** Provides, almost instantaneously, a view of what a possible automation solution looks like
+    - **GamiphyAI edge:** We 
+
+  - **Alternative 7: Agentic AI based automation design**
+    - **Example:** Neuracore 
+    - **Web:** https://www.neuracore.com/
+    - **Why it wins:** Already ahead in the business, provides products for data collection, curation and model inference and training.
+    - **GamiphyAI edge:** We do not provide tools for developers only, but rather a platform to commercialize datasets as well and B2B turnkey solutions.
 
 - **Differentiation (what we do uniquely):**
   - **Closed-loop marketplace tied to real outcomes:** We connect SME automation “jobs-to-be-done” with creators who generate targeted datasets and skills, and we validate value through real PoCs and workload-level KPIs.

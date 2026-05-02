@@ -23,6 +23,82 @@ Codex identified 10 issues with the initial plan. All are resolved below:
 
 ---
 
+## Shared Media Infrastructure — Reusable UI and Logic Layer
+
+> **Read this before Phase 1.** The challenge feature already has a working `challenge-media`
+> Supabase Storage bucket, `challenge_media` table, `challengeMediaService`, and
+> `ChallengeMediaUpload` component. Rather than leaving those as monolithic challenge-specific
+> code, this plan extracts the **UI component and upload logic** into reusable primitives.
+> Future features (blog sections, portfolio items, course content, etc.) will get their own
+> storage buckets and DB tables — but they reuse the same upload component and the same
+> service shape, so the implementation work is minimal and the UX is consistent.
+
+### Design Principles
+
+1. **Each feature owns its storage and data.** The `challenge-media` bucket and `challenge_media`
+   table stay challenge-specific. A future blog feature gets a `blog-media` bucket and a
+   `blog_media` table. No shared bucket, no polymorphic table. This keeps RLS, quotas, and
+   migrations cleanly scoped per feature.
+
+2. **The upload component is context-agnostic.** `ChallengeMediaUpload` is split into a generic
+   `MediaUpload` primitive (drag-drop zone, preview grid, delete, upload progress) that knows
+   nothing about challenges or any service. It receives all I/O through props. `ChallengeMediaUpload`
+   becomes a thin adapter that wires `challengeMediaService` to those props.
+
+3. **New features need only a service adapter.** To add media upload to a blog editor:
+   write a `blogMediaService` with the same method signatures as `challengeMediaService`, then
+   render `<MediaUpload onUpload={...} onDelete={...} getUrl={...} />`. No changes to the
+   component itself.
+
+### Files to Create / Modify
+
+#### `src/components/MediaUpload.tsx` (new — generic primitive)
+```ts
+interface MediaUploadProps<T> {
+  items: T[];                            // already-loaded media items
+  onUpload: (file: File) => Promise<T>;  // caller handles storage + DB insert
+  onDelete: (item: T) => Promise<void>;
+  getUrl: (item: T) => string | undefined;  // signed URL, pre-resolved by caller
+  getContentType: (item: T) => string;
+  getFileName: (item: T) => string;
+  maxFiles?: number;                     // default 10
+  maxSizeBytes?: number;                 // default 100MB
+  accept?: string;                       // default "video/*,image/*"
+}
+```
+- Preserves all existing `ChallengeMediaUpload` behavior: drag-and-drop zone, file input,
+  uploading state, 2–3 column preview grid, video thumbnail (`preload="metadata"` +
+  `currentTime = 0.1`), delete button on hover.
+- No import of any service or Supabase client — all I/O through props.
+
+#### `src/components/ChallengeMediaUpload.tsx` (refactor — keep public API, replace internals)
+```tsx
+// Thin adapter: owns state, wires challengeMediaService to MediaUpload props
+const ChallengeMediaUpload = ({ challengeId, userId, onMediaChange }) => {
+  const [items, setItems] = useState<ChallengeMedia[]>([]);
+  const [signedUrls, setSignedUrls] = useState<Map<string, string>>(new Map());
+  // load on mount: challengeMediaService.list() + getSignedUrl per item (same as today)
+  // onUpload  → challengeMediaService.upload(challengeId, userId, file) + getSignedUrl
+  // onDelete  → challengeMediaService.delete(item.id, item.storage_path)
+  // getUrl    → signedUrls.get(item.id)
+  return <MediaUpload items={items} onUpload={...} onDelete={...} getUrl={...} ... />;
+};
+```
+Existing call sites in `ChallengeEditorPage` require **zero changes**.
+
+#### `src/services/challengeMediaService.ts` (no change required)
+The service is already well-scoped. Its public API (`upload`, `list`, `getSignedUrl`, `delete`,
+`reorder`) becomes the **reference interface** that future feature services should mirror so they
+are plug-compatible with `MediaUpload` adapters.
+
+### Storage and DB Strategy
+- Each feature provisions its own bucket and table. Naming convention:
+  `{feature}-media` bucket, `{feature}_media` table.
+- No cross-feature sharing of storage or DB tables — clean blast radius, independent RLS.
+- The `challenge-media` bucket and `challenge_media` table are untouched.
+
+---
+
 ## Phase 1 — Tabbed Shell (No DB Changes)
 
 ### Goal
@@ -104,7 +180,18 @@ export const useChallengeContext = () => { /* throws if outside provider */ };
 - Reads `challenge.description` from context
 - Renders description with `react-markdown` + `remark-gfm` (prose styling via `@tailwindcss/typography`
   which is already installed)
-- Renders media carousel (calls `challengeMediaService.list()`, signs URLs per item)
+- **Media gallery** (replaces the flat carousel from `ChallengeDetailPage`):
+  - Fetches items via `challengeMediaService.list()` + per-item `getSignedUrl`
+  - Renders a **featured media slot** (first item, full-width, aspect-video) above the description.
+    If the first item is a video: native `<video controls preload="metadata">`. If image: full display.
+  - Below the featured slot: horizontal thumbnail strip for remaining items. Clicking a thumbnail
+    promotes it to the featured slot (local state swap — no refetch).
+  - Video-first ordering: `challengeMediaService.list()` returns items sorted by `sort_order`;
+    challenge creators should place video first (enforced by drag-to-reorder in the editor).
+  - Empty state: renders description full-width with no gallery (no placeholder shown to viewers).
+  - Uses `ChallengeMediaUpload` (owner-only, shown below description when `isOwner`) so owners
+    can manage media without leaving the tab. This replaces the editor Step 2 as the canonical
+    media management surface once Phase 2 is complete.
 - Sidebar: tags, deadline countdown, compensation card, submission count
 - Tag pills link to `/marketplace?tab=challenges&tag={tag}` — works on first load
 
@@ -244,6 +331,9 @@ the column. This means:
 ```bash
 npm install @tiptap/react @tiptap/starter-kit @tiptap/extension-link @tiptap/extension-image
 ```
+No video-specific TipTap extension is needed — video upload is handled by `MediaUpload` /
+`ChallengeMediaUpload` in the OverviewTab gallery, not embedded inline in the document body.
+This keeps the content model simple (videos are structured media records, not embedded blobs).
 
 ### Files to Create / Modify
 
@@ -255,16 +345,30 @@ upsert(challengeId: string, tabKey: string, bodyJson: JSONContent, bodyMd: strin
 
 #### `src/components/TipTapEditor.tsx` (new)
 - Props: `content: JSONContent | null`, `onChange: (json, md) => void`, `readOnly: boolean`
-- Toolbar: bold, italic, headings, links, bullet/numbered lists
+- Toolbar: bold, italic, headings, links, bullet/numbered lists, inline image embed (via
+  `@tiptap/extension-image` — for small diagrams inline with text, not for video)
 - `readOnly=true`: renders with prose classes, no toolbar
+- **Note:** Do not add a video node to TipTap. Videos are managed through the gallery (structured
+  media layer) so that playback UX, signed URLs, and ordering are consistent across all views.
 
 #### `src/pages/challenge-tabs/OverviewTab.tsx` (modify)
 - Load `challenge_content` (tab_key='overview') via React Query
 - Fallback: render `challenge.description` as markdown if no content row
 - `isOwner`: show Edit toggle → TipTap in write mode; auto-save on blur with 1s debounce
+- Media gallery (already added in Phase 1) remains above the TipTap body — no change to gallery
+  behavior in this phase
 
 #### `src/pages/challenge-tabs/RulesTab.tsx` (modify)
 - Same pattern; tab_key='rules'; fallback: `challenge.constraints` + `challenge.conditions`
+
+### Future reuse of MediaUpload for blog / other content
+When a blog or course feature is added:
+1. Provision a new `blog-media` bucket and `blog_media` table (same schema as `challenge_media`).
+2. Write a `blogMediaService` with the same method signatures as `challengeMediaService`
+   (`upload`, `list`, `getSignedUrl`, `delete`, `reorder`).
+3. Write a thin `BlogMediaUpload` adapter component that wires `blogMediaService` to
+   `<MediaUpload />` — same pattern as `ChallengeMediaUpload`.
+4. No changes to `MediaUpload` itself are required.
 
 ---
 
@@ -401,7 +505,8 @@ Move the existing sidebar content from `ChallengeDetailPage` into a standalone
 
 | Phase | Work | DB Changes | Risk |
 |-------|------|-----------|------|
-| 1 | Tabbed shell, routes, behavior parity | None | Low |
+| 0 | Generic media layer (`mediaService`, `MediaUpload`, refactor `ChallengeMediaUpload`) | None | Low — pure refactor, no call site changes |
+| 1 | Tabbed shell, routes, behavior parity; video gallery in OverviewTab | None | Low |
 | 1.5 | Test parity checkpoint | None | None |
 | 5 | Sidebar polish | None | Low |
 | 2 | TipTap / markdown authoring | New table | Medium |
@@ -427,3 +532,8 @@ Move the existing sidebar content from `ChallengeDetailPage` into a standalone
    reads `?tag=` from search params), but the marketplace does not persist `activeTag` back to the URL
    during browsing. If shareable filtered views matter, add URL sync to MarketplacePage as a separate
    task.
+
+5. **Video file size cap**: `ChallengeMediaUpload` currently caps all files at 100MB. Short demo
+   videos commonly exceed this. Decide on a video-specific limit (e.g. 500MB) vs keeping a single
+   cap. Can be implemented in `MediaUpload` via a `getMaxSizeBytes?: (file: File) => number` prop
+   so each consumer controls its own limits.

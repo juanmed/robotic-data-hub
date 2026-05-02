@@ -105,24 +105,44 @@ are plug-compatible with `MediaUpload` adapters.
 Replace `ChallengeDetailPage` with a `ChallengeLayout` hosting nested routes. Preserve all existing
 behavior; only reorganize it into tabs. No new database tables or content model changes in this phase.
 
+### Tab Model
+
+**Only `Overview` is mandatory.** All other tabs (`Rules`, `Submissions`, `Discussion`,
+`Leaderboard`) are optional and enabled per-challenge by the owner. This is persisted in a new
+`enabled_tabs text[]` column on `challenges` (see DB Changes below). Viewers only see enabled tabs.
+
+The available optional tabs and their keys:
+
+| Key | Label | Default enabled? |
+|-----|-------|-----------------|
+| `submissions` | Submissions | Yes (core action) |
+| `rules` | Rules | No |
+| `discussion` | Discussion | No |
+| `leaderboard` | Leaderboard | No |
+
+Owners can rename tabs in a future polish pass; for now labels are fixed.
+
 ### Route Structure (after change)
+
+All optional tab routes are registered in the router regardless of `enabled_tabs` — visibility
+is enforced in `ChallengeLayout`'s nav render and by redirecting unknown tab segments to `overview`.
 
 ```
 /marketplace/challenges/:id/edit         → (keep as sibling, NOT nested) → ChallengeEditorPage
 /marketplace/challenges/:id              → index → <Navigate replace to="overview" />
-/marketplace/challenges/:id/overview     → OverviewTab
-/marketplace/challenges/:id/rules        → RulesTab
-/marketplace/challenges/:id/submissions  → SubmissionsTab
-/marketplace/challenges/:id/discussion   → DiscussionTab (placeholder)
-/marketplace/challenges/:id/leaderboard  → LeaderboardTab (placeholder)
+/marketplace/challenges/:id/overview     → OverviewTab          (always visible)
+/marketplace/challenges/:id/rules        → RulesTab             (visible if 'rules' in enabled_tabs)
+/marketplace/challenges/:id/submissions  → SubmissionsTab       (visible if 'submissions' in enabled_tabs)
+/marketplace/challenges/:id/discussion   → DiscussionTab        (visible if 'discussion' in enabled_tabs)
+/marketplace/challenges/:id/leaderboard  → LeaderboardTab       (visible if 'leaderboard' in enabled_tabs)
 
 /dashboard/challenges/:id/edit           → (keep as sibling, NOT nested) → ChallengeEditorPage (ProtectedRoute)
 /dashboard/challenges/:id                → index → <Navigate replace to="overview" />
 /dashboard/challenges/:id/overview       → OverviewTab
 /dashboard/challenges/:id/rules          → RulesTab
 /dashboard/challenges/:id/submissions    → SubmissionsTab
-/dashboard/challenges/:id/discussion     → DiscussionTab (placeholder)
-/dashboard/challenges/:id/leaderboard    → LeaderboardTab (placeholder)
+/dashboard/challenges/:id/discussion     → DiscussionTab
+/dashboard/challenges/:id/leaderboard    → LeaderboardTab
 ```
 
 > **Key rule**: `:id/edit` must remain a sibling (not a child) of the `:id` layout parent, or `edit`
@@ -158,20 +178,32 @@ export const useChallengeContext = () => { /* throws if outside provider */ };
 - Fetches challenge via `challengeService.getEnriched(id)` with React Query
 - Renders: hero header (title, `ChallengeStatusBadge`, deadline, compensation, creator name), tab nav,
   `<Outlet />`
+- **Creator name**: displayed as plain text with a `// TODO: link to /users/:id once public profile feature ships`
+  comment at the exact line — no link or route added now.
 - Tab navigation uses `<NavLink>` styled to look like tabs, **not** `shadcn <Tabs>` with
   `onValueChange(navigate)`. Reason (from codex): `NavLink` handles deep linking, new-tab behavior,
   and a11y correctly; `onValueChange(navigate)` does not.
   ```tsx
-  // Tab nav pattern
-  const tabs = [
-    { to: "overview", label: "Overview" },
-    { to: "rules", label: "Rules" },
-    { to: "submissions", label: "Submissions" },
-    { to: "discussion", label: "Discussion" },
-    { to: "leaderboard", label: "Leaderboard" },
+  // Dynamic tab nav — Overview always first, then only enabled optional tabs
+  const ALL_OPTIONAL_TABS = [
+    { key: 'rules',        to: 'rules',        label: 'Rules' },
+    { key: 'submissions',  to: 'submissions',  label: 'Submissions' },
+    { key: 'discussion',   to: 'discussion',   label: 'Discussion' },
+    { key: 'leaderboard',  to: 'leaderboard',  label: 'Leaderboard' },
+  ];
+  const visibleTabs = [
+    { to: 'overview', label: 'Overview' },
+    ...ALL_OPTIONAL_TABS.filter(t => challenge.enabled_tabs.includes(t.key)),
   ];
   // Render each as <NavLink to={t.to} relative="path"> with active class
   ```
+- **Tab settings panel** (owner only): a `<Settings>` icon button (lucide-react) in the trailing
+  edge of the tab bar. Opens a `<Popover>` with a checkbox list of `ALL_OPTIONAL_TABS`. Toggling
+  a checkbox immediately calls `challengeService.update(id, { enabled_tabs: next })` with an
+  optimistic update + revert on error. If the currently active tab is unchecked, navigate to
+  `overview`.
+- **New DB column required**: `enabled_tabs text[] NOT NULL DEFAULT '{submissions}'` on `challenges`.
+  See Database Changes below.
 - Owner action buttons in header: Edit (→ `:id/edit`), Publish (if draft), Deactivate/Activate,
   Close (with AlertDialog confirmation). **Publish must be added here** — it does not exist on the
   current detail page and lives only on `DashboardPage`.
@@ -254,7 +286,23 @@ npm install react-markdown remark-gfm
 (`@tailwindcss/typography` is already in devDependencies — no install needed.)
 
 ### Database Changes
-None.
+
+One new column on `challenges` to persist per-challenge tab visibility:
+
+```sql
+-- supabase/migrations/YYYYMMDDHHMMSS_challenges_enabled_tabs.sql
+ALTER TABLE public.challenges
+  ADD COLUMN enabled_tabs text[] NOT NULL DEFAULT '{submissions}';
+```
+
+- `overview` is never stored here — it is always rendered unconditionally.
+- Default `'{submissions}'` means existing challenges show Overview + Submissions with no
+  data migration required.
+- No new RLS policies needed: existing `challenges_owner_crud` covers the UPDATE path;
+  existing `challenges_public_read_active` covers SELECT for non-owners.
+- Add `enabled_tabs: string[]` to the `Challenge` TypeScript interface and to the Supabase
+  generated types (`Row`, `Insert?: string[]`, `Update?: string[]`).
+- Add `enabled_tabs: ['submissions']` to `createMockChallenge` in `src/test/helpers/factories.ts`.
 
 ---
 
@@ -269,106 +317,80 @@ Before adding any new feature, verify:
 
 ---
 
-## Phase 2 — Rich Content Authoring (TipTap)
+## Phase 2 — Markdown Authoring
 
-### Decision Gate
-Only proceed if rich WYSIWYG is a hard requirement. If challenge creators are technical, Phase 2 can be
-replaced with a simpler **markdown textarea + preview toggle** on `OverviewTab` and `RulesTab`, which
-requires no new DB table.
+> **Decision:** Challenge creators are technical users. TipTap is not needed.
+> Use a **markdown textarea + toggle preview** for `OverviewTab` and `RulesTab`.
+> No new DB table is required — writes go directly to the existing `description`,
+> `constraints`, and `conditions` columns on `challenges` via `challengeService.update()`.
+> The `challenge_content` table and `challengeContentService` are **not created**.
 
-If WYSIWYG is needed, proceed with the full plan below.
-
-### New Database Table: `challenge_content`
-```sql
-create table challenge_content (
-  id uuid primary key default gen_random_uuid(),
-  challenge_id uuid references challenges(id) on delete cascade not null,
-  tab_key text not null check (tab_key in ('overview', 'rules')),
-  body_json jsonb,        -- TipTap JSON (primary for editor)
-  body_md text,           -- Markdown fallback for rendering
-  updated_at timestamptz default now(),
-  unique(challenge_id, tab_key)
-);
-
-alter table challenge_content enable row level security;
-
--- Public can read content for active challenges
-create policy "public read active" on challenge_content
-  for select using (
-    exists (select 1 from challenges where id = challenge_id and status = 'active')
-  );
-
--- Owner can read their own content regardless of status (needed for draft editing)
-create policy "owner read own" on challenge_content
-  for select using (
-    exists (select 1 from challenges where id = challenge_id and user_id = auth.uid())
-  );
-
--- Owner can insert/update (WITH CHECK enforces same constraint as USING)
-create policy "owner write" on challenge_content
-  for insert with check (
-    exists (select 1 from challenges where id = challenge_id and user_id = auth.uid())
-  );
-
-create policy "owner update" on challenge_content
-  for update using (
-    exists (select 1 from challenges where id = challenge_id and user_id = auth.uid())
-  ) with check (
-    exists (select 1 from challenges where id = challenge_id and user_id = auth.uid())
-  );
-```
-
-### Migration Strategy for Existing Content
-The existing `description`, `constraints`, and `conditions` columns on `challenges` remain as the
-**fallback source**. When a `challenge_content` row exists for a tab, it wins; otherwise fall back to
-the column. This means:
-- No data migration required; existing challenges keep working
-- `ChallengeEditorPage` continues writing to `description`/`constraints`/`conditions`
-- Tab editing (Phase 2) writes to `challenge_content`
-- This dual-source state is acknowledged as technical debt; a future cleanup can sync or migrate
+### Database Changes
+None. Existing `challenges.description`, `challenges.constraints`, and `challenges.conditions`
+columns are the source of truth. No migration required.
 
 ### New Libraries to Install
 ```bash
-npm install @tiptap/react @tiptap/starter-kit @tiptap/extension-link @tiptap/extension-image
+npm install react-markdown remark-gfm
 ```
-No video-specific TipTap extension is needed — video upload is handled by `MediaUpload` /
-`ChallengeMediaUpload` in the OverviewTab gallery, not embedded inline in the document body.
-This keeps the content model simple (videos are structured media records, not embedded blobs).
+(`@tailwindcss/typography` is already in devDependencies — no install needed.
+Register it in `tailwind.config.ts` plugins array if not already present.)
 
-### Files to Create / Modify
+### New Component: `src/components/MarkdownEditor.tsx`
 
-#### `src/services/challengeContentService.ts` (new)
+A reusable edit/preview toggle editor. No dependency on any challenge-specific service.
+
 ```ts
-get(challengeId: string, tabKey: 'overview' | 'rules'): Promise<ChallengeContent | null>
-upsert(challengeId: string, tabKey: string, bodyJson: JSONContent, bodyMd: string): Promise<void>
+interface MarkdownEditorProps {
+  value: string;
+  onChange?: (value: string) => void;  // omit when readOnly
+  onBlur?: () => void;                 // fires after 1s debounce on textarea blur
+  readOnly?: boolean;                  // default false
+  placeholder?: string;
+  minRows?: number;                    // default 6
+  className?: string;
+}
 ```
 
-#### `src/components/TipTapEditor.tsx` (new)
-- Props: `content: JSONContent | null`, `onChange: (json, md) => void`, `readOnly: boolean`
-- Toolbar: bold, italic, headings, links, bullet/numbered lists, inline image embed (via
-  `@tiptap/extension-image` — for small diagrams inline with text, not for video)
-- `readOnly=true`: renders with prose classes, no toolbar
-- **Note:** Do not add a video node to TipTap. Videos are managed through the gallery (structured
-  media layer) so that playback UX, signed URLs, and ordering are consistent across all views.
+**Edit mode** (`readOnly` false):
+- Small toolbar above the pane with two buttons: **Edit** | **Preview**. Default: Edit.
+- Edit pane: shadcn `<Textarea>` wired to `value`/`onChange`.
+- Preview pane: `<div className="prose prose-invert prose-sm max-w-none">` with
+  `<ReactMarkdown remarkPlugins={[remarkGfm]}>{value}</ReactMarkdown>`.
+- Debounce (internal): `useRef<ReturnType<typeof setTimeout>>` clears and resets a 1s timer
+  on textarea `onBlur`; fires `onBlur` prop after timeout. Cleared on unmount.
+
+**Read-only mode** (`readOnly` true):
+- No toolbar, no textarea. Renders prose div only.
+- If `value` is empty/whitespace: renders `<p className="text-sm text-muted-foreground">No content provided.</p>`.
+
+### Files to Modify
 
 #### `src/pages/challenge-tabs/OverviewTab.tsx` (modify)
-- Load `challenge_content` (tab_key='overview') via React Query
-- Fallback: render `challenge.description` as markdown if no content row
-- `isOwner`: show Edit toggle → TipTap in write mode; auto-save on blur with 1s debounce
-- Media gallery (already added in Phase 1) remains above the TipTap body — no change to gallery
-  behavior in this phase
+- Owner view: replaces the plain `react-markdown` render (from Phase 1) with `<MarkdownEditor>`
+  wired to `challenge.description`. On `onBlur`, calls `challengeService.update(id, { description })`.
+  Shows a subtle "Saved" toast on success.
+- Non-owner view: `<MarkdownEditor readOnly value={challenge.description} />`.
+- Media gallery from Phase 1 is unchanged — stays above the editor.
 
 #### `src/pages/challenge-tabs/RulesTab.tsx` (modify)
-- Same pattern; tab_key='rules'; fallback: `challenge.constraints` + `challenge.conditions`
+- Two independent `<MarkdownEditor>` instances: one for `constraints`, one for `conditions`.
+- Each has its own independent debounced save — updating one field does not overwrite the other.
+- Owner view: editable. Non-owner view: `readOnly`.
+- If both fields are empty in read-only mode: render a muted "No rules specified." message.
 
-### Future reuse of MediaUpload for blog / other content
+#### `src/services/challengeService.ts` (modify)
+Widen the `update()` Pick type to include `"enabled_tabs"` (see Phase 1 tab settings).
+No other logic changes needed — `description`, `constraints`, and `conditions` are already
+in the pick list.
+
+### Future reuse of MarkdownEditor and MediaUpload
 When a blog or course feature is added:
-1. Provision a new `blog-media` bucket and `blog_media` table (same schema as `challenge_media`).
-2. Write a `blogMediaService` with the same method signatures as `challengeMediaService`
-   (`upload`, `list`, `getSignedUrl`, `delete`, `reorder`).
-3. Write a thin `BlogMediaUpload` adapter component that wires `blogMediaService` to
-   `<MediaUpload />` — same pattern as `ChallengeMediaUpload`.
-4. No changes to `MediaUpload` itself are required.
+- **`MarkdownEditor`** is already prop-driven with no challenge coupling. Drop it directly into
+  any new editor context.
+- **`MediaUpload`**: provision a new `blog-media` bucket and `blog_media` table, write a
+  `blogMediaService` matching the `challengeMediaService` method signatures, then wrap it
+  in a thin `BlogMediaUpload` adapter. No changes to `MediaUpload` itself.
 
 ---
 
@@ -490,9 +512,11 @@ Move the existing sidebar content from `ChallengeDetailPage` into a standalone
 - Deadline with `formatDistanceToNow` from `date-fns` (already installed)
 - Tag pills → `/marketplace?tab=challenges&tag={tag}`
 - Submission count
-- Creator name (from `EnrichedChallenge.creator_name`)
-  - Note: no public profile route (`/users/:id`) exists yet; link to creator is omitted until a
-    public profile feature is added
+- Creator name (from `EnrichedChallenge.creator_name`) — displayed as plain text
+  - A `// TODO: link to /users/:id once public profile feature ships` comment must appear at the
+    exact render site in both `ChallengeLayout` (header) and `ChallengeMetaSidebar`. When the
+    public profile feature is built, replace the `<span>` with a `<Link to={/users/${challenge.user_id}}>`.
+    No route, no component, and no placeholder link should be added before that feature ships.
 
 ### Creator UX Improvements
 - Draft banner visible only to owner (from `ChallengeLayout`)
@@ -505,35 +529,31 @@ Move the existing sidebar content from `ChallengeDetailPage` into a standalone
 
 | Phase | Work | DB Changes | Risk |
 |-------|------|-----------|------|
-| 0 | Generic media layer (`mediaService`, `MediaUpload`, refactor `ChallengeMediaUpload`) | None | Low — pure refactor, no call site changes |
-| 1 | Tabbed shell, routes, behavior parity; video gallery in OverviewTab | None | Low |
+| 0 | Generic media layer (`MediaUpload`, refactor `ChallengeMediaUpload`) | None | Low — pure refactor, no call site changes |
+| 1 | Tabbed shell, dynamic nav, `enabled_tabs` toggle, video gallery in OverviewTab | `enabled_tabs` column | Low |
 | 1.5 | Test parity checkpoint | None | None |
 | 5 | Sidebar polish | None | Low |
-| 2 | TipTap / markdown authoring | New table | Medium |
+| 2 | Markdown authoring (`MarkdownEditor`, edit/preview in OverviewTab + RulesTab) | None | Low |
 | 3 | Discussion | New tables | Medium |
-| 4 | Leaderboard | New table | High (scoring model) |
+| 4 | Leaderboard | New table | High (scoring model TBD) |
 
 ---
 
+## Resolved Decisions
+
+| Decision | Resolution |
+|----------|------------|
+| **TipTap vs markdown textarea** | **Markdown textarea** — creators are technical. `MarkdownEditor` component with Edit/Preview toggle. No TipTap packages installed. |
+| **Mandatory vs optional tabs** | **Overview only is mandatory.** All other tabs are owner-toggled per challenge via `enabled_tabs` column. Default: `{submissions}`. |
+| **Video file size cap** | **100MB** — existing cap is correct, no change needed. |
+| **Public creator profiles** | **Future feature.** Show creator name as plain text now. Leave `// TODO: link to /users/:id once public profile feature ships` at every render site. No route or placeholder link added until the feature ships. |
+
 ## Open Decisions
 
-1. **TipTap vs markdown textarea**: If challenge creators are technical, skip TipTap and use a
-   markdown textarea with live preview. Simpler, no extra bundle, and the existing data model
-   (`description` as plain text) is already correct. TipTap is only worth it for non-technical users.
-
-2. **Leaderboard scoring model**: Manual owner entry, edge-function scoring, or community vote?
+1. **Leaderboard scoring model**: Manual owner entry, edge-function scoring, or community vote?
    Must be decided before Phase 4 begins.
 
-3. **Public creator profiles**: Phase 5 sidebar currently shows creator name only (no link) because
-   there is no public `/users/:id` route. If a profile feature is planned, add a public profile route
-   and wire the link at that time.
-
-4. **MarketplacePage tag URL sync**: Tag pill links from the sidebar work on first load (MarketplacePage
+2. **MarketplacePage tag URL sync**: Tag pill links from the sidebar work on first load (MarketplacePage
    reads `?tag=` from search params), but the marketplace does not persist `activeTag` back to the URL
    during browsing. If shareable filtered views matter, add URL sync to MarketplacePage as a separate
    task.
-
-5. **Video file size cap**: `ChallengeMediaUpload` currently caps all files at 100MB. Short demo
-   videos commonly exceed this. Decide on a video-specific limit (e.g. 500MB) vs keeping a single
-   cap. Can be implemented in `MediaUpload` via a `getMaxSizeBytes?: (file: File) => number` prop
-   so each consumer controls its own limits.

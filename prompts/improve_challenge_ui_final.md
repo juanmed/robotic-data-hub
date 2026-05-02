@@ -382,22 +382,33 @@ A reusable edit/preview toggle editor. No dependency on any challenge-specific s
 ```ts
 interface MarkdownEditorProps {
   value: string;
-  onChange?: (value: string) => void;  // omit when readOnly
-  onBlur?: () => void;                 // fires after 1s debounce on textarea blur
-  readOnly?: boolean;                  // default false
+  onChange?: (value: string) => void;    // omit when readOnly
+  onBlur?: () => Promise<void> | void;   // fires after 1s debounce on textarea blur (can be async)
+  readOnly?: boolean;                    // default false
   placeholder?: string;
-  minRows?: number;                    // default 6
+  minRows?: number;                      // default 50 (changed from 6 in Phase 1.5)
   className?: string;
+  showSaveButton?: boolean;               // default false; when true, shows explicit Save button (Phase 1.5)
 }
 ```
 
 **Edit mode** (`readOnly` false):
-- Small toolbar above the pane with two buttons: **Edit** | **Preview**. Default: Edit.
-- Edit pane: shadcn `<Textarea>` wired to `value`/`onChange`.
+- Toolbar with three sections:
+  - Left: **Edit** | **Preview** toggle buttons. Default: Edit.
+  - Right: **Save** button (when `showSaveButton={true}`). Shows three states:
+    - `"Save"` — default, clickable
+    - `"Saving..."` with spinner — while async save in progress
+    - `"Saved"` with green checkmark — for 2 seconds after successful save
+- Edit pane: shadcn `<Textarea>` wired to `value`/`onChange`, with `resize: vertical` CSS class
+  to allow users to drag the bottom edge and resize height.
 - Preview pane: `<div className="prose prose-invert prose-sm max-w-none">` with
   `<ReactMarkdown remarkPlugins={[remarkGfm]}>{value}</ReactMarkdown>`.
 - Debounce (internal): `useRef<ReturnType<typeof setTimeout>>` clears and resets a 1s timer
   on textarea `onBlur`; fires `onBlur` prop after timeout. Cleared on unmount.
+- **Phase 1.5 enhancements**:
+  - Default height increased to 50 lines (from 6) for ergonomic editing of longer content
+  - Explicit save button with visual feedback (Saving → Saved states)
+  - Textarea is vertically resizable
 
 **Read-only mode** (`readOnly` true):
 - No toolbar, no textarea. Renders prose div only.
@@ -423,10 +434,45 @@ Widen the `update()` Pick type to include `"enabled_tabs"` (see Phase 1 tab sett
 No other logic changes needed — `description`, `constraints`, and `conditions` are already
 in the pick list.
 
+### Drag-and-Drop Media Insertion (Phase 2 Enhancement)
+
+**Planned enhancement** — Allow users to drag images and videos directly into the editor textarea
+and have them inserted as markdown at the cursor position, similar to GitHub's PR description editor.
+
+#### Implementation approach:
+
+1. **Drop event handler** — Add `onDrop` listener to textarea
+   - Extract dropped files via `event.dataTransfer.files`
+   - Detect file type (image: jpg/png/gif/webp or video: mp4/webm/etc.)
+   - Track cursor position before upload
+
+2. **Media upload** — Use existing `challengeMediaService.upload()` API
+   - Show placeholder spinner at cursor position during upload
+   - Once upload completes, get signed URL from `challengeMediaService.getSignedUrl()`
+
+3. **Markdown insertion** — Insert markdown syntax at the cursor position (not append to end)
+   - Images: `![alt-text](signed-url)`
+   - Videos: `[Video: filename](signed-url)` or similar reference format
+   - Use `textareaRef.current.setSelectionRange()` to position cursor, then insert text
+
+4. **UX details**
+   - Disable drop if `readOnly` is true
+   - Show loading spinner during upload
+   - Show error toast on upload failure
+   - Maintain cursor position after insertion
+
+#### Why Phase 2?
+
+This feature is nice-to-have (users can still upload via the dedicated "Manage Media" section below
+the editor). Phase 2 allows time to verify Phase 1 stability and handle edge cases (large files,
+concurrent uploads, cursor positioning across browsers) without rushing.
+
+---
+
 ### Future reuse of MarkdownEditor and MediaUpload
 When a blog or course feature is added:
 - **`MarkdownEditor`** is already prop-driven with no challenge coupling. Drop it directly into
-  any new editor context.
+  any new editor context. If drag-and-drop is needed, it will already be built into the component.
 - **`MediaUpload`**: provision a new `blog-media` bucket and `blog_media` table, write a
   `blogMediaService` matching the `challengeMediaService` method signatures, then wrap it
   in a thin `BlogMediaUpload` adapter. No changes to `MediaUpload` itself.
@@ -570,9 +616,9 @@ Move the existing sidebar content from `ChallengeDetailPage` into a standalone
 |-------|------|-----------|------|
 | 0 | Generic media layer (`MediaUpload`, refactor `ChallengeMediaUpload`) | None | Low — pure refactor, no call site changes |
 | 1 | Tabbed shell, dynamic nav, `enabled_tabs` toggle, video gallery in OverviewTab | `enabled_tabs` column | Low |
-| 1.5 | Test parity checkpoint | None | None |
+| 1.5 | **COMPLETED** — Test parity checkpoint; UX polish: save button, resizable editor (50-line default) | None | None |
+| 2 | Markdown authoring (`MarkdownEditor`, edit/preview in OverviewTab + RulesTab); drag-and-drop media insertion | None | Low |
 | 5 | Sidebar polish | None | Low |
-| 2 | Markdown authoring (`MarkdownEditor`, edit/preview in OverviewTab + RulesTab) | None | Low |
 | 3 | Discussion | New tables | Medium |
 | 4 | Leaderboard | New table | High (scoring model TBD) |
 

@@ -112,7 +112,7 @@ export const challengeService = {
     id: string,
     updates: Partial<Pick<Challenge,
       "title" | "description" | "compensation_amount" | "compensation_per" |
-      "currency" | "deadline" | "constraints" | "conditions" | "tags"
+      "currency" | "deadline" | "constraints" | "conditions" | "tags" | "enabled_tabs"
     >>
   ): Promise<Challenge> {
     const { data, error } = await supabase

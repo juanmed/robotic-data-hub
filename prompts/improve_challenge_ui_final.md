@@ -4,7 +4,7 @@
 
 React 18 + Vite + Tailwind + shadcn/ui + Supabase. The current `ChallengeDetailPage.tsx` renders all
 content in a single scrolling view. The goal is a Kaggle/HuggingFace-style tabbed layout with rich
-authoring, discussion, and a leaderboard.
+authoring, discussion, possibly other tabs like leaderboard, community.
 
 ## Codex Review — Issues Addressed in This Plan
 
@@ -107,32 +107,33 @@ behavior; only reorganize it into tabs. No new database tables or content model 
 
 ### Tab Model
 
-**Only `Overview` is mandatory.** All other tabs (`Rules`, `Submissions`, `Discussion`,
-`Leaderboard`) are optional and enabled per-challenge by the owner. This is persisted in a new
-`enabled_tabs text[]` column on `challenges` (see DB Changes below). Viewers only see enabled tabs.
+**`Overview` and `Submissions` are always mandatory** — every challenge has exactly these two tabs
+regardless of owner settings. All other tabs (`Rules`, `Discussion`, `Leaderboard`) are optional
+and enabled per-challenge by the owner, persisted in a new `enabled_tabs text[]` column on
+`challenges` (see DB Changes below). Viewers only see enabled optional tabs, but always see
+Overview and Submissions.
 
-The available optional tabs and their keys:
+| Tab | Key | Mandatory | Notes |
+|-----|-----|-----------|-------|
+| Overview | `overview` | **Yes** | Description, media, tags |
+| Submissions | `submissions` | **Yes** | Accepted submissions list; always visible |
+| Rules | `rules` | No — owner opt-in | |
+| Discussion | `discussion` | No — owner opt-in | Placeholder until Phase 3 |
+| Leaderboard | `leaderboard` | No — owner opt-in | Placeholder until Phase 4 |
 
-| Key | Label | Default enabled? |
-|-----|-------|-----------------|
-| `submissions` | Submissions | Yes (core action) |
-| `rules` | Rules | No |
-| `discussion` | Discussion | No |
-| `leaderboard` | Leaderboard | No |
-
-Owners can rename tabs in a future polish pass; for now labels are fixed.
+Owners can rename optional tabs in a future polish pass; for now labels are fixed.
 
 ### Route Structure (after change)
 
-All optional tab routes are registered in the router regardless of `enabled_tabs` — visibility
-is enforced in `ChallengeLayout`'s nav render and by redirecting unknown tab segments to `overview`.
+All tab routes are registered in the router regardless of `enabled_tabs` — nav visibility
+is enforced in `ChallengeLayout`. Navigating directly to a disabled optional tab redirects to `overview`.
 
 ```
 /marketplace/challenges/:id/edit         → (keep as sibling, NOT nested) → ChallengeEditorPage
 /marketplace/challenges/:id              → index → <Navigate replace to="overview" />
-/marketplace/challenges/:id/overview     → OverviewTab          (always visible)
+/marketplace/challenges/:id/overview     → OverviewTab          (always visible — mandatory)
+/marketplace/challenges/:id/submissions  → SubmissionsTab       (always visible — mandatory)
 /marketplace/challenges/:id/rules        → RulesTab             (visible if 'rules' in enabled_tabs)
-/marketplace/challenges/:id/submissions  → SubmissionsTab       (visible if 'submissions' in enabled_tabs)
 /marketplace/challenges/:id/discussion   → DiscussionTab        (visible if 'discussion' in enabled_tabs)
 /marketplace/challenges/:id/leaderboard  → LeaderboardTab       (visible if 'leaderboard' in enabled_tabs)
 
@@ -184,15 +185,15 @@ export const useChallengeContext = () => { /* throws if outside provider */ };
   `onValueChange(navigate)`. Reason (from codex): `NavLink` handles deep linking, new-tab behavior,
   and a11y correctly; `onValueChange(navigate)` does not.
   ```tsx
-  // Dynamic tab nav — Overview always first, then only enabled optional tabs
+  // Mandatory tabs always rendered; optional tabs filtered by enabled_tabs
   const ALL_OPTIONAL_TABS = [
     { key: 'rules',        to: 'rules',        label: 'Rules' },
-    { key: 'submissions',  to: 'submissions',  label: 'Submissions' },
     { key: 'discussion',   to: 'discussion',   label: 'Discussion' },
     { key: 'leaderboard',  to: 'leaderboard',  label: 'Leaderboard' },
   ];
   const visibleTabs = [
-    { to: 'overview', label: 'Overview' },
+    { to: 'overview',     label: 'Overview' },
+    { to: 'submissions',  label: 'Submissions' },
     ...ALL_OPTIONAL_TABS.filter(t => challenge.enabled_tabs.includes(t.key)),
   ];
   // Render each as <NavLink to={t.to} relative="path"> with active class
@@ -232,15 +233,53 @@ export const useChallengeContext = () => { /* throws if outside provider */ };
 - Renders both as `react-markdown` sections with `@tailwindcss/typography`
 - Phase 1: read-only; edit capability deferred to Phase 2
 
-#### `src/pages/challenge-tabs/SubmissionsTab.tsx` (new)
-Carries over **all** existing submission behavior from `ChallengeDetailPage`:
-- **Participant view**: own submissions list with status badges; withdraw button per submission;
-  "Submit Dataset" button that opens `<SubmitDatasetModal>` (passes `existingSubmissions` for dedup
-  filtering, exactly as today)
-- **Owner view** (`isOwner === true`): enriched submission list per `challengeSubmissionService.listForChallengeEnriched()`;
-  per-row actions: Accept, Reject (pending only), Visualize (calls `openVisualizer(datasetId)`),
-  Access Files (opens file dialog for accepted submissions via `getDatasetFileUrls`)
-- The file access dialog currently in `ChallengeDetailPage` moves into this tab as a local `<Dialog>`
+#### `src/pages/challenge-tabs/SubmissionsTab.tsx` (new — mandatory tab)
+
+This tab is always visible to everyone and reorganizes the existing submission content from
+`ChallengeDetailPage` into a dedicated view. The core purpose is to display the list of
+**accepted submissions** publicly, while giving owners full management controls over all submissions.
+
+**Empty state** (no accepted submissions yet):
+- Renders a centred muted message: `"No submissions yet"`. Shown to all viewers including the owner.
+
+**Public / participant view** (not owner):
+- Shows only **accepted** submissions (`status === 'accepted'`). Pending and rejected submissions
+  are never shown to non-owners.
+- Each accepted submission row mirrors the current `ChallengeDetailPage` card layout exactly:
+  dataset name, dataset ID (monospace), submitter name, submission date, `accepted` status badge,
+  payout amount line.
+- **Visualize** button (`<Eye>` icon): visible to **authenticated users only**. Calls
+  `openVisualizer(datasetId)` — same as today.
+- **Access Files / Download** button (`<Download>` icon): visible to the **challenge owner only**
+  (not to participants or anonymous viewers). Opens the existing file-access `<Dialog>` via
+  `getDatasetFileUrls(datasetId)`.
+- Unauthenticated visitors see the accepted list but no action buttons.
+
+**Owner view** (`isOwner === true`):
+- Fetches all submissions via `challengeSubmissionService.listForChallengeEnriched()` — sees
+  pending, accepted, and rejected, not just accepted.
+- Same card layout as today, preserving all existing fields and styling from `ChallengeDetailPage`
+  (lines 342–416).
+- Per-row actions, identical to today:
+  - **Visualize** (`<Eye>`): always available — calls `openVisualizer(datasetId)`.
+  - **Access Files** (`<Download>`): available on accepted submissions only — opens file dialog.
+  - **Accept** (`<CheckCircle2>`, green): available on pending submissions only.
+  - **Reject** (`<XIcon>`, red): available on pending submissions only.
+- The file-access `<Dialog>` (currently in `ChallengeDetailPage` lines 554–582) moves into this
+  tab as a local `<Dialog>` — state variables `filesOpen`, `filesLoading`, `selectedSubmissionName`,
+  `submissionFiles` all live inside `SubmissionsTab`.
+
+**Submit action**: the "Submit Dataset" button remains in the **sidebar** of `ChallengeLayout`,
+not inside this tab. `SubmissionsTab` is read-only from the participant's perspective — it shows
+what has been accepted, not where to submit. The `<SubmitDatasetModal>` and `mySubmissions` state
+stay in `ChallengeLayout` and are passed down as needed.
+
+**Data sources**:
+- Owner: `challengeSubmissionService.listForChallengeEnriched(id)` — full list with enriched metadata.
+- Non-owner authenticated: filter `challengeSubmissionService.listMine()` for this challenge, but
+  only render the subset with `status === 'accepted'` in the public list.
+- Non-owner unauthenticated: no service call needed — only the accepted list (fetched as part of
+  owner's enriched load, or via a dedicated public query); show without action buttons.
 
 #### `src/pages/challenge-tabs/DiscussionTab.tsx` (new, placeholder)
 - Renders a "Coming soon" card; will be replaced in Phase 3
@@ -292,12 +331,12 @@ One new column on `challenges` to persist per-challenge tab visibility:
 ```sql
 -- supabase/migrations/YYYYMMDDHHMMSS_challenges_enabled_tabs.sql
 ALTER TABLE public.challenges
-  ADD COLUMN enabled_tabs text[] NOT NULL DEFAULT '{submissions}';
+  ADD COLUMN enabled_tabs text[] NOT NULL DEFAULT '{}';
 ```
 
-- `overview` is never stored here — it is always rendered unconditionally.
-- Default `'{submissions}'` means existing challenges show Overview + Submissions with no
-  data migration required.
+- `overview` and `submissions` are never stored here — they are always rendered unconditionally.
+- Default `'{}'` (empty) means existing challenges show only the two mandatory tabs (Overview +
+  Submissions) with no data migration required.
 - No new RLS policies needed: existing `challenges_owner_crud` covers the UPDATE path;
   existing `challenges_public_read_active` covers SELECT for non-owners.
 - Add `enabled_tabs: string[]` to the `Challenge` TypeScript interface and to the Supabase

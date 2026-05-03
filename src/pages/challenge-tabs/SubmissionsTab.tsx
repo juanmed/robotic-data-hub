@@ -61,8 +61,13 @@ export const SubmissionsTab = () => {
               dataset_display_name: null,
               submitter_name: null,
             })) as ChallengeSubmissionEnriched[];
-          } catch {
-            // If both fail, show no submissions
+          } catch (plainError: any) {
+            // If both fail, check if it's an RLS/auth issue
+            console.warn('Failed to fetch submissions:', {
+              enrichError: (enrichError as any)?.message,
+              plainError: plainError?.message,
+              isAuthenticated,
+            });
             allSubmissions = [];
           }
         }
@@ -77,6 +82,7 @@ export const SubmissionsTab = () => {
         }
       } catch (err) {
         // This is a fallback for unexpected errors
+        console.error('Unexpected error loading submissions:', err);
         setSubmissions([]);
       } finally {
         setLoading(false);

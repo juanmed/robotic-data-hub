@@ -140,6 +140,8 @@ export const OverviewTab = () => {
             onBlur={saveDescription}
             placeholder="Describe your challenge, dataset requirements, and expectations..."
             showSaveButton={true}
+            challengeId={challenge.id}
+            userId={challenge.user_id}
           />
         ) : (
           <MarkdownEditor readOnly value={localDescription} />

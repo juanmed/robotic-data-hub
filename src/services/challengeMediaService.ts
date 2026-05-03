@@ -55,6 +55,14 @@ export const challengeMediaService = {
     return data.signedUrl;
   },
 
+  async getEmbedUrl(storagePath: string): Promise<string> {
+    const { data, error } = await supabase.storage
+      .from("challenge-media")
+      .createSignedUrl(storagePath, 157680000); // 5 years
+    if (error) throw error;
+    return data.signedUrl;
+  },
+
   async delete(mediaId: string, storagePath: string): Promise<void> {
     const { error: storageError } = await supabase.storage
       .from("challenge-media")

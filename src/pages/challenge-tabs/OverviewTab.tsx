@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, Link } from 'react-router-dom';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { challengeService } from '@/services/challengeService';
 import { challengeMediaService } from '@/services/challengeMediaService';
@@ -154,12 +154,13 @@ export const OverviewTab = () => {
           <h4 className="text-xs font-semibold text-muted-foreground uppercase">Tags</h4>
           <div className="flex flex-wrap gap-2">
             {challenge.tags.map((tag) => (
-              <span
+              <Link
                 key={tag}
-                className="px-3 py-1 rounded-full text-[10px] font-medium bg-muted/40 text-muted-foreground border border-border/30"
+                to={`/marketplace?tab=challenges&tag=${encodeURIComponent(tag)}`}
+                className="px-3 py-1 rounded-full text-[10px] font-medium bg-muted/40 text-muted-foreground border border-border/30 hover:border-secondary/50 hover:text-foreground transition-colors"
               >
                 {tag}
-              </span>
+              </Link>
             ))}
           </div>
         </div>

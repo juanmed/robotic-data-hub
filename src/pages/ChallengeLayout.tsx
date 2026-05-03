@@ -6,7 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import type { Challenge, OptionalTabKey } from '@/types';
 import { OPTIONAL_TABS } from '@/types';
 import ChallengeStatusBadge from '@/components/ChallengeStatusBadge';
-import GlassCard from '@/components/GlassCard';
+import ChallengeMetaSidebar from '@/components/ChallengeMetaSidebar';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -14,17 +14,6 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
 import {
   Settings,
@@ -34,9 +23,6 @@ import {
   Calendar,
   MessageSquare,
   Pencil,
-  ToggleLeft,
-  ToggleRight,
-  XCircle,
   User,
 } from 'lucide-react';
 
@@ -187,6 +173,17 @@ export const ChallengeLayout = () => {
           </div>
         )}
 
+        {/* Draft banner */}
+        {isOwner && challenge.status === 'draft' && (
+          <div className="flex items-center gap-2 px-4 py-3 rounded-xl border border-blue-500/30 bg-blue-500/5 mb-6">
+            <Pencil className="h-4 w-4 text-blue-400 shrink-0" />
+            <p className="text-sm text-blue-400">
+              This challenge is in draft — only you can see it. Use{' '}
+              <span className="font-semibold">Manage Challenge</span> to publish it.
+            </p>
+          </div>
+        )}
+
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-3">
@@ -279,87 +276,13 @@ export const ChallengeLayout = () => {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-4">
-            {/* Compensation card */}
-            <GlassCard hover={false}>
-              <div className="flex items-center gap-2 mb-3">
-                <Target className="h-4 w-4 text-secondary" />
-                <span className="text-xs font-semibold text-foreground">Compensation</span>
-              </div>
-              {challenge.compensation_amount === 0 ? (
-                <p className="text-lg font-bold text-primary">Volunteer</p>
-              ) : (
-                <>
-                  <p className="text-2xl font-bold text-foreground">
-                    ${challenge.compensation_amount.toLocaleString()} {challenge.currency}
-                  </p>
-                  <p className="text-[11px] text-muted-foreground mt-1">
-                    {challenge.compensation_per === 'challenge' ? 'Total budget (lump sum)' : 'Per accepted dataset'}
-                  </p>
-                </>
-              )}
-            </GlassCard>
-
-            {/* Owner controls */}
-            {isOwner && challenge.status !== 'closed' && (
-              <GlassCard hover={false}>
-                <p className="text-xs font-semibold text-foreground mb-3">Manage Challenge</p>
-                <div className="space-y-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="w-full justify-start gap-2 text-xs"
-                    onClick={() => navigate(`/dashboard/challenges/${challenge.id}/edit`)}
-                  >
-                    <Pencil className="h-3.5 w-3.5" /> Edit Challenge
-                  </Button>
-                  {challenge.status === 'active' && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="w-full justify-start gap-2 text-xs"
-                      onClick={() => handleToggleStatus('inactive')}
-                    >
-                      <ToggleLeft className="h-3.5 w-3.5" /> Deactivate
-                    </Button>
-                  )}
-                  {challenge.status === 'inactive' && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="w-full justify-start gap-2 text-xs"
-                      onClick={() => handleToggleStatus('active')}
-                    >
-                      <ToggleRight className="h-3.5 w-3.5" /> Reactivate
-                    </Button>
-                  )}
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="w-full justify-start gap-2 text-xs text-destructive hover:text-destructive"
-                      >
-                        <XCircle className="h-3.5 w-3.5" /> Close Permanently
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Close this challenge?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This action is permanent. The challenge will no longer accept submissions and cannot be reopened.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleClose}>Close Challenge</AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
-              </GlassCard>
-            )}
-          </div>
+          <ChallengeMetaSidebar
+            challenge={challenge}
+            isOwner={isOwner}
+            onToggleStatus={handleToggleStatus}
+            onClose={handleClose}
+            onNavigateEdit={() => navigate(`/dashboard/challenges/${challenge.id}/edit`)}
+          />
         </div>
       </div>
     </div>

@@ -143,7 +143,16 @@ export interface Challenge {
   closed_at: string | null;
   created_at: string;
   updated_at: string;
+  enabled_tabs: string[];
 }
+
+export type OptionalTabKey = 'rules' | 'discussion' | 'leaderboard';
+
+export const OPTIONAL_TABS: { key: OptionalTabKey; label: string }[] = [
+  { key: 'rules', label: 'Rules' },
+  { key: 'discussion', label: 'Discussion' },
+  { key: 'leaderboard', label: 'Leaderboard' },
+];
 
 export interface ChallengeMedia {
   id: string;

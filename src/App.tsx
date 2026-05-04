@@ -24,7 +24,14 @@ import SearchPage from "@/pages/SearchPage";
 import ListingPage from "@/pages/ListingPage";
 import ChallengeEditorPage from "@/pages/ChallengeEditorPage";
 import ChallengeDetailPage from "@/pages/ChallengeDetailPage";
+import ChallengeLayout from "@/pages/ChallengeLayout";
+import OverviewTab from "@/pages/challenge-tabs/OverviewTab";
+import RulesTab from "@/pages/challenge-tabs/RulesTab";
+import SubmissionsTab from "@/pages/challenge-tabs/SubmissionsTab";
+import DiscussionTab from "@/pages/challenge-tabs/DiscussionTab";
+import LeaderboardTab from "@/pages/challenge-tabs/LeaderboardTab";
 import NotFound from "@/pages/NotFound";
+import { Navigate } from "react-router-dom";
 
 const queryClient = new QueryClient();
 
@@ -48,7 +55,14 @@ const App = () => (
             <Route path="/dashboard/datasets/:id" element={<ProtectedRoute><DatasetDetailPage /></ProtectedRoute>} />
             <Route path="/dashboard/challenges/new" element={<ProtectedRoute><ChallengeEditorPage /></ProtectedRoute>} />
             <Route path="/dashboard/challenges/:id/edit" element={<ProtectedRoute><ChallengeEditorPage /></ProtectedRoute>} />
-            <Route path="/dashboard/challenges/:id" element={<ProtectedRoute><ChallengeDetailPage /></ProtectedRoute>} />
+            <Route path="/dashboard/challenges/:id" element={<ProtectedRoute><ChallengeLayout /></ProtectedRoute>}>
+              <Route index element={<Navigate replace to="overview" />} />
+              <Route path="overview" element={<OverviewTab />} />
+              <Route path="rules" element={<RulesTab />} />
+              <Route path="submissions" element={<SubmissionsTab />} />
+              <Route path="discussion" element={<DiscussionTab />} />
+              <Route path="leaderboard" element={<LeaderboardTab />} />
+            </Route>
             <Route path="/keys" element={<ProtectedRoute><KeysPage /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
@@ -56,7 +70,14 @@ const App = () => (
             <Route path="/sessions/:id/viewer" element={<ProtectedRoute><SessionViewerPage /></ProtectedRoute>} />
             <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
             <Route path="/marketplace" element={<MarketplacePage />} />
-            <Route path="/marketplace/challenges/:id" element={<ChallengeDetailPage />} />
+            <Route path="/marketplace/challenges/:id" element={<ChallengeLayout />}>
+              <Route index element={<Navigate replace to="overview" />} />
+              <Route path="overview" element={<OverviewTab />} />
+              <Route path="rules" element={<RulesTab />} />
+              <Route path="submissions" element={<SubmissionsTab />} />
+              <Route path="discussion" element={<DiscussionTab />} />
+              <Route path="leaderboard" element={<LeaderboardTab />} />
+            </Route>
             <Route path="/marketplace/:id" element={<ListingPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

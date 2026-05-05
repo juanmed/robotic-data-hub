@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
+import { useIsBlogger } from "@/hooks/useIsBlogger";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -10,17 +11,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, LayoutDashboard, KeyRound, Settings } from "lucide-react";
+import { LogOut, LayoutDashboard, KeyRound, Settings, FileText } from "lucide-react";
 
 const publicLinks = [
   { to: "/", label: "Home" },
   { to: "/marketplace", label: "Marketplace" },
+  { to: "/blog", label: "Blog" },
 ];
 
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated, user, logout } = useAuth();
+  const { isBlogger, isLoading } = useIsBlogger();
 
   const handleLogout = async () => {
     await logout();
@@ -96,6 +99,12 @@ const Navbar = () => {
                   <LayoutDashboard className="h-4 w-4" />
                   Dashboard
                 </DropdownMenuItem>
+                {!isLoading && isBlogger && (
+                  <DropdownMenuItem onSelect={() => navigate("/dashboard/blog/new")} className="gap-2 cursor-pointer">
+                    <FileText className="h-4 w-4" />
+                    New Post
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem onSelect={() => navigate("/keys")} className="gap-2 cursor-pointer">
                   <KeyRound className="h-4 w-4" />
                   Keys

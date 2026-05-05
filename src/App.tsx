@@ -30,6 +30,11 @@ import RulesTab from "@/pages/challenge-tabs/RulesTab";
 import SubmissionsTab from "@/pages/challenge-tabs/SubmissionsTab";
 import DiscussionTab from "@/pages/challenge-tabs/DiscussionTab";
 import LeaderboardTab from "@/pages/challenge-tabs/LeaderboardTab";
+import { BlogListPage } from "@/pages/blog/BlogListPage";
+import { BlogPostPage } from "@/pages/blog/BlogPostPage";
+import { BlogPostPreview } from "@/pages/blog/BlogPostPreview";
+import { AdminBlogListPage } from "@/pages/blog/AdminBlogListPage";
+import { BlogEditorPage } from "@/pages/blog/BlogEditorPage";
 import NotFound from "@/pages/NotFound";
 import { Navigate } from "react-router-dom";
 
@@ -79,6 +84,12 @@ const App = () => (
               <Route path="leaderboard" element={<LeaderboardTab />} />
             </Route>
             <Route path="/marketplace/:id" element={<ListingPage />} />
+            <Route path="/blog" element={<BlogListPage />} />
+            <Route path="/blog/:slug" element={<BlogPostPage />} />
+            <Route path="/dashboard/blog" element={<ProtectedRoute><AdminBlogListPage /></ProtectedRoute>} />
+            <Route path="/dashboard/blog/new" element={<ProtectedRoute><BlogEditorPage /></ProtectedRoute>} />
+            <Route path="/dashboard/blog/:id/edit" element={<ProtectedRoute><BlogEditorPage /></ProtectedRoute>} />
+            <Route path="/dashboard/blog/:id/preview" element={<ProtectedRoute><BlogPostPreview /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

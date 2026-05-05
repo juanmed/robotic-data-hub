@@ -194,3 +194,28 @@ export interface EnrichedChallenge extends Challenge {
   creator_name: string;
   preview_url: string | null;
 }
+
+export interface BlogPost {
+  id: string;
+  author_id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  body_md: string;
+  status: "draft" | "published";
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BlogMedia {
+  id: string;
+  post_id: string;
+  uploaded_by: string;
+  storage_path: string;
+  file_name: string;
+  content_type: string;
+  size_bytes: number | null;
+  sort_order: number;
+  created_at: string;
+}

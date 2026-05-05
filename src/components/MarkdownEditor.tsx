@@ -9,6 +9,11 @@ import { Check, Loader2 } from 'lucide-react';
 import { challengeMediaService } from '@/services/challengeMediaService';
 import { toast } from 'sonner';
 
+interface UploaderResult {
+  url: string;
+  alt?: string;
+}
+
 interface MarkdownEditorProps {
   value: string;
   onChange?: (value: string) => void;
@@ -20,6 +25,7 @@ interface MarkdownEditorProps {
   showSaveButton?: boolean;
   challengeId?: string;
   userId?: string;
+  uploader?: (file: File) => Promise<UploaderResult>;
 }
 
 const sanitizeSchema = {
@@ -43,6 +49,7 @@ export const MarkdownEditor = ({
   showSaveButton = false,
   challengeId,
   userId,
+  uploader,
 }: MarkdownEditorProps) => {
   const [mode, setMode] = useState<'edit' | 'preview'>('edit');
   const [localValue, setLocalValue] = useState(value);
@@ -109,7 +116,11 @@ export const MarkdownEditor = ({
     e.preventDefault();
     setIsDraggingOver(false);
 
-    if (!challengeId || !userId || readOnly) return;
+    // Check if we have either uploader callback OR challenge context
+    const hasUploader = !!uploader;
+    const hasChallengeContext = challengeId && userId;
+    if (!hasUploader && !hasChallengeContext) return;
+    if (readOnly) return;
 
     const file = e.dataTransfer.files[0];
     if (!file) return;
@@ -136,12 +147,25 @@ export const MarkdownEditor = ({
     setUploadingCount((c) => c + 1);
 
     try {
-      const media = await challengeMediaService.upload(challengeId, userId, file);
-      const url = await challengeMediaService.getEmbedUrl(media.storage_path);
+      let markdown: string;
 
-      const markdown = file.type.startsWith('video/')
-        ? `<video src="${url}" controls width="100%"></video>`
-        : `![${file.name}](${url})`;
+      if (uploader) {
+        // Use custom uploader callback
+        const result = await uploader(file);
+        markdown = file.type.startsWith('video/')
+          ? `<video src="${result.url}" controls width="100%"></video>`
+          : `![${result.alt || file.name}](${result.url})`;
+      } else if (hasChallengeContext && challengeId && userId) {
+        // Fall back to challenge media service
+        const media = await challengeMediaService.upload(challengeId, userId, file);
+        const url = await challengeMediaService.getEmbedUrl(media.storage_path);
+
+        markdown = file.type.startsWith('video/')
+          ? `<video src="${url}" controls width="100%"></video>`
+          : `![${file.name}](${url})`;
+      } else {
+        throw new Error('No upload handler configured');
+      }
 
       // Replace placeholder with actual markdown
       currentValue = insertAtCursor(currentValue, markdown, placeholder);
@@ -247,7 +271,7 @@ export const MarkdownEditor = ({
           onBlur={handleBlur}
           onDragOver={(e) => {
             e.preventDefault();
-            if (challengeId && userId && !readOnly) setIsDraggingOver(true);
+            if ((uploader || (challengeId && userId)) && !readOnly) setIsDraggingOver(true);
           }}
           onDragLeave={() => setIsDraggingOver(false)}
           onDrop={handleDrop}

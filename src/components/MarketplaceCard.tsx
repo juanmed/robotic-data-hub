@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { formatPrice } from "@/lib/marketplace";
 import { getMarketplaceFileUrls } from "@/services/marketplaceService";
 import type { EnrichedListing } from "@/types";
@@ -32,6 +32,7 @@ function findVideoPath(paths: string[]): string | null {
 }
 
 const MarketplaceCard = ({ listing }: { listing: EnrichedListing }) => {
+  const navigate = useNavigate();
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
   const [meta, setMeta] = useState<DatasetMeta | null>(null);
 
@@ -75,7 +76,7 @@ const MarketplaceCard = ({ listing }: { listing: EnrichedListing }) => {
   }, [listing.dataset_id, listing.file_paths]);
 
   return (
-    <Link to={`/marketplace/${listing.id}`} className="group block">
+    <div className="group block cursor-pointer" onClick={() => navigate(`/marketplace/${listing.id}`)}>
       <div className="relative rounded-2xl border border-border/40 bg-card/50 backdrop-blur-sm overflow-hidden transition-all duration-500 hover:border-primary/40 hover:shadow-[0_0_40px_hsl(var(--primary)/0.12)] hover:-translate-y-1">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--secondary)/0.06),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
@@ -171,7 +172,14 @@ const MarketplaceCard = ({ listing }: { listing: EnrichedListing }) => {
           <div className="flex items-center justify-between pt-3 border-t border-border/20">
             <div className="flex items-center gap-4 text-[10px] text-muted-foreground">
               <span className="flex items-center gap-1">
-                <User className="h-3 w-3" /> {listing.creator_name}
+                <User className="h-3 w-3" />
+                <Link
+                  to={`/users/${listing.user_id}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="hover:text-foreground underline-offset-2 hover:underline"
+                >
+                  {listing.creator_name}
+                </Link>
               </span>
               <span className="flex items-center gap-1">
                 <Calendar className="h-3 w-3" /> {new Date(listing.created_at).toLocaleDateString()}
@@ -184,7 +192,7 @@ const MarketplaceCard = ({ listing }: { listing: EnrichedListing }) => {
           </div>
         </div>
       </div>
-    </Link>
+    </div>
   );
 };
 

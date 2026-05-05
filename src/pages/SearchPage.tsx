@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Search, Radio, Sparkles, Database, ArrowRight } from "lucide-react";
 import { searchService, type SearchResult } from "@/services/searchService";
@@ -20,14 +20,16 @@ const SearchPage = () => {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
-  const handleSearch = useCallback(async (q: string) => {
+  const handleSearch = useCallback(async (q: string, isMounted?: () => boolean) => {
     setQuery(q);
     setLoading(true);
     setSearched(true);
     try {
       const res = await searchService.search(q);
+      if (isMounted && !isMounted()) return;
       setResults(res);
     } finally {
+      if (isMounted && !isMounted()) return;
       setLoading(false);
     }
   }, []);
@@ -37,10 +39,14 @@ const SearchPage = () => {
     handleSearch(query);
   };
 
-  // Load all on mount
-  useState(() => {
-    handleSearch("");
-  });
+  useEffect(() => {
+    let mounted = true;
+    const isMounted = () => mounted;
+    void handleSearch("", isMounted);
+    return () => {
+      mounted = false;
+    };
+  }, [handleSearch]);
 
   return (
     <div className="min-h-screen pt-16 bg-background">

@@ -346,7 +346,7 @@ describe("challengeService", () => {
       expect(result).toEqual([]);
     });
 
-    it("merges creator names from profiles", async () => {
+    it("merges creator names from public profiles", async () => {
       supabaseMock.supabase.from.mockImplementation((table: string) => {
         if (table === "challenges") {
           return {
@@ -357,10 +357,10 @@ describe("challengeService", () => {
             }),
           };
         }
-        if (table === "profiles") {
+        if (table === "public_profiles") {
           return {
             select: vi.fn().mockReturnValue({
-              in: vi.fn().mockResolvedValue({ data: [{ id: "usr_001", name: "Jane" }], error: null }),
+              in: vi.fn().mockResolvedValue({ data: [{ id: "usr_001", display_name: "Jane" }], error: null }),
             }),
           };
         }
@@ -394,7 +394,7 @@ describe("challengeService", () => {
             }),
           };
         }
-        if (table === "profiles") {
+        if (table === "public_profiles") {
           return {
             select: vi.fn().mockReturnValue({
               in: vi.fn().mockResolvedValue({ data: [], error: null }),
@@ -430,7 +430,7 @@ describe("challengeService", () => {
             }),
           };
         }
-        if (table === "profiles") {
+        if (table === "public_profiles") {
           return {
             select: vi.fn().mockReturnValue({
               in: vi.fn().mockResolvedValue({ data: [], error: null }),
@@ -469,7 +469,7 @@ describe("challengeService", () => {
             }),
           };
         }
-        if (table === "profiles") {
+        if (table === "public_profiles") {
           return {
             select: vi.fn().mockReturnValue({
               in: vi.fn().mockResolvedValue({ data: [], error: null }),
@@ -505,7 +505,7 @@ describe("challengeService", () => {
             }),
           };
         }
-        if (table === "profiles") {
+        if (table === "public_profiles") {
           return {
             select: vi.fn().mockReturnValue({
               in: vi.fn().mockResolvedValue({ data: [], error: null }),

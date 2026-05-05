@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { formatPrice } from "@/lib/marketplace";
 import type { EnrichedChallenge } from "@/types";
 import {
@@ -18,11 +18,16 @@ function deadlineLabel(deadline: string | null): { text: string; urgent: boolean
 }
 
 const ChallengeCard = ({ challenge }: { challenge: EnrichedChallenge }) => {
+  const navigate = useNavigate();
   const { text: deadlineText, urgent } = deadlineLabel(challenge.deadline);
   const isLumpSum = challenge.compensation_per === "challenge";
 
   return (
-    <Link to={`/marketplace/challenges/${challenge.id}`} className="group block" data-testid="challenge-card">
+    <div
+      className="group block cursor-pointer"
+      data-testid="challenge-card"
+      onClick={() => navigate(`/marketplace/challenges/${challenge.id}`)}
+    >
       <div className="relative rounded-2xl border border-border/40 bg-card/50 backdrop-blur-sm overflow-hidden transition-all duration-500 hover:border-secondary/40 hover:shadow-[0_0_40px_hsl(var(--secondary)/0.12)] hover:-translate-y-1">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.06),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
@@ -99,7 +104,14 @@ const ChallengeCard = ({ challenge }: { challenge: EnrichedChallenge }) => {
           <div className="flex items-center justify-between pt-3 border-t border-border/20">
             <div className="flex items-center gap-4 text-[10px] text-muted-foreground">
               <span className="flex items-center gap-1">
-                <User className="h-3 w-3" /> {challenge.creator_name}
+                <User className="h-3 w-3" />
+                <Link
+                  to={`/users/${challenge.user_id}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="hover:text-foreground underline-offset-2 hover:underline"
+                >
+                  {challenge.creator_name}
+                </Link>
               </span>
               <span className={`flex items-center gap-1 ${urgent ? "text-red-400" : ""}`}>
                 <Clock className="h-3 w-3" /> {deadlineText}
@@ -112,7 +124,7 @@ const ChallengeCard = ({ challenge }: { challenge: EnrichedChallenge }) => {
           </div>
         </div>
       </div>
-    </Link>
+    </div>
   );
 };
 

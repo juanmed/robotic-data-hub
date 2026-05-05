@@ -23,13 +23,13 @@ import ProfilePage from "@/pages/ProfilePage";
 import SearchPage from "@/pages/SearchPage";
 import ListingPage from "@/pages/ListingPage";
 import ChallengeEditorPage from "@/pages/ChallengeEditorPage";
-import ChallengeDetailPage from "@/pages/ChallengeDetailPage";
 import ChallengeLayout from "@/pages/ChallengeLayout";
 import OverviewTab from "@/pages/challenge-tabs/OverviewTab";
 import RulesTab from "@/pages/challenge-tabs/RulesTab";
 import SubmissionsTab from "@/pages/challenge-tabs/SubmissionsTab";
 import DiscussionTab from "@/pages/challenge-tabs/DiscussionTab";
 import LeaderboardTab from "@/pages/challenge-tabs/LeaderboardTab";
+import PublicUserProfilePage from "@/pages/PublicUserProfilePage";
 import NotFound from "@/pages/NotFound";
 import { Navigate } from "react-router-dom";
 
@@ -79,6 +79,7 @@ const App = () => (
               <Route path="leaderboard" element={<LeaderboardTab />} />
             </Route>
             <Route path="/marketplace/:id" element={<ListingPage />} />
+            <Route path="/users/:id" element={<PublicUserProfilePage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

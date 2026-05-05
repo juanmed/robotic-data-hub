@@ -67,11 +67,11 @@ const ListingPage = () => {
 
           // Fetch creator name
           const { data: profile } = await supabase
-            .from("profiles")
-            .select("name")
+            .from("public_profiles")
+            .select("display_name")
             .eq("id", l.user_id)
             .maybeSingle();
-          if (profile?.name) setCreatorName(profile.name);
+          if ((profile as any)?.display_name) setCreatorName((profile as any).display_name);
 
           // Fetch file paths for thumbnail + metadata
           const { data: files } = await supabase
@@ -280,7 +280,12 @@ const ListingPage = () => {
                 <div className="space-y-3 text-[11px]">
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <User className="h-3.5 w-3.5 shrink-0" />
-                    <span>Creator: <span className="text-foreground font-medium">{creatorName}</span></span>
+                    <span>
+                      Creator:{" "}
+                      <Link to={`/users/${listing.user_id}`} className="text-foreground font-medium hover:underline">
+                        {creatorName}
+                      </Link>
+                    </span>
                   </div>
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Download className="h-3.5 w-3.5 shrink-0" />

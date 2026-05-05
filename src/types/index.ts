@@ -194,3 +194,16 @@ export interface EnrichedChallenge extends Challenge {
   creator_name: string;
   preview_url: string | null;
 }
+
+export interface PublicUserProfile {
+  id: string;
+  display_name: string;
+  avatar_url: string | null;
+  member_since: string;
+}
+
+export interface PublicUserProfileStats {
+  total_challenges_created: number;
+  total_successful_participations: number;
+  total_datasets_uploaded: number;
+}

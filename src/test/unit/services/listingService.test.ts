@@ -121,7 +121,7 @@ describe("listingService", () => {
         download_count: 0, created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
       };
       const mockDataset = { id: "ds_001", dataset_files: [{ relative_path: "data.mcap" }] };
-      const mockProfile = { id: "usr_001", name: "Jane Doe" };
+      const mockProfile = { id: "usr_001", display_name: "Jane Doe" };
 
       supabaseMock.supabase.from.mockImplementation((table: string) => {
         if (table === "listings") {
@@ -140,7 +140,7 @@ describe("listingService", () => {
             }),
           };
         }
-        if (table === "profiles") {
+        if (table === "public_profiles") {
           return {
             select: vi.fn().mockReturnValue({
               in: vi.fn().mockResolvedValue({ data: [mockProfile], error: null }),
@@ -181,7 +181,7 @@ describe("listingService", () => {
             }),
           };
         }
-        if (table === "profiles") {
+        if (table === "public_profiles") {
           return {
             select: vi.fn().mockReturnValue({
               in: vi.fn().mockResolvedValue({ data: [], error: null }),
@@ -196,7 +196,7 @@ describe("listingService", () => {
       expect(result[0].file_paths).toEqual([]);
     });
 
-    it("throws when profiles fetch fails", async () => {
+    it("throws when public profiles fetch fails", async () => {
       const mockListing = {
         id: "lst_001", user_id: "usr_001", dataset_id: "ds_001",
         title: "Test", description: "", price_amount: 0, currency: "USD",
@@ -221,7 +221,7 @@ describe("listingService", () => {
             }),
           };
         }
-        if (table === "profiles") {
+        if (table === "public_profiles") {
           return {
             select: vi.fn().mockReturnValue({
               in: vi.fn().mockResolvedValue({ data: null, error: { message: "DB error" } }),

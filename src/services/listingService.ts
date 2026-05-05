@@ -34,14 +34,14 @@ export const listingService = {
     // 3. Batch-fetch creator profiles
     const userIds = [...new Set(listings.map((l) => l.user_id))] as string[];
     const { data: profiles, error: profError } = await supabase
-      .from("profiles")
-      .select("id, name")
+      .from("public_profiles")
+      .select("id, display_name")
       .in("id", userIds);
     if (profError) throw profError;
 
     const profileMap = new Map<string, string>();
     for (const p of profiles ?? []) {
-      profileMap.set(p.id, p.name || "Unknown");
+      profileMap.set((p as any).id, (p as any).display_name || "Unknown");
     }
 
     // 4. Combine

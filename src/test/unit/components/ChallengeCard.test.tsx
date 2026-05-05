@@ -1,8 +1,18 @@
-import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect, vi } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import ChallengeCard from "@/components/ChallengeCard";
 import type { EnrichedChallenge } from "@/types";
+
+const navigateMock = vi.fn();
+
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual<typeof import("react-router-dom")>("react-router-dom");
+  return {
+    ...actual,
+    useNavigate: () => navigateMock,
+  };
+});
 
 const baseChallenge: EnrichedChallenge = {
   id: "ch_001",
@@ -90,8 +100,8 @@ describe("ChallengeCard", () => {
 
   it("links to challenge detail page", () => {
     renderCard();
-    const link = screen.getByTestId("challenge-card");
-    expect(link.closest("a")).toHaveAttribute("href", "/marketplace/challenges/ch_001");
+    fireEvent.click(screen.getByTestId("challenge-card"));
+    expect(navigateMock).toHaveBeenCalledWith("/marketplace/challenges/ch_001");
   });
 
   it("shows creator name", () => {

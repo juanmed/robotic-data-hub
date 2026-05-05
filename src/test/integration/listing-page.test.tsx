@@ -53,7 +53,7 @@ vi.mock("@/integrations/supabase/client", () => ({
     from: () => ({
       select: () => ({
         eq: () => ({
-          maybeSingle: () => Promise.resolve({ data: { name: "Test User" }, error: null }),
+          maybeSingle: () => Promise.resolve({ data: { display_name: "Test User" }, error: null }),
           in: () => Promise.resolve({ data: [], error: null }),
         }),
       }),

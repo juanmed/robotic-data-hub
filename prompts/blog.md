@@ -686,3 +686,122 @@ Codex identified 8 findings; 3 high-severity items have been addressed in this u
    - If blog images/videos don't need auth, make `blog-media` bucket public-read
    - Eliminates signed URL complexity but contents become discoverable
    - Simpler but less flexible if requirements change later
+
+---
+
+## Author-Edit Feature (Implemented)
+
+Posts can be edited by their original author directly from the public blog post page. This feature provides a seamless authoring experience without requiring a separate admin interface.
+
+### Feature Overview
+
+**Public Post Page Editor Access:**
+- The public blog post page (`/blog/:slug`) displays an **Edit** button in the post header
+- The button appears only when:
+  1. User is authenticated (logged in)
+  2. User is the original post author (`user.id === post.author_id`)
+- Clicking **Edit** navigates to `/dashboard/blog/{post.id}/edit`
+
+### Implementation Details
+
+#### Database Authorization
+
+**RLS Policy on `blog_posts` table:**
+```sql
+-- Authors can edit/update their own published or draft posts
+CREATE POLICY "blog_authors_edit_own_posts" ON blog_posts
+  FOR UPDATE
+  USING (author_id = auth.uid())
+  WITH CHECK (author_id = auth.uid());
+```
+
+This ensures that:
+- Only the post author (at the database level) can modify their post
+- RLS prevents any other blogger from accessing another author's posts
+- The application layer (`BlogEditorPage`) confirms authorization as a secondary check
+
+#### Client-Side Authorization
+
+**BlogPostPage** (`src/pages/blog/BlogPostPage.tsx`):
+```tsx
+{user?.id === post.author_id && (
+  <Link to={`/dashboard/blog/${post.id}/edit`}>
+    <Button size="sm" variant="outline">
+      <Edit2 className="h-4 w-4 mr-2" />
+      Edit
+    </Button>
+  </Link>
+)}
+```
+
+- Conditionally renders the Edit button only for the post author
+- Uses the public post data (already fetched) to check authorization
+- No extra API call needed
+
+**BlogEditorPage** (`src/pages/blog/BlogEditorPage.tsx`):
+```ts
+// Check if user is the author (bloggers can only edit their own posts)
+if (data.author_id !== user?.id) {
+  setIsAuthorized(false);
+  toast.error("You can only edit your own posts");
+  navigate(`/blog/${data.slug}`);
+  return;
+}
+```
+
+- Validates author ownership when loading an existing post for editing
+- Prevents unauthorized access (e.g., direct URL manipulation)
+- Redirects to the public post page with an error toast if unauthorized
+
+### User Experience
+
+**Editing Workflow:**
+1. User views a published blog post at `/blog/{slug}`
+2. If authenticated and the author, an **Edit** button is visible
+3. Click **Edit** → navigates to the editor (`/dashboard/blog/{post.id}/edit`)
+4. User can edit title, slug, excerpt, body, and media
+5. Changes are saved with optimistic concurrency control
+6. User can unpublish (revert to draft) if needed
+7. Back button or navigation returns to the admin list or post view
+
+**Security Model:**
+- Database RLS enforces single source of truth (author-only writes)
+- UI check prevents unnecessary navigation to edit page
+- Application check prevents bypass via direct URL access
+- Status transitions are validated (cannot publish if title/slug missing)
+
+### RLS Policy for Draft Posts
+
+Draft posts are **not visible** to the public. They are only accessible to:
+1. The post author (for editing)
+2. Other bloggers viewing the admin dashboard (optional, depends on policy)
+
+**RLS Policy:**
+```sql
+-- Public read (published only)
+CREATE POLICY "blog_public_read_published" ON blog_posts
+  FOR SELECT
+  USING (status = 'published'::blog_status);
+
+-- Bloggers can read/update their own posts (any status)
+CREATE POLICY "blog_authors_read_own" ON blog_posts
+  FOR SELECT
+  USING (author_id = auth.uid());
+
+CREATE POLICY "blog_authors_edit_own_posts" ON blog_posts
+  FOR UPDATE
+  USING (author_id = auth.uid())
+  WITH CHECK (author_id = auth.uid());
+```
+
+This ensures:
+- Draft posts are **never** publicly visible
+- Only the author can see/edit their own drafts
+- Other bloggers cannot access posts they didn't author
+
+### Future Enhancements (Out of Scope)
+
+- **Shared editing**: Allow multiple authors per post (would require `blog_post_authors` junction table + co-author management UI)
+- **Edit history**: Track versions using triggers + `blog_posts_history` table
+- **Draft sharing**: Allow authors to share draft links with reviewers (would require time-limited tokens + separate RLS policy)
+- **Admin override**: Allow site admins to edit any post (would require additional RLS policy checking admin role)

@@ -41,6 +41,89 @@ export type Database = {
         }
         Relationships: []
       }
+      blog_media: {
+        Row: {
+          content_type: string
+          created_at: string
+          file_name: string
+          id: string
+          post_id: string
+          size_bytes: number | null
+          sort_order: number | null
+          storage_path: string
+          uploaded_by: string
+        }
+        Insert: {
+          content_type: string
+          created_at?: string
+          file_name: string
+          id?: string
+          post_id: string
+          size_bytes?: number | null
+          sort_order?: number | null
+          storage_path: string
+          uploaded_by: string
+        }
+        Update: {
+          content_type?: string
+          created_at?: string
+          file_name?: string
+          id?: string
+          post_id?: string
+          size_bytes?: number | null
+          sort_order?: number | null
+          storage_path?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_media_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "blog_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blog_posts: {
+        Row: {
+          author_id: string
+          body_md: string | null
+          created_at: string
+          excerpt: string | null
+          id: string
+          published_at: string | null
+          slug: string
+          status: Database["public"]["Enums"]["blog_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          body_md?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          published_at?: string | null
+          slug: string
+          status?: Database["public"]["Enums"]["blog_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          body_md?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          published_at?: string | null
+          slug?: string
+          status?: Database["public"]["Enums"]["blog_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       challenge_media: {
         Row: {
           challenge_id: string
@@ -144,6 +227,7 @@ export type Database = {
           currency: string
           deadline: string | null
           description: string
+          enabled_tabs: string[]
           id: string
           published_at: string | null
           status: string
@@ -163,6 +247,7 @@ export type Database = {
           currency?: string
           deadline?: string | null
           description?: string
+          enabled_tabs?: string[]
           id?: string
           published_at?: string | null
           status?: string
@@ -182,6 +267,7 @@ export type Database = {
           currency?: string
           deadline?: string | null
           description?: string
+          enabled_tabs?: string[]
           id?: string
           published_at?: string | null
           status?: string
@@ -472,15 +558,40 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: { role: Database["public"]["Enums"]["app_role"]; user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "blogger" | "moderator" | "user"
+      blog_status: "draft" | "published"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -607,6 +718,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "blogger", "moderator", "user"],
+      blog_status: ["draft", "published"],
+    },
   },
 } as const

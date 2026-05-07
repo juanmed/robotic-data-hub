@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Check, Loader2 } from 'lucide-react';
 import { challengeMediaService } from '@/services/challengeMediaService';
+import { blogMediaService } from '@/services/blogMediaService';
 import { toast } from 'sonner';
 
 interface UploaderResult {
@@ -36,6 +37,58 @@ const sanitizeSchema = {
     img: [...(defaultSchema.attributes?.img ?? []), 'src', 'alt'],
   },
   tagNames: [...(defaultSchema.tagNames ?? []), 'video'],
+};
+
+// Component to render preview with transformed blog-media links
+const PreviewRenderer = ({ content }: { content: string }) => {
+  const [transformed, setTransformed] = useState(content);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const transformBlogMediaLinks = async (markdown: string) => {
+      try {
+        const regex = /blog-media:storage_path:([^\s)]+)/g;
+        let result = markdown;
+        const matches = Array.from(markdown.matchAll(regex));
+
+        for (const match of matches) {
+          const storagePath = match[1];
+          try {
+            const signedUrl = await blogMediaService.getSignedUrl(storagePath);
+            result = result.replace(
+              `blog-media:storage_path:${storagePath}`,
+              signedUrl
+            );
+          } catch (err) {
+            console.error(`Failed to get signed URL for ${storagePath}:`, err);
+          }
+        }
+
+        setTransformed(result);
+      } catch (err) {
+        console.error("Error transforming markdown:", err);
+        setTransformed(markdown);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    setIsLoading(true);
+    transformBlogMediaLinks(content);
+  }, [content]);
+
+  if (isLoading) {
+    return <p className="text-sm text-muted-foreground">Loading preview...</p>;
+  }
+
+  return (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema]]}
+    >
+      {transformed}
+    </ReactMarkdown>
+  );
 };
 
 export const MarkdownEditor = ({
@@ -290,12 +343,7 @@ export const MarkdownEditor = ({
           {!localValue || !localValue.trim() ? (
             <p className="text-sm text-muted-foreground">No content to preview.</p>
           ) : (
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema]]}
-            >
-              {localValue}
-            </ReactMarkdown>
+            <PreviewRenderer content={localValue} />
           )}
         </div>
       )}

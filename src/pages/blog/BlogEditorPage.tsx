@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { blogService } from "@/services/blogService";
 import { blogMediaService } from "@/services/blogMediaService";
@@ -38,6 +38,9 @@ export const BlogEditorPage = () => {
   const [excerpt, setExcerpt] = useState("");
   const [body, setBody] = useState("");
   const [status, setStatus] = useState<"draft" | "published">("draft");
+
+  // Track pending saves to prevent concurrent updates
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (!id) {
@@ -119,28 +122,47 @@ export const BlogEditorPage = () => {
   };
 
   const handleSave = async () => {
-    if (!post) return;
-
-    try {
-      setIsSaving(true);
-
-      const updatedPost = await blogService.update(post.id, {
-        title,
-        slug,
-        excerpt,
-        body_md: body,
-        status,
-        expectedUpdatedAt: post.updated_at,
-      });
-
-      setPost(updatedPost);
-      toast.success("Post saved successfully");
-    } catch (err: any) {
-      console.error("Failed to save post:", err);
-      toast.error(err.message || "Failed to save post");
-    } finally {
-      setIsSaving(false);
+    console.log("[BlogEditorPage] handleSave called, post:", post?.id, "body length:", body.length);
+    if (!post) {
+      console.log("[BlogEditorPage] No post, skipping save");
+      return;
     }
+
+    // Cancel any pending save
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    // Debounce saves to prevent concurrent requests
+    saveTimeoutRef.current = setTimeout(async () => {
+      try {
+        setIsSaving(true);
+
+        console.log("[BlogEditorPage] Saving post with data:", { title, slug, excerpt, body_length: body.length, status, expectedUpdatedAt: post.updated_at });
+        const updatedPost = await blogService.update(post.id, {
+          title,
+          slug,
+          excerpt,
+          body_md: body,
+          status,
+          expectedUpdatedAt: post.updated_at,
+        });
+
+        console.log("[BlogEditorPage] Save successful, updated post:", updatedPost);
+        setPost(updatedPost);
+        setBody(updatedPost.body_md);
+        setTitle(updatedPost.title);
+        setSlug(updatedPost.slug);
+        setExcerpt(updatedPost.excerpt);
+        setStatus(updatedPost.status);
+        toast.success("Post saved successfully");
+      } catch (err: any) {
+        console.error("Failed to save post:", err);
+        toast.error(err.message || "Failed to save post");
+      } finally {
+        setIsSaving(false);
+      }
+    }, 500); // 500ms debounce to collect rapid changes
   };
 
   const handlePublish = async () => {

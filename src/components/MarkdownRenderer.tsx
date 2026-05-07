@@ -22,10 +22,15 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         let transformed = markdown;
         const matches = Array.from(markdown.matchAll(regex));
 
+        console.log("[MarkdownRenderer] Original content:", markdown);
+        console.log("[MarkdownRenderer] Matches found:", matches.length, matches);
+
         for (const match of matches) {
           const storagePath = match[1];
           try {
+            console.log("[MarkdownRenderer] Getting signed URL for:", storagePath);
             const signedUrl = await blogMediaService.getSignedUrl(storagePath);
+            console.log("[MarkdownRenderer] Got signed URL:", signedUrl);
             transformed = transformed.replace(
               `blog-media:storage_path:${storagePath}`,
               signedUrl
@@ -38,6 +43,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
           }
         }
 
+        console.log("[MarkdownRenderer] Transformed content:", transformed);
         setTransformedContent(transformed);
       } catch (err) {
         console.error("Error transforming markdown:", err);

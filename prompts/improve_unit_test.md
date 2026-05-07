@@ -228,3 +228,63 @@ At each checkpoint:
   - `blogService.ts`, blog pages
   - `MarkdownRenderer.tsx`
 - Placeholder-only coverage for critical modules eliminated (notably blog and `useIsBlogger` as follow-up).
+
+---
+
+## Augmented Plan (Post-Report Focus)
+
+### Why this augmentation
+Based on the latest failure report and feature-priority prompts (`creator_participant_*`, `blog.md`), the most critical remaining gaps are:
+1. **Role gating correctness** (`useIsBlogger`, navbar entry points)
+2. **Owner control safety/UX** (`ChallengeMetaSidebar` actions + copy-link behavior)
+3. **Async teardown stability** (`SearchPage` unmount while async request resolves)
+
+These areas directly impact production access control and reliability, and are not fully covered by the original top-20 set.
+
+### New test files / updates (Augmented only)
+1. `src/test/unit/hooks/useIsBlogger.test.tsx` (new)
+2. `src/test/unit/components/Navbar.test.tsx` (new)
+3. `src/test/unit/components/ChallengeMetaSidebar.test.tsx` (new)
+4. `src/test/integration/search-page.test.tsx` (extend with teardown regression test)
+
+### Augmented test cases
+
+#### A1: `useIsBlogger` real hook behavior (4 tests)
+File: `src/test/unit/hooks/useIsBlogger.test.tsx`
+
+1. returns `{ isBlogger: false, isLoading: false }` when no authenticated user
+2. returns blogger=true when `user_roles` lookup returns a row
+3. returns blogger=false when Supabase returns `PGRST116` (no role row)
+4. returns blogger=false and ends loading when Supabase throws/unexpected error
+
+#### A2: `Navbar` role-gated actions (3 tests)
+File: `src/test/unit/components/Navbar.test.tsx`
+
+1. authenticated + `isLoading=true` hides `New Post` menu item
+2. authenticated + `isLoading=false` + `isBlogger=false` hides `New Post`
+3. authenticated + `isLoading=false` + `isBlogger=true` shows `New Post` and navigates to `/dashboard/blog/new` on select
+
+#### A3: `ChallengeMetaSidebar` critical owner and link-copy behavior (4 tests)
+File: `src/test/unit/components/ChallengeMetaSidebar.test.tsx`
+
+1. copy-link writes current URL to clipboard and shows temporary `Link Copied!` state, then resets after 2s
+2. owner + active challenge shows `Deactivate` and triggers `onToggleStatus('inactive')`
+3. owner + inactive challenge shows `Reactivate` and triggers `onToggleStatus('active')`
+4. non-owner hides manage controls entirely
+
+#### A4: `SearchPage` async teardown regression guard (1 test)
+File: `src/test/integration/search-page.test.tsx` (append)
+
+1. unmounting before initial search promise resolves does not trigger post-teardown state-update failure (`window is not defined` class regression)
+
+### Augmented execution checkpoints
+1. `npm run test -- src/test/unit/hooks/useIsBlogger.test.tsx`
+2. `npm run test -- src/test/unit/components/Navbar.test.tsx`
+3. `npm run test -- src/test/unit/components/ChallengeMetaSidebar.test.tsx`
+4. `npm run test -- src/test/integration/search-page.test.tsx`
+
+### Augmented Definition of Done
+- All augmented tests pass.
+- Placeholder-only test for `useIsBlogger` is replaced by behavior tests.
+- Role-gated blog entry visibility is explicitly verified at navbar level.
+- Search page async teardown regression is protected by an automated test.

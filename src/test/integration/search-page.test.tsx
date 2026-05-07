@@ -229,4 +229,29 @@ describe("SearchPage", () => {
       expect(searchServiceMock.search).toHaveBeenCalledWith("video");
     }, { timeout: 3000 });
   });
+
+  it("does not leak state updates when unmounted before async search resolves", async () => {
+    let resolveSearch: (value: any[]) => void = () => {};
+    searchServiceMock.search.mockImplementation(
+      () => new Promise((resolve) => { resolveSearch = resolve; })
+    );
+
+    const { unmount } = render(
+      <MemoryRouter initialEntries={["/search"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <Routes>
+          <Route path="/search" element={<SearchPage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(searchServiceMock.search).toHaveBeenCalledWith("");
+    }, { timeout: 3000 });
+
+    unmount();
+    resolveSearch([]);
+
+    await Promise.resolve();
+    await Promise.resolve();
+  });
 });

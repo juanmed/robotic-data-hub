@@ -7,7 +7,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Check, Loader2 } from 'lucide-react';
 import { challengeMediaService } from '@/services/challengeMediaService';
+import { blogMediaService } from '@/services/blogMediaService';
 import { toast } from 'sonner';
+
+interface UploaderResult {
+  url: string;
+  alt?: string;
+}
 
 interface MarkdownEditorProps {
   value: string;
@@ -20,6 +26,7 @@ interface MarkdownEditorProps {
   showSaveButton?: boolean;
   challengeId?: string;
   userId?: string;
+  uploader?: (file: File) => Promise<UploaderResult>;
 }
 
 const sanitizeSchema = {
@@ -30,6 +37,58 @@ const sanitizeSchema = {
     img: [...(defaultSchema.attributes?.img ?? []), 'src', 'alt'],
   },
   tagNames: [...(defaultSchema.tagNames ?? []), 'video'],
+};
+
+// Component to render preview with transformed blog-media links
+const PreviewRenderer = ({ content }: { content: string }) => {
+  const [transformed, setTransformed] = useState(content);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const transformBlogMediaLinks = async (markdown: string) => {
+      try {
+        const regex = /blog-media:storage_path:([^\s)]+)/g;
+        let result = markdown;
+        const matches = Array.from(markdown.matchAll(regex));
+
+        for (const match of matches) {
+          const storagePath = match[1];
+          try {
+            const signedUrl = await blogMediaService.getSignedUrl(storagePath);
+            result = result.replace(
+              `blog-media:storage_path:${storagePath}`,
+              signedUrl
+            );
+          } catch (err) {
+            console.error(`Failed to get signed URL for ${storagePath}:`, err);
+          }
+        }
+
+        setTransformed(result);
+      } catch (err) {
+        console.error("Error transforming markdown:", err);
+        setTransformed(markdown);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    setIsLoading(true);
+    transformBlogMediaLinks(content);
+  }, [content]);
+
+  if (isLoading) {
+    return <p className="text-sm text-muted-foreground">Loading preview...</p>;
+  }
+
+  return (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema]]}
+    >
+      {transformed}
+    </ReactMarkdown>
+  );
 };
 
 export const MarkdownEditor = ({
@@ -43,6 +102,7 @@ export const MarkdownEditor = ({
   showSaveButton = false,
   challengeId,
   userId,
+  uploader,
 }: MarkdownEditorProps) => {
   const [mode, setMode] = useState<'edit' | 'preview'>('edit');
   const [localValue, setLocalValue] = useState(value);
@@ -109,7 +169,11 @@ export const MarkdownEditor = ({
     e.preventDefault();
     setIsDraggingOver(false);
 
-    if (!challengeId || !userId || readOnly) return;
+    // Check if we have either uploader callback OR challenge context
+    const hasUploader = !!uploader;
+    const hasChallengeContext = challengeId && userId;
+    if (!hasUploader && !hasChallengeContext) return;
+    if (readOnly) return;
 
     const file = e.dataTransfer.files[0];
     if (!file) return;
@@ -136,12 +200,25 @@ export const MarkdownEditor = ({
     setUploadingCount((c) => c + 1);
 
     try {
-      const media = await challengeMediaService.upload(challengeId, userId, file);
-      const url = await challengeMediaService.getEmbedUrl(media.storage_path);
+      let markdown: string;
 
-      const markdown = file.type.startsWith('video/')
-        ? `<video src="${url}" controls width="100%"></video>`
-        : `![${file.name}](${url})`;
+      if (uploader) {
+        // Use custom uploader callback
+        const result = await uploader(file);
+        markdown = file.type.startsWith('video/')
+          ? `<video src="${result.url}" controls width="100%"></video>`
+          : `![${result.alt || file.name}](${result.url})`;
+      } else if (hasChallengeContext && challengeId && userId) {
+        // Fall back to challenge media service
+        const media = await challengeMediaService.upload(challengeId, userId, file);
+        const url = await challengeMediaService.getEmbedUrl(media.storage_path);
+
+        markdown = file.type.startsWith('video/')
+          ? `<video src="${url}" controls width="100%"></video>`
+          : `![${file.name}](${url})`;
+      } else {
+        throw new Error('No upload handler configured');
+      }
 
       // Replace placeholder with actual markdown
       currentValue = insertAtCursor(currentValue, markdown, placeholder);
@@ -247,7 +324,7 @@ export const MarkdownEditor = ({
           onBlur={handleBlur}
           onDragOver={(e) => {
             e.preventDefault();
-            if (challengeId && userId && !readOnly) setIsDraggingOver(true);
+            if ((uploader || (challengeId && userId)) && !readOnly) setIsDraggingOver(true);
           }}
           onDragLeave={() => setIsDraggingOver(false)}
           onDrop={handleDrop}
@@ -266,12 +343,7 @@ export const MarkdownEditor = ({
           {!localValue || !localValue.trim() ? (
             <p className="text-sm text-muted-foreground">No content to preview.</p>
           ) : (
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema]]}
-            >
-              {localValue}
-            </ReactMarkdown>
+            <PreviewRenderer content={localValue} />
           )}
         </div>
       )}

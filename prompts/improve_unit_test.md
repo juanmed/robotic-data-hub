@@ -288,3 +288,203 @@ File: `src/test/integration/search-page.test.tsx` (append)
 - Placeholder-only test for `useIsBlogger` is replaced by behavior tests.
 - Role-gated blog entry visibility is explicitly verified at navbar level.
 - Search page async teardown regression is protected by an automated test.
+
+---
+
+## Augmented Plan II — Post-Coverage-Report Focus
+
+### Why this second augmentation
+Running `npm run test:coverage` after the first augmentation revealed critical zero-coverage and low-coverage modules that directly affect core product features. The priorities below are ranked by: (1) business impact per the feature-planning prompts, (2) current coverage deficit, (3) complexity of implementation.
+
+**Current overall coverage: 57.62% stmts / 70.1% branch**
+
+### Critical gaps (0% coverage)
+| File | Business Area | Priority |
+|------|--------------|----------|
+| `AdminBlogListPage.tsx` | Blog CRUD admin workflow | P1 |
+| `DiscussionTab.tsx` | Placeholder stub — skip | — |
+| `LeaderboardTab.tsx` | Placeholder stub — skip | — |
+| `mediaServiceBase.ts` | Shared media upload infrastructure | P2 |
+| `blogMediaService.ts` (9%) | Blog media (signed URL, upload/delete) | P2 |
+
+### Significant gaps (<80%)
+| File | Current | Business Area |
+|------|---------|--------------|
+| `blogService.ts` | 57% stmts | Blog CRUD (list, listAll, delete, getById/getBySlug, unpublish) |
+| `challengeSubmissionService.ts` | 73% stmts / 50% branch | `listForChallengeEnriched`, error paths |
+| `OverviewTab.tsx` | 62% stmts | Description save, media gallery interactions |
+| `ProfilePage.tsx` | 75% stmts | Profile display, loading/error states |
+
+---
+
+### New test files (Augmented II)
+
+1. `src/test/integration/admin-blog-list-page.test.tsx` (new)
+2. `src/test/unit/services/blogService.extended.test.ts` (new)
+3. `src/test/unit/services/blogMediaService.test.ts` (replace placeholder)
+4. `src/test/unit/services/mediaServiceBase.test.ts` (new)
+5. `src/test/unit/services/challengeSubmissionService.extended.test.ts` (new)
+6. `src/test/unit/components/OverviewTab.extended.test.tsx` (new — extends existing OverviewTab coverage)
+
+> **Excluded**: `DiscussionTab.tsx` and `LeaderboardTab.tsx` are "coming soon" placeholder stubs with no business logic. Testing them adds coverage noise without confidence value — add tests when the actual features are built.
+
+---
+
+### Augmented II test cases
+
+#### B1: `AdminBlogListPage` critical admin blog workflow (6 tests)
+File: `src/test/integration/admin-blog-list-page.test.tsx`
+
+1. `renders blog posts table with title, status badge, dates, and action buttons`
+   - Mock `blogService.listAll()` returning one draft and one published post.
+   - Assert table rows, "Draft"/"Published" badges, edit (Pencil) and delete (Trash) buttons.
+
+2. `shows empty state with Create button when no posts exist`
+   - Mock `blogService.listAll()` returning `[]`.
+   - Assert "No posts yet" text and "Create one to get started" button.
+
+3. `shows error message when post list fetch fails`
+   - Mock `blogService.listAll()` reject.
+   - Assert "Failed to load blog posts" error text visible.
+
+4. `filter: Drafts button fetches posts with status: draft`
+   - Mock `blogService.listAll` accepting arguments.
+   - Click "Drafts" filter button.
+   - Assert `blogService.listAll` called with `{ status: 'draft' }`.
+
+5. `delete flow: opens confirm dialog then calls blogService.delete and removes row`
+   - Click trash icon on a row → confirm dialog appears.
+   - Click "Delete" → mock `blogService.delete` resolves.
+   - Assert row removed from table and success toast shown.
+
+6. `delete failure: shows error toast when blogService.delete rejects`
+   - Click trash → confirm → mock `blogService.delete` rejects.
+   - Assert "Failed to delete post" toast and row remains.
+
+#### B2: `blogService` missing coverage (5 tests)
+File: `src/test/unit/services/blogService.extended.test.ts`
+
+1. `listAll returns all posts ordered by created_at desc`
+   - Mock `from.select.order` returning two rows.
+   - Assert both rows returned.
+
+2. `listAll with status filter adds eq call`
+   - Mock chain; call `listAll({ status: 'draft' })`.
+   - Assert `eq` called with `('status', 'draft')`.
+
+3. `list returns only published posts by default`
+   - Mock chain returning one published post.
+   - Assert `eq` called with `('status', 'published')`.
+
+4. `delete calls from.delete.eq with post id`
+   - Mock `from.delete.eq` resolving `{ error: null }`.
+   - Assert correct id passed to `eq`.
+
+5. `getById returns null when PGRST116 not-found error`
+   - Mock `from.select.eq.single` returning `{ data: null, error: { code: 'PGRST116' } }`.
+   - Assert `getById` returns `null` without throwing.
+
+#### B3: `blogMediaService` real behavior tests (5 tests)
+File: `src/test/unit/services/blogMediaService.test.ts` (replace placeholder)
+
+1. `upload calls storage.from.upload then inserts DB row and returns record`
+   - Mock `supabase.storage.from.upload` success + `from.insert.select.single` success.
+   - Assert returned record has correct `storage_path`, `post_id`, `uploaded_by`.
+
+2. `upload rolls back storage file when DB insert fails`
+   - Mock upload success, DB insert error.
+   - Assert `storage.from.remove` called with the storage path.
+   - Assert upload throws.
+
+3. `list returns media ordered by sort_order`
+   - Mock `from.select.eq.order` returning two items.
+   - Assert list returns items in order.
+
+4. `getSignedUrl returns signedUrl from storage`
+   - Mock `storage.from.createSignedUrl` returning `{ data: { signedUrl: 'https://...' }, error: null }`.
+   - Assert returned URL matches.
+
+5. `delete removes storage file then DB record`
+   - Mock `storage.from.remove` and `from.delete.eq`.
+   - Assert both called in order.
+
+#### B4: `mediaServiceBase` shared infrastructure (4 tests)
+File: `src/test/unit/services/mediaServiceBase.test.ts`
+
+1. `upload builds storagePath as entityId/uuid-filename and uploads to correct bucket`
+   - Create service with `bucketName: 'test-bucket'`.
+   - Mock storage + DB.
+   - Assert `storage.from('test-bucket').upload` called and path starts with `entityId/`.
+
+2. `list queries correct table and column`
+   - Create service with `tableName: 'test_media', entityIdColumn: 'entity_id'`.
+   - Assert `from('test_media')` and `.eq('entity_id', ...)` called.
+
+3. `delete calls storage.remove then table delete`
+   - Assert order: storage remove before DB delete.
+
+4. `reorder updates each item's sort_order`
+   - Pass two items with sort_order 0 and 1.
+   - Assert `from.update` called twice with correct sort_order values.
+
+#### B5: `challengeSubmissionService` enriched + error paths (4 tests)
+File: `src/test/unit/services/challengeSubmissionService.extended.test.ts`
+
+1. `listForChallengeEnriched returns enriched rows with dataset_display_name and submitter_name`
+   - Spy `listForChallenge` → return one row.
+   - Mock `from` for datasets and profiles.
+   - Assert enriched result has both display names.
+
+2. `listForChallengeEnriched returns empty array when listForChallenge returns []`
+   - Spy `listForChallenge` → return `[]`.
+   - Assert no supabase calls made, returns `[]`.
+
+3. `updateStatus throws when supabase returns error`
+   - Mock `from.update.eq` returning `{ error: { message: 'DB error' } }`.
+   - Assert `updateStatus` throws.
+
+4. `withdraw throws when supabase returns error`
+   - Mock `from.delete.eq` returning `{ error: { message: 'DB error' } }`.
+   - Assert `withdraw` throws.
+
+#### B6: `OverviewTab` description-save and media interactions (3 tests)
+File: `src/test/unit/components/OverviewTab.extended.test.tsx`
+
+1. `owner: saveDescription calls challengeService.update only when content changes on blur`
+   - Render in owner mode, trigger blur without changing text.
+   - Assert `challengeService.update` NOT called.
+   - Change text, blur.
+   - Assert `challengeService.update` called with new description.
+
+2. `owner: saveDescription failure resets local description and shows error toast`
+   - Mock `challengeService.update` reject.
+   - Change description, blur.
+   - Assert textarea reverts to original value and toast.error called.
+
+3. `loads media on mount and shows gallery when media items exist`
+   - Mock `challengeMediaService.list` returning one image item.
+   - Mock `challengeMediaService.getSignedUrl` returning signed URL.
+   - Wait for gallery to appear (image with signed URL).
+
+---
+
+### Augmented II execution checkpoints
+
+```
+npm run test -- src/test/integration/admin-blog-list-page.test.tsx
+npm run test -- src/test/unit/services/blogService.extended.test.ts
+npm run test -- src/test/unit/services/blogMediaService.test.ts
+npm run test -- src/test/unit/services/mediaServiceBase.test.ts
+npm run test -- src/test/unit/services/challengeSubmissionService.extended.test.ts
+npm run test -- src/test/unit/components/OverviewTab.extended.test.tsx
+npm run test:coverage
+```
+
+### Augmented II Definition of Done
+- `AdminBlogListPage.tsx` coverage rises from 0% to >80%.
+- `blogService.ts` coverage rises from 57% to >85%.
+- `blogMediaService.ts` coverage rises from 9% to >75%.
+- `mediaServiceBase.ts` coverage rises from 0% to >80%.
+- `challengeSubmissionService.ts` branch coverage rises from 50% to >75%.
+- `OverviewTab.tsx` rises from 62% to >80%.
+- All existing tests continue passing; overall project coverage advances beyond 60% stmts.

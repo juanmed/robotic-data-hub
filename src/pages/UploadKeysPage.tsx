@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import PageContainer from "@/layouts/PageContainer";
 import SectionHeader from "@/components/SectionHeader";
 import GlassCard from "@/components/GlassCard";
@@ -24,16 +24,26 @@ const UploadKeysPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [revoking, setRevoking] = useState<string | null>(null);
+  const mountedRef = useRef(true);
 
   const fetchKeys = useCallback(async () => {
+    if (!mountedRef.current) return;
     setLoading(true);
-    const data = await listUploadKeys();
-    setKeys(data);
-    setLoading(false);
+    try {
+      const data = await listUploadKeys();
+      if (!mountedRef.current) return;
+      setKeys(data);
+    } finally {
+      if (!mountedRef.current) return;
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
     fetchKeys();
+    return () => {
+      mountedRef.current = false;
+    };
   }, [fetchKeys]);
 
   const handleCreate = async (name: string): Promise<string | null> => {

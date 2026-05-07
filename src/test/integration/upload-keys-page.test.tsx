@@ -243,4 +243,28 @@ describe("UploadKeysPage", () => {
       expect(uploadKeyServiceMock.listUploadKeys).toHaveBeenCalled();
     }, { timeout: 3000 });
   });
+
+  it("does not leak state updates when unmounted before list resolves", async () => {
+    let resolveList: (value: any[]) => void = () => {};
+    uploadKeyServiceMock.listUploadKeys.mockImplementation(
+      () => new Promise((resolve) => { resolveList = resolve; })
+    );
+
+    const { unmount } = render(
+      <MemoryRouter initialEntries={["/dashboard/upload-keys"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <Routes>
+          <Route path="/dashboard/upload-keys" element={<UploadKeysPage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(uploadKeyServiceMock.listUploadKeys).toHaveBeenCalled();
+    }, { timeout: 3000 });
+
+    unmount();
+    resolveList([]);
+    await Promise.resolve();
+    await Promise.resolve();
+  });
 });

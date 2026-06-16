@@ -365,24 +365,52 @@ A coherent regional expansion path is:
     - **Why it fails for SME automation:** Geared toward large robotics teams and large-scale data programs; higher price points and longer cycles; not optimized for Korean SMEs requiring fast, low-cost, “finish-the-workload” outcomes.
     - **GamiphyAI edge:** Korea-first SME focus, constrained tasks, small datasets, and rapid PoC-to-deployment conversion with ongoing monthly support.
 
-  - **Alternative 5: Outsourced data collection networks**
+  - **Alternative 5: Physical-AI data pipeline and workforce-backed data operations**
+    - **Example:** CrowdWorks markets a Physical AI data pipeline covering data collection via digital twin simulators and real-world proving grounds, data processing, validation, model evaluation, and expert/worker matching through its specialized platform and large workforce pool.
+    - **Web:** `https://www.crowdworks.ai/data/physicalai`
+    - **Why it wins:** End-to-end physical-AI data operations, multimodal data-management tooling, integrated QC/validation, and flexible staffing for large annotation and verification programs.
+    - **Why it fails for SME automation:** Optimized for building and operating data pipelines for AI teams, not for owning SME automation outcomes on live production workflows; it does not appear positioned around onsite deployment, workload-level ROI, or recurring operational support for constrained manufacturing cells.
+    - **GamiphyAI edge:** We start from the SME production problem itself, then use PoCs, deployment responsibility, and ongoing support to convert data work into measurable automation outcomes rather than selling data operations as a standalone service.
+
+  - **Alternative 6: Outsourced data collection networks**
     - **Example:** Sensei positions itself as “Scale AI for robotics data,” combining low-cost collection hardware and a network of paid human operators to fulfill data-generation requests.
     - **Web:** `https://senseirobotics.com/`, `https://www.ycombinator.com/companies/sensei`, `https://www.ycombinator.com/launches/Ljf-sensei-robotics-training-data-at-scale`
     - **Why it wins:** Scales data generation and reduces collection cost/time for robotics companies.
     - **Why it fails for SME automation:** Primarily solves data supply for robotics teams rather than solving the deployment and operations problem for SME production lines.
     - **GamiphyAI edge:** We combine SME need discovery + PoC + deployment + ongoing maintenance with a marketplace that recruits creators specifically for validated SME use cases.
   
-  - **Alternative 6: Real world, robot data collection**
+  - **Alternative 7: Real world, robot data collection**
     - **Example:** Gauss Robotics provides agentic AI based automation workcell and workflow design. The user generates workcells by prompting a chatbot. In turn this creates a workcell with realistic objects, robot and motion that recreates the workflow described. "We use Agentic AI to automate robotics engineering workflows. From the initial idea to delivering the solution. A fully digitized robot cell with seamless AI-based integration of hardware and software."
     - **Web:** https://www.gauss-robotics.de/en/our-tech/
     - **Why it wins:** Provides, almost instantaneously, a view of what a possible automation solution looks like
     - **GamiphyAI edge:** We 
 
-  - **Alternative 7: Agentic AI based automation design**
+  - **Alternative 8: Agentic AI based automation design**
     - **Example:** Neuracore 
     - **Web:** https://www.neuracore.com/
     - **Why it wins:** Already ahead in the business, provides products for data collection, curation and model inference and training.
     - **GamiphyAI edge:** We do not provide tools for developers only, but rather a platform to commercialize datasets as well and B2B turnkey solutions.
+
+  - **Alternative 9: Teleoperation services** 
+    - **Example:** Adamo
+    - **Web:** https://adamohq.com/
+    - **Why it wins:** Adamo builds high-performance teleoperation tools and services, so our clients can focus on building the world's best robots.
+    - **GamiphyAI edge:** GamiphyAI does not focus on teleoperation but on the successfull commercialization of robot solutions 
+
+  - **Alternative 10: Data quality governance and AI-readiness platforms**
+    - **Example:** Data Clinic (Pebblous) positions itself as a data management and governance solution that continuously evaluates and improves the AI suitability of data, with capabilities including multimodal quality diagnosis, synthetic data generation, data lightweighting, and regulatory-response support.
+    - **Web:** `https://dataclinic.ai/en/data-clinic/about`
+    - **Why it wins:** Strong positioning around data quality, explainability, governance, synthetic-data targeting, and efficient model-development support across multiple data modalities and industries.
+    - **Why it fails for SME automation:** It is designed primarily as a data diagnosis and governance layer for AI teams, not as an automation-delivery business for SMEs; it does not appear focused on onsite workflow integration, constrained robotic workcells, or taking responsibility for production KPIs and recurring operational performance.
+    - **GamiphyAI edge:** We connect data work directly to deployed automation outcomes. Instead of stopping at AI-ready data quality and governance, we use PoCs, deployment ownership, and ongoing support to turn workflow-specific data into contracted SME automation results.
+
+  - **Alternative 11: Adaptive high-mix / high-variance automation providers**
+    - **Example:** Carbon6 Robotics positions itself around bringing “Six-Sigma robot dexterity and intelligence” to manufacturing automation, targeting high-mix and high-variance processes with AI-powered imitation learning that captures operator expertise and judgment.
+    - **Web:** `https://www.carbon6robotics.com/aboutus`
+    - **Why it wins:** Directly targets the same hard automation problem in variable manufacturing environments, with a strong message around adaptive robotic intelligence, ROI, and practical factory-floor deployment.
+    - **Why it fails for SME automation:** While compelling for adaptive manufacturing automation, the positioning is still centered on delivering intelligent robotics solutions rather than building a broader marketplace and commercialization layer for datasets, creators, and repeatable workflow assets; it also does not appear specifically optimized for ultra-low-friction SME onboarding or creator-driven data supply loops.
+    - **GamiphyAI edge:** We pair adaptive automation delivery with a commercialization model. The advantage is not only solving a high-mix task, but converting each deployment into reusable datasets, creator incentives, and repeatable skill packages that compound into a platform over time.
+
 
 - **Differentiation (what we do uniquely):**
   - **Closed-loop marketplace tied to real outcomes:** We connect SME automation “jobs-to-be-done” with creators who generate targeted datasets and skills, and we validate value through real PoCs and workload-level KPIs.

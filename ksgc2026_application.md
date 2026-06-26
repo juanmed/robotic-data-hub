@@ -21,5 +21,7 @@ Our customers are SMEs in logistics, packaging, F&B, cosmetics, and assembly tha
 
 ### Global competitors and competitiveness: Who are your global competitors and what makes you different...
 
+Our core technology is: robots designed to automate high-mix, low-volume tasks, generating proprietary multimodal datasets, validated against real production KPIs, and producing reusable skill packages commercialized on gamiphy.ai. Our advantage compounds with every deployment: we capture demonstrations, failures, recovery strategies, benchmarks, and integration playbooks that improve future deployments. The integration of hardware, workflow data, evaluation methods, and customer-specific know-how raises the barrier to competitors and matches customer expectations of a turn-key solutions.
+
 
 

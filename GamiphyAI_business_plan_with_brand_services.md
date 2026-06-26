@@ -345,8 +345,8 @@ A coherent regional expansion path is:
     - **GamiphyAI edge:** One-day installation for constrained workcells, ≥10x lower upfront integration fee for SMEs, and flexibility for tasks that do not require extreme precision—validated through rapid PoCs and iterated via data/skill updates.
 
   - **Alternative 2: “Dataset marketplace” platforms (generic robotics/physical-AI datasets)**
-    - **Example:** ExchAInge positions itself as “the marketplace for verified physical AI datasets,” emphasizing hardware verification, AI-powered QA, and monetization for creators.
-    - **Web:** `https://exchainge.net/` (overview), `https://exchainge.net/how-it-works` (workflow)
+    - **Example:** ExchAInge, now Augea, positions itself as “the marketplace for verified physical AI datasets,” emphasizing hardware verification, AI-powered QA, and monetization for creators.
+    - **Web:** `https://augea.org/` (overview)
     - **Why it wins:** Provides a buying/selling mechanism for datasets and encourages monetization.
     - **Why it fails for SME automation:** Does not start from specific SME workloads and “definition-of-done” KPIs; lacks onsite constraints, exception handling, and deployment responsibility; data may not map cleanly to repeatable production outcomes.
     - **GamiphyAI edge:** Dataset marketplace is tied to real SME use cases and PoCs—data is collected/curated to satisfy workload-level KPIs and is continuously refined through real deployments.
@@ -410,6 +410,20 @@ A coherent regional expansion path is:
     - **Why it wins:** Directly targets the same hard automation problem in variable manufacturing environments, with a strong message around adaptive robotic intelligence, ROI, and practical factory-floor deployment.
     - **Why it fails for SME automation:** While compelling for adaptive manufacturing automation, the positioning is still centered on delivering intelligent robotics solutions rather than building a broader marketplace and commercialization layer for datasets, creators, and repeatable workflow assets; it also does not appear specifically optimized for ultra-low-friction SME onboarding or creator-driven data supply loops.
     - **GamiphyAI edge:** We pair adaptive automation delivery with a commercialization model. The advantage is not only solving a high-mix task, but converting each deployment into reusable datasets, creator incentives, and repeatable skill packages that compound into a platform over time.
+
+  - **Alternative 12: AI data processing and software testing service providers**
+    - **Example:** TestWorks, now AIWORKX, positions itself as an AI data processing, automation, and software testing specialist with products and services spanning crowd-based data collection, data quality verification, QA services, and remote test automation management.
+    - **Web:** `https://aiworkx.ai/contents/about.html?lan=ko&category=company&active=about`
+    - **Why it wins:** Established Korean execution capability in large-scale AI data operations, quality assurance, testing infrastructure, and enterprise service delivery, with credibility built through repeated public-sector and commercial data programs.
+    - **Why it fails for SME automation:** The company is oriented toward AI data processing and software testing services rather than owning robotic workflow deployment outcomes for SME manufacturers; it does not appear focused on constrained workcell installs, workload-level automation KPIs, or turning factory deployments into a creator-driven robotics data marketplace.
+    - **GamiphyAI edge:** We use data and QA work in service of a narrower, more outcome-driven goal: contracted automation performance on live SME workflows. That lets us tie data creation, deployment, and recurring support into one commercialization loop instead of selling testing and data services as separate offerings.
+
+  - **Alternative 13: Korean Physical AI platform providers**
+    - **Example:** Maum.ai positions itself as a Physical AI specialist, saying its SUDA, MAAL, and WoRV technologies power business automation and productivity improvement through a broader Physical AI platform.
+    - **Web:** `https://maum.ai/physical-ai-service`
+    - **Why it wins:** Strong top-level Korean Physical AI positioning, a platform narrative spanning language, voice, and vision/action capabilities, and a broad enterprise automation message that can resonate with buyers looking for advanced AI-led productivity gains.
+    - **Why it fails for SME automation:** The positioning is broad and platform-centric rather than tightly anchored to specific SME manufacturing workloads, constrained robotic cells, and measurable line-level deployment outcomes; it does not clearly emphasize the closed-loop creator marketplace and workflow-by-workflow commercialization model that GamiphyAI is building.
+    - **GamiphyAI edge:** We focus the Physical AI story on a narrower wedge that is easier to sell and operationalize: real SME factory workflows, rapid PoCs, repeatable installations, and a marketplace that turns each deployment into reusable data and skill assets.
 
 
 - **Differentiation (what we do uniquely):**
